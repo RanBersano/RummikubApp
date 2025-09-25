@@ -1,4 +1,6 @@
-﻿namespace RummikubApp
+﻿using RummikubApp.Views;
+
+namespace RummikubApp
 {
     public partial class App : Application
     {
@@ -6,7 +8,7 @@
         {
             InitializeComponent();
 
-            MainPage = new AppShell();
+            MainPage = new LogInPage();
         }
     }
 }
