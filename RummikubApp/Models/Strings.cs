@@ -4,7 +4,7 @@
     {
         public const string UserName = "User name";
         public const string Password = "Password";
-        public const string Email = "Email";
+        public const string Email = "Emailk";
         public const string LogIn = "Log In";
         public const string Register = "Register";
     }
