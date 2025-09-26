@@ -1,27 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RummikubApp.ModelLogics;
+using System.Windows.Input;
 
 namespace RummikubApp.ViewModels
 {
     internal class LogInPageVM
     {
-        //אסור כאן הכל צריך להעיף.
-        private string name { get; set; } = string.Empty;
-        public string Name
-        {
-            get => Name;
-            set
-            {
-                name = value;
-                Preferences.Set("name", name);
-            }
-        }
+        private readonly User user = new();
+        public ICommand LogInCommand {  get; }
         public LogInPageVM()
         {
-            name = Preferences.Get("name", string.Empty);
+            LogInCommand = new Command(LogIn, CanLogIn);
+        }
+        public bool CanLogIn()
+        {
+            return !string.IsNullOrWhiteSpace(user.UserName);
+        }
+
+        private void LogIn()
+        {
+            user.LogIn();
+        }
+
+        public string UserName 
+        { 
+            get => user.UserName ;
+            set
+            {
+                user.UserName = value;
+                (LogInCommand as Command)?.ChangeCanExecute();
+            }
         }
     }
 }

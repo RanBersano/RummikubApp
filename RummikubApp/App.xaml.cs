@@ -1,4 +1,5 @@
-﻿using RummikubApp.Views;
+﻿using RummikubApp.ModelLogics;
+using RummikubApp.Views;
 
 namespace RummikubApp
 {
@@ -7,8 +8,9 @@ namespace RummikubApp
         public App()
         {
             InitializeComponent();
-
-            MainPage = new LogInPage();
+            User user = new();
+            Page page = user.IsRegistered ? new LogInPage() : new RegisterPage();
+            MainPage = page;
         }
     }
 }
