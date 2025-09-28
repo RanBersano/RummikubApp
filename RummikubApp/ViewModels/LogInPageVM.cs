@@ -13,7 +13,7 @@ namespace RummikubApp.ViewModels
         }
         public bool CanLogIn()
         {
-            return !string.IsNullOrWhiteSpace(user.UserName);
+            return !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email);
         }
 
         private void LogIn()
@@ -27,6 +27,24 @@ namespace RummikubApp.ViewModels
             set
             {
                 user.UserName = value;
+                (LogInCommand as Command)?.ChangeCanExecute();
+            }
+        }
+        public string Password
+        {
+            get => user.Password;
+            set
+            {
+                user.Password = value;
+                (LogInCommand as Command)?.ChangeCanExecute();
+            }
+        }
+        public string Email
+        {
+            get => user.Email;
+            set
+            {
+                user.Email = value;
                 (LogInCommand as Command)?.ChangeCanExecute();
             }
         }

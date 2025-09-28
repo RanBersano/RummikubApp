@@ -11,6 +11,14 @@
             Text="{Binding UserName}"
             Placeholder="{x:Static m:Strings.UserName}"
             VerticalOptions="Center"/>
+        <Entry
+            Placeholder="{x:Static m:Strings.Password}"
+            Text="{Binding Password}"
+            VerticalOptions="Center" />
+        <Entry
+            Placeholder="{x:Static m:Strings.Email}"
+            Text="{Binding Email}"
+            VerticalOptions="Center" />
         <Button
             Text="{x:Static m:Strings.LogIn}" 
             Command="{Binding LogInCommand}"/>
