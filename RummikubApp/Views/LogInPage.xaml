@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-             xmlns:m="clr-namespace:RummikubApp.Models"
-             x:DataType="vm:LogInPageVM"
-             x:Class="RummikubApp.Views.LogInPage"
-             Title="LogInPage">
-    <VerticalStackLayout Spacing="15" Margin="10">
+<ContentPage
+    x:Class="RummikubApp.Views.LogInPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:m="clr-namespace:RummikubApp.Models"
+    xmlns:vm="clr-namespace:RummikubApp.ViewModels"
+    Title="LogInPage"
+    x:DataType="vm:LogInPageVM">
+    <VerticalStackLayout Margin="10" Spacing="15">
         <Entry
-            Text="{Binding UserName}"
             Placeholder="{x:Static m:Strings.UserName}"
-            VerticalOptions="Center"/>
+            Text="{Binding UserName}"
+            VerticalOptions="Center" />
         <Entry
             Placeholder="{x:Static m:Strings.Password}"
             Text="{Binding Password}"
@@ -19,8 +20,6 @@
             Placeholder="{x:Static m:Strings.Email}"
             Text="{Binding Email}"
             VerticalOptions="Center" />
-        <Button
-            Text="{x:Static m:Strings.LogIn}" 
-            Command="{Binding LogInCommand}"/>
+        <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
     </VerticalStackLayout>
 </ContentPage>

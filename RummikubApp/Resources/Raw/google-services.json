@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "461661189483",
+    "project_id": "rummikub-18b9a",
+    "storage_bucket": "rummikub-18b9a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461661189483:android:e200549b754912fb85482e",
+        "android_client_info": {
+          "package_name": "com.meitar.rummikubapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAahvaiDx4Hv5gfgp0lXsLCxXe8K_SGyRE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

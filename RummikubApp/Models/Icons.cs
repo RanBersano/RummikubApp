@@ -1,4 +1,4 @@
-﻿namespace Chess.Models
+﻿namespace RummikubApp.Models
 {
     internal static class Icons
     {

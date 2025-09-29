@@ -12,10 +12,26 @@ namespace RummikubApp.ModelLogics
         }
         public override void Register()
         {
+            fbd.CreateUserWithEmailAndPasswordAsync(Email, Password, UserName, OnComplete);
+        }
+
+        private void OnComplete(Task task)
+        {
+            if (task.IsCompletedSuccessfully)
+                SaveToPreferences();
+            else
+            {
+                Shell.Current.DisplayAlert(Strings.CreateUserError, task.Exception?.Message, Strings.Ok);
+            }
+        }
+
+        private void SaveToPreferences()
+        {
             Preferences.Set(Keys.UserNameKey, UserName);
             Preferences.Set(Keys.PasswordKey, Password);
             Preferences.Set(Keys.EmailKey, Email);
         }
+
         public User()
         {
             UserName = Preferences.Get(Keys.UserNameKey, string.Empty);

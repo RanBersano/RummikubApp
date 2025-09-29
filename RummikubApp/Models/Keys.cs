@@ -5,5 +5,6 @@
         public const string UserNameKey = "userName";
         public const string PasswordKey = "password";
         public const string EmailKey = "email";
+        public const string FbApikey = "AIzaSyAahvaiDx4Hv5gfgp0lXsLCxXe8K_SGyRE";
     }
 }
