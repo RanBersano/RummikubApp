@@ -16,14 +16,23 @@ namespace RummikubApp.ModelLogics
         }
 
         private void OnComplete(Task task)
-        {
-            if (task.IsCompletedSuccessfully)
-                SaveToPreferences();
-            else
-            {
-                Shell.Current.DisplayAlert(Strings.CreateUserError, task.Exception?.Message, Strings.Ok);
-            }
-        }
+  {
+      MainThread.BeginInvokeOnMainThread(async () =>
+      {
+          if (task.IsCompletedSuccessfully)
+          {
+              SaveToPreferences();
+          }
+          else
+          {
+              await Application.Current.MainPage.DisplayAlert(
+                  "Registration Failed",
+                  "An error occurred while creating your account. Please try again.",
+                  "OK"
+              );
+          }
+      });
+  }
 
         private void SaveToPreferences()
         {
