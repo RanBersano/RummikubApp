@@ -8,18 +8,67 @@
     Title="LogInPage"
     x:DataType="vm:LogInPageVM">
     <VerticalStackLayout Margin="10" Spacing="15">
-        <Entry
-            Placeholder="{x:Static m:Strings.UserName}"
-            Text="{Binding UserName}"
-            VerticalOptions="Center" />
-        <Entry
-            Placeholder="{x:Static m:Strings.Password}"
-            Text="{Binding Password}"
-            VerticalOptions="Center" />
-        <Entry
-            Placeholder="{x:Static m:Strings.Email}"
-            Text="{Binding Email}"
-            VerticalOptions="Center" />
+        <Label
+            FontAttributes="Bold"
+            FontSize="15"
+            Text="{x:Static m:Strings.UserName}"
+            TextColor="DarkOrange" />
+        <Border
+            Margin="10"
+            Padding="10"
+            Stroke="Turquoise"
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="1">
+            <Entry
+                Placeholder="{x:Static m:Strings.UserName}"
+                Text="{Binding UserName}"
+                VerticalOptions="Center" />
+        </Border>
+        <Label
+            FontAttributes="Bold"
+            FontSize="15"
+            Text="{x:Static m:Strings.Password}"
+            TextColor="DarkOrange" />
+        <Border
+            Margin="10"
+            Padding="10"
+            Stroke="Turquoise"
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="1">
+            <Grid>
+                <Entry
+                    Placeholder="{x:Static m:Strings.Password}"
+                    Text="{Binding Password}"
+                    VerticalOptions="Center"
+                    IsPassword="{Binding IsPassword}"/>
+                <Button
+                    BackgroundColor="Transparent"
+                    BorderWidth="0"
+                    Command="{Binding ToggleIsPasswordCommand}"
+                    FontFamily="MaterialSymbols"
+                    FontSize="24"
+                    HorizontalOptions="End"
+                    Style="{StaticResource IconButtonStyle}"
+                    Text="{Binding IsPassword, Converter={StaticResource passwordIconConvert}}"
+                    TextColor="DarkOrange" />
+            </Grid>
+        </Border>
+        <Label
+            FontAttributes="Bold"
+            FontSize="15"
+            Text="{x:Static m:Strings.Email}"
+            TextColor="DarkOrange" />
+        <Border
+            Margin="10"
+            Padding="10"
+            Stroke="Turquoise"
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="1">
+            <Entry
+                Placeholder="{x:Static m:Strings.Email}"
+                Text="{Binding Email}"
+                VerticalOptions="Center" />
+        </Border>
         <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
     </VerticalStackLayout>
 </ContentPage>

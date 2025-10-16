@@ -1,15 +1,24 @@
 ﻿using RummikubApp.ModelLogics;
 using System.Windows.Input;
+using RummikubApp.Models; 
 
 namespace RummikubApp.ViewModels
 {
-    internal class RegisterPageVM
+    internal class RegisterPageVM : ObservableObject
     {
+        public ICommand ToggleIsPasswordCommand { get; }
+        public bool IsPassword { get; set; } = true;
         private readonly User user = new();
         public ICommand RegisterCommand { get; }
         public RegisterPageVM()
         {
             RegisterCommand = new Command(Register, CanRegister);
+            ToggleIsPasswordCommand = new Command(ToggleIsPassword);
+        }
+        private void ToggleIsPassword()
+        {
+            IsPassword = !IsPassword;
+            OnPropertyChanged(nameof(IsPassword));
         }
         public bool CanRegister()
         {
