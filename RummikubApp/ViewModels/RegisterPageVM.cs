@@ -1,6 +1,8 @@
-﻿using RummikubApp.ModelLogics;
-using System.Windows.Input;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using RummikubApp.ModelLogics;
 using RummikubApp.Models; 
+using System.Windows.Input;
 
 namespace RummikubApp.ViewModels
 {
@@ -14,6 +16,7 @@ namespace RummikubApp.ViewModels
         {
             RegisterCommand = new Command(Register, CanRegister);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
+            
         }
         private void ToggleIsPassword()
         {
@@ -27,6 +30,7 @@ namespace RummikubApp.ViewModels
 
         private void Register()
         {
+            Toast.Make("Test", ToastDuration.Long).Show();
             user.Register();
         }
 

@@ -6,7 +6,8 @@
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     Title="LogInPage"
-    x:DataType="vm:LogInPageVM">
+    x:DataType="vm:LogInPageVM"
+    BackgroundImageSource="loginandregisterbackground.png">
     <VerticalStackLayout Margin="10" Spacing="15">
         <Label
             FontAttributes="Bold"
@@ -22,7 +23,8 @@
             <Entry
                 Placeholder="{x:Static m:Strings.UserName}"
                 Text="{Binding UserName}"
-                VerticalOptions="Center" />
+                VerticalOptions="Center"
+                BackgroundColor="#80FFFFFF"/>
         </Border>
         <Label
             FontAttributes="Bold"
@@ -40,7 +42,8 @@
                     Placeholder="{x:Static m:Strings.Password}"
                     Text="{Binding Password}"
                     VerticalOptions="Center"
-                    IsPassword="{Binding IsPassword}"/>
+                    IsPassword="{Binding IsPassword}"
+                    BackgroundColor="#80FFFFFF"/>
                 <Button
                     BackgroundColor="Transparent"
                     BorderWidth="0"
@@ -67,7 +70,8 @@
             <Entry
                 Placeholder="{x:Static m:Strings.Email}"
                 Text="{Binding Email}"
-                VerticalOptions="Center" />
+                VerticalOptions="Center" 
+                BackgroundColor="#80FFFFFF"/>
         </Border>
         <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
     </VerticalStackLayout>
