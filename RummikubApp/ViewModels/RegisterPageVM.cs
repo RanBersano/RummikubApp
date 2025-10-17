@@ -1,7 +1,5 @@
-﻿using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
-using RummikubApp.ModelLogics;
-using RummikubApp.Models; 
+﻿using RummikubApp.ModelLogics;
+using RummikubApp.Models;
 using System.Windows.Input;
 
 namespace RummikubApp.ViewModels
@@ -16,8 +14,20 @@ namespace RummikubApp.ViewModels
         {
             RegisterCommand = new Command(Register, CanRegister);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
-            
+            user.OnAuthComplete += OnAuthComplete;
         }
+
+        private void OnAuthComplete(object? sender, EventArgs e)
+        {
+            if(Application.Current != null)
+            {
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    Application.Current.MainPage = new AppShell();
+                });
+            }
+        }
+
         private void ToggleIsPassword()
         {
             IsPassword = !IsPassword;
@@ -25,12 +35,11 @@ namespace RummikubApp.ViewModels
         }
         public bool CanRegister()
         {
-            return !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email);
+            return user.CanRegister();
         }
 
         private void Register()
         {
-            Toast.Make("Test", ToastDuration.Long).Show();
             user.Register();
         }
 

@@ -11,20 +11,26 @@
     <VerticalStackLayout Margin="10" Spacing="15">
         <Label
             FontAttributes="Bold"
+            FontSize="50"
+            HorizontalOptions="Center"
+            Text="{x:Static m:Strings.LogIn}"
+            TextColor="Black" />
+        <Label
+            FontAttributes="Bold"
             FontSize="15"
             Text="{x:Static m:Strings.UserName}"
             TextColor="DarkOrange" />
         <Border
             Margin="10"
             Padding="10"
+            BackgroundColor="#90FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="1">
             <Entry
                 Placeholder="{x:Static m:Strings.UserName}"
                 Text="{Binding UserName}"
-                VerticalOptions="Center"
-                BackgroundColor="#80FFFFFF"/>
+                VerticalOptions="Center" />
         </Border>
         <Label
             FontAttributes="Bold"
@@ -34,16 +40,16 @@
         <Border
             Margin="10"
             Padding="10"
+            BackgroundColor="#99FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="1">
             <Grid>
                 <Entry
+                    IsPassword="{Binding IsPassword}"
                     Placeholder="{x:Static m:Strings.Password}"
                     Text="{Binding Password}"
-                    VerticalOptions="Center"
-                    IsPassword="{Binding IsPassword}"
-                    BackgroundColor="#80FFFFFF"/>
+                    VerticalOptions="Center" />
                 <Button
                     BackgroundColor="Transparent"
                     BorderWidth="0"
@@ -64,14 +70,14 @@
         <Border
             Margin="10"
             Padding="10"
+            BackgroundColor="#99FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="1">
             <Entry
                 Placeholder="{x:Static m:Strings.Email}"
                 Text="{Binding Email}"
-                VerticalOptions="Center" 
-                BackgroundColor="#80FFFFFF"/>
+                VerticalOptions="Center" />
         </Border>
         <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
     </VerticalStackLayout>

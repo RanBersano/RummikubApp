@@ -14,12 +14,22 @@ namespace RummikubApp.ViewModels
         {
             LogInCommand = new Command(LogIn, CanLogIn);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
+            user.OnAuthComplete += OnAuthComplete;
         }
         public bool CanLogIn()
         {
-            return !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email);
+            return user.CanLogIn();
         }
-
+        private void OnAuthComplete(object? sender, EventArgs e)
+        {
+            if (Application.Current != null)
+            {
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    Application.Current.MainPage = new AppShell();
+                });
+            }
+        }
         private void LogIn()
         {
             user.LogIn();

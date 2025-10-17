@@ -6,8 +6,15 @@
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     Title="RegisterPage"
-    x:DataType="vm:RegisterPageVM">
+    x:DataType="vm:RegisterPageVM"
+    BackgroundImageSource="loginandregisterbackground.png">
     <VerticalStackLayout>
+        <Label
+            FontAttributes="Bold"
+            FontSize="50"
+            Text="{x:Static m:Strings.Register}"
+            HorizontalOptions="Center"
+            TextColor="Black" />
         <Label
             FontAttributes="Bold"
             FontSize="15"
@@ -16,6 +23,7 @@
         <Border
             Margin="10"
             Padding="10"
+            BackgroundColor="#99FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="1">
@@ -32,15 +40,16 @@
         <Border
             Margin="10"
             Padding="10"
+            BackgroundColor="#99FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="1">
             <Grid>
                 <Entry
+                    IsPassword="{Binding IsPassword}"
                     Placeholder="{x:Static m:Strings.Password}"
                     Text="{Binding Password}"
-                    VerticalOptions="Center"
-                    IsPassword="{Binding IsPassword}"/>
+                    VerticalOptions="Center" />
                 <Button
                     BackgroundColor="Transparent"
                     BorderWidth="0"
@@ -61,6 +70,7 @@
         <Border
             Margin="10"
             Padding="10"
+            BackgroundColor="#99FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="1">
