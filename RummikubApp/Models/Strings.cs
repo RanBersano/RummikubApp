@@ -21,6 +21,9 @@
         public const string Reason = "Reason";
         public const string UserNotFound = "INVALID_LOGIN_CREDENTIALS";
         public const string UserNotFoundmsg = "User not found.";
+        public const string Play = "PLAY";
+        public const string Instructions = "INSTRUCTIONS";
+        public const string Settings = "SETTINGS";
 
     }
 }

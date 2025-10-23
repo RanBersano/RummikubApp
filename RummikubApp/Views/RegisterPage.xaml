@@ -8,7 +8,7 @@
     Title="RegisterPage"
     x:DataType="vm:RegisterPageVM"
     BackgroundImageSource="loginandregisterbackground.png">
-    <VerticalStackLayout>
+    <VerticalStackLayout Margin="10" Spacing="15">
         <Label
             FontAttributes="Bold"
             FontSize="50"

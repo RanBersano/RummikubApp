@@ -1,5 +1,6 @@
 ﻿using RummikubApp.ModelLogics;
 using RummikubApp.Models;
+using RummikubApp.Views;
 using System.Windows.Input;
 
 namespace RummikubApp.ViewModels
@@ -23,7 +24,7 @@ namespace RummikubApp.ViewModels
             {
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Application.Current.MainPage = new AppShell();
+                    Application.Current.MainPage = new HomePage();
                 });
             }
         }

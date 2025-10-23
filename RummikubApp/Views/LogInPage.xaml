@@ -23,7 +23,7 @@
         <Border
             Margin="10"
             Padding="10"
-            BackgroundColor="#90FFFFFF"
+            BackgroundColor="#99FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="1">
