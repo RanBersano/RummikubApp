@@ -5,7 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-    Title="LogInPage"
     x:DataType="vm:LogInPageVM"
     BackgroundImageSource="loginandregisterbackground.png">
     <VerticalStackLayout Margin="10" Spacing="15">
@@ -80,5 +79,13 @@
                 VerticalOptions="Center" />
         </Border>
         <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
+        <HorizontalStackLayout Spacing="30" HorizontalOptions="Center">
+            <Label Text="{x:Static m:Strings.ForgotPassword}" />
+            <Label Text="{x:Static m:Strings.ResetPassword}" TextColor="DarkTurquoise" FontAttributes="Bold">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ResetPasswordCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>

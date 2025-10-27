@@ -7,10 +7,11 @@ namespace RummikubApp.ViewModels
 {
     internal class LogInPageVM : ObservableObject
     {
-        public ICommand ToggleIsPasswordCommand { get; }
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();
+        public ICommand ToggleIsPasswordCommand { get; }
         public ICommand LogInCommand {  get; }
+        public ICommand ResetPasswordCommand => new Command(ResetPassword);
         public LogInPageVM()
         {
             LogInCommand = new Command(LogIn, CanLogIn);
@@ -40,9 +41,30 @@ namespace RummikubApp.ViewModels
             IsPassword = !IsPassword;
             OnPropertyChanged(nameof(IsPassword));
         }
+        public async void ResetPassword()
+        {
+            string resetEmail = await Shell.Current.DisplayPromptAsync(
+                Strings.ResetPWPrompt,
+                Strings.ResetEmailPrompt,
+                Strings.Ok,
+                Strings.Cancel,
+                maxLength: 50,
+                keyboard: Microsoft.Maui.Keyboard.Email
+            );
+            ResetEmail = resetEmail;
+            user.ResetPassword();
+        }
+        public string ResetEmail
+        {
+            get => user.ResetEmail;
+            set
+            {
+                user.ResetEmail = value;
+            }
+        }
         public string UserName 
         { 
-            get => user.UserName ;
+            get => user.UserName;
             set
             {
                 user.UserName = value;

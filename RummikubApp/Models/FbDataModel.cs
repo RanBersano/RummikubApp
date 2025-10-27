@@ -12,12 +12,13 @@ namespace RummikubApp.Models
         public abstract string UserId { get; }
         public abstract void CreateUserWithEmailAndPasswordAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete);
         public abstract void SignInWithEmailAndPasswordAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete);
+        public abstract void SendResetEmailPasswordAsync(string email, Action<Task> OnComplete);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()
             {
                 ApiKey = Keys.FbApikey,
-                AuthDomain = "rummikub-18b9a.firebaseapp.com",
+                AuthDomain = Keys.FbAppDomainKey,
                 Providers = [new EmailProvider()]
             };
             facl = new FirebaseAuthClient(fac);

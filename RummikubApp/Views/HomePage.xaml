@@ -5,13 +5,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-    Title="HomePage"
-    x:DataType="vm:HomePageVM">
+    x:DataType="vm:HomePageVM"
+    BackgroundImageSource="homebackground.jpg">
     <VerticalStackLayout Spacing="50" Padding="0,60,0,0">
         <Label
             Text="{Binding UserName, StringFormat='Hello {0}!'}"
             FontSize="28"
-            TextColor="Black"
+            TextColor="White"
             HorizontalOptions="Center"
             HeightRequest="150"/>
         

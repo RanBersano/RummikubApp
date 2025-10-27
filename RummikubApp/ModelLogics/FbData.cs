@@ -19,6 +19,10 @@ namespace RummikubApp.ModelLogics
         {
             await facl.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(OnComplete);
         }
+        public override async void SendResetEmailPasswordAsync(string email, Action<Task> OnComplete)
+        {
+            await facl.ResetEmailPasswordAsync(email).ContinueWith(OnComplete);
+        }
         public override string DisplayName
         {
             get

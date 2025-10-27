@@ -5,7 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-    Title="RegisterPage"
     x:DataType="vm:RegisterPageVM"
     BackgroundImageSource="loginandregisterbackground.png">
     <VerticalStackLayout Margin="10" Spacing="15">

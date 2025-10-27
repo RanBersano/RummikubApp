@@ -24,6 +24,11 @@
         public const string Play = "PLAY";
         public const string Instructions = "INSTRUCTIONS";
         public const string Settings = "SETTINGS";
+        public const string ForgotPassword = "Forgot password?";
+        public const string ResetPassword = "Reset";
+        public const string ResetPWPrompt = "Reset Password";
+        public const string ResetEmailPrompt = "Please Enter Your Account's Email:";
+        public const string Cancel = "Cancel";
 
     }
 }

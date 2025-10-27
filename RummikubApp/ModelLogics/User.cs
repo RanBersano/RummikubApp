@@ -34,18 +34,12 @@ namespace RummikubApp.ModelLogics
         }
         public override string GetFirebaseErrorMessage(string msg)
         {
-            if (msg.Contains(Strings.Reason))
-            {
-                if (msg.Contains(Strings.EmailExists))
-                    return Strings.EmailExistsmsg;
-                if (msg.Contains(Strings.InvalidEmailAddress))
-                    return Strings.InvalidEmailAddressmsg;
-                if (msg.Contains(Strings.WeakPassword))
-                    return Strings.WeakPasswordmsg;
-                if (msg.Contains(Strings.UserNotFound))
-                    return Strings.UserNotFoundmsg;
-            }
-            return Strings.UnknownError;
+            return msg.Contains(Strings.Reason) ?
+                msg.Contains(Strings.EmailExists) ? Strings.EmailExistsmsg :
+                msg.Contains(Strings.InvalidEmailAddress) ? Strings.InvalidEmailAddressmsg :
+                msg.Contains(Strings.WeakPassword) ? Strings.WeakPasswordmsg :
+                msg.Contains(Strings.UserNotFound) ? Strings.UserNotFoundmsg : 
+                Strings.UnknownError : Strings.UnknownError;
         }
         private static void ShowAlert(string msg)
         {
@@ -54,7 +48,13 @@ namespace RummikubApp.ModelLogics
                Toast.Make(msg, ToastDuration.Long).Show();
             });
         }
-
+        public override void ResetPassword()
+        {
+            fbd.SendResetEmailPasswordAsync(ResetEmail, OnCompleteResetPassword);
+        }
+        private void OnCompleteResetPassword(Task task)
+        {
+        }
         private void SaveToPreferences()
         {
             Preferences.Set(Keys.UserNameKey, UserName);
