@@ -19,9 +19,27 @@ namespace RummikubApp.ModelLogics
         {
             await facl.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(OnComplete);
         }
-        public override async void SendResetEmailPasswordAsync(string email, Action<Task> OnComplete)
+        public override async Task SendPasswordResetEmailAsync(string email, Func<Task, Task> OnCompleteSendEmail)
         {
-            await facl.ResetEmailPasswordAsync(email).ContinueWith(OnComplete);
+            // Start Firebase sign-in
+            Task firebaseTask = facl.ResetEmailPasswordAsync(email);
+            try
+            {
+                // Await Firebase sign-in
+                await firebaseTask;
+            }
+            catch (Exception ex)
+            {
+                // Wrap the exception in a Task to pass to the callback
+                TaskCompletionSource<Firebase.Auth.UserCredential> tcs = new();
+                tcs.SetException(ex);
+                firebaseTask = tcs.Task;
+            }
+            finally
+            {
+                // Always invoke the callback, even if the sign-in failed
+                await OnCompleteSendEmail(firebaseTask);
+            }
         }
         public override string DisplayName
         {

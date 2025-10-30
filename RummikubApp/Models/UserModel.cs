@@ -1,5 +1,4 @@
 ﻿using RummikubApp.ModelLogics;
-
 namespace RummikubApp.Models
 {
     internal abstract class UserModel
@@ -16,6 +15,5 @@ namespace RummikubApp.Models
         public abstract bool CanLogIn();
         public abstract bool CanRegister();
         public abstract string GetFirebaseErrorMessage(string msg);
-        public abstract void ResetPassword();
     }
 }

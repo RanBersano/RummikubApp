@@ -1,7 +1,6 @@
 ﻿using Firebase.Auth;
 using Firebase.Auth.Providers;
 using Plugin.CloudFirestore;
-
 namespace RummikubApp.Models
 {
     internal abstract class FbDataModel
@@ -12,7 +11,7 @@ namespace RummikubApp.Models
         public abstract string UserId { get; }
         public abstract void CreateUserWithEmailAndPasswordAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete);
         public abstract void SignInWithEmailAndPasswordAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete);
-        public abstract void SendResetEmailPasswordAsync(string email, Action<Task> OnComplete);
+        public abstract Task SendPasswordResetEmailAsync(string email, Func<Task, Task> OnCompleteSendEmail);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

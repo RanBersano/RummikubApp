@@ -83,7 +83,7 @@
             <Label Text="{x:Static m:Strings.ForgotPassword}" />
             <Label Text="{x:Static m:Strings.ResetPassword}" TextColor="DarkTurquoise" FontAttributes="Bold">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ResetPasswordCommand}" />
+                    <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
                 </Label.GestureRecognizers>
             </Label>
         </HorizontalStackLayout>

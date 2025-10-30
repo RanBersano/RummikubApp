@@ -13,6 +13,21 @@ namespace RummikubApp.ModelLogics
             Preferences.Set(Keys.PasswordKey, Password);
             Preferences.Set(Keys.EmailKey, Email);
         }
+        public async Task ResetPassword()
+        {
+            await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
+        }
+        private async Task OnCompleteSendEmail(Task task)
+        {
+            if (task.IsCompletedSuccessfully)
+            {
+                await Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, "errorMessage", Strings.ResetPWErrorButton);
+            }
+        }
         public override void Register()
         {
             fbd.CreateUserWithEmailAndPasswordAsync(Email, Password, UserName, OnComplete);
@@ -47,13 +62,6 @@ namespace RummikubApp.ModelLogics
             {
                Toast.Make(msg, ToastDuration.Long).Show();
             });
-        }
-        public override void ResetPassword()
-        {
-            fbd.SendResetEmailPasswordAsync(ResetEmail, OnCompleteResetPassword);
-        }
-        private void OnCompleteResetPassword(Task task)
-        {
         }
         private void SaveToPreferences()
         {

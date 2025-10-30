@@ -29,6 +29,11 @@
         public const string ResetPWPrompt = "Reset Password";
         public const string ResetEmailPrompt = "Please Enter Your Account's Email:";
         public const string Cancel = "Cancel";
-
+        public const string ResetPWTitle = "An email has been sent:";
+        public const string ResetPWErrorTitle = "Error sending a mail:";
+        public const string ResetPWMessage = "An email with a link to reset your password has been sent to the provided email.\n" +
+            "Please follow the instructions in the email and try again.";
+        public const string ResetPWButton = "I will!";
+        public const string ResetPWErrorButton = "I'll right it right away!";
     }
 }

@@ -11,12 +11,18 @@ namespace RummikubApp.ViewModels
         private readonly User user = new();
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand LogInCommand {  get; }
-        public ICommand ResetPasswordCommand => new Command(ResetPassword);
+        public ICommand ForgotPasswordCommand { get; }
+        public bool IsBusy { get; set; } = false;
         public LogInPageVM()
         {
             LogInCommand = new Command(LogIn, CanLogIn);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
             user.OnAuthComplete += OnAuthComplete;
+            ForgotPasswordCommand = new Command(async () => await ForgotPassword());
+        }
+        private async Task ForgotPassword()
+        {
+            await user.ResetPassword();
         }
         public bool CanLogIn()
         {
@@ -40,27 +46,6 @@ namespace RummikubApp.ViewModels
         {
             IsPassword = !IsPassword;
             OnPropertyChanged(nameof(IsPassword));
-        }
-        public async void ResetPassword()
-        {
-            string resetEmail = await Shell.Current.DisplayPromptAsync(
-                Strings.ResetPWPrompt,
-                Strings.ResetEmailPrompt,
-                Strings.Ok,
-                Strings.Cancel,
-                maxLength: 50,
-                keyboard: Microsoft.Maui.Keyboard.Email
-            );
-            ResetEmail = resetEmail;
-            user.ResetPassword();
-        }
-        public string ResetEmail
-        {
-            get => user.ResetEmail;
-            set
-            {
-                user.ResetEmail = value;
-            }
         }
         public string UserName 
         { 
