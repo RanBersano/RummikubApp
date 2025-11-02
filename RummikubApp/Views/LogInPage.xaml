@@ -78,6 +78,14 @@
                 Text="{Binding Email}"
                 VerticalOptions="Center" />
         </Border>
+        <Label
+           Grid.Row="4"
+           Grid.ColumnSpan="3"
+           Text="{x:Static m:Strings.RememberMeCheckBoxText}" />
+        <CheckBox
+         Grid.Row="4"
+         Grid.Column="2"
+         IsChecked="{Binding IsChecked}" />
         <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
         <HorizontalStackLayout Spacing="30" HorizontalOptions="Center">
             <Label Text="{x:Static m:Strings.ForgotPassword}" />

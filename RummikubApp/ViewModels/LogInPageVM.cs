@@ -13,12 +13,18 @@ namespace RummikubApp.ViewModels
         public ICommand LogInCommand {  get; }
         public ICommand ForgotPasswordCommand { get; }
         public bool IsBusy { get; set; } = false;
+        private bool IsCheckedValue;
         public LogInPageVM()
         {
             LogInCommand = new Command(LogIn, CanLogIn);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
             user.OnAuthComplete += OnAuthComplete;
             ForgotPasswordCommand = new Command(async () => await ForgotPassword());
+        }
+        public bool IsChecked
+        {
+            get => IsCheckedValue;
+            set => IsCheckedValue = value;
         }
         private async Task ForgotPassword()
         {
@@ -40,7 +46,7 @@ namespace RummikubApp.ViewModels
         }
         private void LogIn()
         {
-            user.LogIn();
+            user.Login(IsCheckedValue);
         }
         private void ToggleIsPassword()
         {

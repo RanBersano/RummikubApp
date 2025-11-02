@@ -6,14 +6,20 @@ namespace RummikubApp.ModelLogics
 {
     internal class User : UserModel
     {
-        public override void LogIn()
+        public override void Login(bool IsChecked)
         {
+            if (IsChecked)
+            {
+                Preferences.Set(Keys.UserNameKey, UserName);
+                Preferences.Set(Keys.PasswordKey, Password);
+                Preferences.Set(Keys.EmailKey, Email);
+            }
+            else
+                Preferences.Clear();
+
             fbd.SignInWithEmailAndPasswordAsync(Email, Password, OnComplete);
-            Preferences.Set(Keys.UserNameKey, UserName);
-            Preferences.Set(Keys.PasswordKey, Password);
-            Preferences.Set(Keys.EmailKey, Email);
         }
-        public async Task ResetPassword()
+        public async override Task ResetPassword()
         {
             await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
         }
@@ -21,11 +27,11 @@ namespace RummikubApp.ModelLogics
         {
             if (task.IsCompletedSuccessfully)
             {
-                await Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
+                await Application.Current!.MainPage!.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
             }
             else
             {
-                await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, "errorMessage", Strings.ResetPWErrorButton);
+                await Application.Current!.MainPage!.DisplayAlert(Strings.ResetPWErrorTitle, "errorMessage", Strings.ResetPWErrorButton);
             }
         }
         public override void Register()

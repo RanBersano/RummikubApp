@@ -35,5 +35,6 @@
             "Please follow the instructions in the email and try again.";
         public const string ResetPWButton = "I will!";
         public const string ResetPWErrorButton = "I'll right it right away!";
+        public const string RememberMeCheckBoxText = "Remember me:";
     }
 }

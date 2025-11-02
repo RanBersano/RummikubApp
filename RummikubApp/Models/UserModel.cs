@@ -10,10 +10,12 @@ namespace RummikubApp.Models
         public string Email { get; set; } = string.Empty;
         public string ResetEmail { get; set; } = string.Empty;
         public bool IsRegistered => (!string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email));
-        public abstract void LogIn();
+        public abstract void Login(bool IsChecked);
         public abstract void Register();
         public abstract bool CanLogIn();
         public abstract bool CanRegister();
+        public abstract Task ResetPassword();
         public abstract string GetFirebaseErrorMessage(string msg);
+
     }
 }
