@@ -36,5 +36,6 @@
         public const string ResetPWButton = "I will!";
         public const string ResetPWErrorButton = "I'll right it right away!";
         public const string RememberMeCheckBoxText = "Remember me:";
+        public const string CreateGame = "Create game";
     }
 }
