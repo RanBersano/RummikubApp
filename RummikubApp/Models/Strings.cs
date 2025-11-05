@@ -37,5 +37,8 @@
         public const string ResetPWErrorButton = "I'll right it right away!";
         public const string RememberMeCheckBoxText = "Remember me:";
         public const string CreateGame = "Create game";
+        public const string AddGame = "Add Game";
+        public const string GameSize = "Game Size";
+        public const string SelectGameSize = "Select Game Size";
     }
 }

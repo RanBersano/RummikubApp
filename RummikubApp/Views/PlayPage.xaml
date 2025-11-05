@@ -13,5 +13,50 @@
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
         <Button Command="{Binding CreateGameCommand}" Text="{x:Static m:Strings.CreateGame}" />
+        <Grid
+           Padding="5"
+           ColumnDefinitions="*,1.4*"
+           ColumnSpacing="5">
+            <Picker
+               Title="{x:Static m:Strings.SelectGameSize}"
+               FontSize="20"
+               HorizontalTextAlignment="Center"
+                ItemDisplayBinding="{Binding DisplayName}"
+               ItemsSource="{Binding GameSizes}"
+                SelectedItem="{Binding SelectedGameSize}" />
+            <Button
+              Grid.Column="1"
+              Margin="10"
+              Command="{Binding AddGameCommand}"
+              FontSize="Body"
+              HorizontalOptions="Fill"
+              Text="{x:Static m:Strings.AddGame}" />
+        </Grid>
+        <ListView ItemsSource="{Binding GamesList}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="m:GameModel">
+                    <ViewCell>
+                        <Grid ColumnDefinitions="*,2*,0.5*">
+                            <Label
+                        Grid.Column="0"
+                        Margin="20,0,0,0"
+                        FontAttributes="Bold"
+                        FontSize="20"
+                        HorizontalTextAlignment="Start"
+                        Text="{Binding HostName}" />
+                            <Label
+                        Grid.Column="1"
+                        FontSize="20"
+                        Text="{Binding Created}" />
+                            <Label
+                        Grid.Column="2"
+                        FontSize="20"
+                        HorizontalOptions="Center"
+                        Text="{Binding RowSize}" />
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </VerticalStackLayout>
 </ContentPage>
