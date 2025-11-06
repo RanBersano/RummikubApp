@@ -1,4 +1,5 @@
-﻿using RummikubApp.ModelLogics;
+﻿using CommunityToolkit.Maui.Views;
+using RummikubApp.ModelLogics;
 using RummikubApp.Models;
 using RummikubApp.Views;
 using System.Windows.Input;
@@ -9,9 +10,11 @@ namespace RummikubApp.ViewModels
     {
         private readonly User user = new();
         public ICommand PlayCommand { get; }
+        public ICommand InstructionsPopupCommand { get; private set; }
         public HomePageVM()
         {
             PlayCommand = new Command(Play);
+            InstructionsPopupCommand = new Command(InstructionsPopup);
         }
 
         private void Play (object? sender)
@@ -24,7 +27,10 @@ namespace RummikubApp.ViewModels
                 });
             }
         }
-
+        private void InstructionsPopup(object obj)
+        {
+            Application.Current!.MainPage!.DisplayAlert(Strings.Instructions, Strings.RummyInstructions, Strings.Ok);
+        }
         public string UserName
         {
             get => user.UserName;

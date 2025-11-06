@@ -6,7 +6,7 @@ namespace RummikubApp.ModelLogics
         internal Game(GameSize selectedGameSize)
         {
             HostName = new User().UserName;
-            RowSize = selectedGameSize.Size;
+            Players = selectedGameSize.Size;
             Created = DateTime.Now;
         }
         internal Game()

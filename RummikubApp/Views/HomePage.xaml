@@ -6,42 +6,48 @@
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:HomePageVM"
-    BackgroundImageSource="homebackground.jpg">
-    <VerticalStackLayout Spacing="50" Padding="0,60,0,0">
+    BackgroundImageSource="homebackgroundimg.jpg">
+    <VerticalStackLayout Padding="0,60,0,0" Spacing="50">
         <Label
-            Text="{Binding UserName, StringFormat='Hello {0}!'}"
             FontSize="28"
-            TextColor="White"
+            HeightRequest="150"
             HorizontalOptions="Center"
-            HeightRequest="150"/>
-        
-        <Button
-            Text="{x:Static m:Strings.Play}"
-            FontSize="24"
-            TextColor="White"
-            BackgroundColor="#007AFF"
-            WidthRequest="170"
-            HeightRequest="170"
-            CornerRadius="95"
-            Command="{Binding PlayCommand}"/>
-        <HorizontalStackLayout Spacing="30" HorizontalOptions="Center">
-            <Button
-                Text="{x:Static m:Strings.Instructions}"
-                FontSize="13"
-                TextColor="White"
-                BackgroundColor="#FF9500"
-                WidthRequest="120"
-                HeightRequest="120"
-                CornerRadius="70" />
+            Text="{Binding UserName, StringFormat='Hello {0}!'}"
+            TextColor="Black" />
 
+        <Button
+            BackgroundColor="#FF9500"
+            Command="{Binding PlayCommand}"
+            CornerRadius="95"
+            FontSize="24"
+            HeightRequest="170"
+            Text="{x:Static m:Strings.Play}"
+            TextColor="White"
+            WidthRequest="170" />
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
             <Button
-                Text="{x:Static m:Strings.Settings}"
-                FontSize="13"
-                TextColor="White"
-                BackgroundColor="#34C759"
-                WidthRequest="120"
+                BackgroundColor="#FF9500"
+                Command="{Binding InstructionsPopupCommand}"
+                CornerRadius="70"
                 HeightRequest="120"
-                CornerRadius="70" />
+                WidthRequest="120">
+                <Button.ImageSource>
+                    <FontImageSource Glyph="{StaticResource IconMenu_book}" Size="50">
+                        <FontImageSource.FontFamily>MaterialSymbols</FontImageSource.FontFamily>
+                    </FontImageSource>
+                </Button.ImageSource>
+            </Button>
+            <Button
+                BackgroundColor="#FF9500"
+                CornerRadius="70"
+                HeightRequest="120"
+                WidthRequest="120">
+                <Button.ImageSource>
+                    <FontImageSource Glyph="{StaticResource IconSettings}" Size="50">
+                        <FontImageSource.FontFamily>MaterialSymbols</FontImageSource.FontFamily>
+                    </FontImageSource>
+                </Button.ImageSource>
+            </Button>
         </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>

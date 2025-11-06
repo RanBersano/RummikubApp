@@ -7,7 +7,7 @@
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:RegisterPageVM"
     BackgroundImageSource="loginandregisterbackground.png">
-    <VerticalStackLayout Margin="10" Spacing="15">
+    <VerticalStackLayout Margin="10" Spacing="8">
         <Label
             FontAttributes="Bold"
             FontSize="50"

@@ -7,7 +7,7 @@
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:LogInPageVM"
     BackgroundImageSource="loginandregisterbackground.png">
-    <VerticalStackLayout Margin="10" Spacing="15">
+    <VerticalStackLayout Margin="10" Spacing="8">
         <Label
             FontAttributes="Bold"
             FontSize="50"
@@ -78,18 +78,19 @@
                 Text="{Binding Email}"
                 VerticalOptions="Center" />
         </Border>
-        <Label
-           Grid.Row="4"
-           Grid.ColumnSpan="3"
-           Text="{x:Static m:Strings.RememberMeCheckBoxText}" />
-        <CheckBox
-         Grid.Row="4"
-         Grid.Column="2"
-         IsChecked="{Binding IsChecked}" />
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
+            <Label
+                Text="{x:Static m:Strings.RememberMeCheckBoxText}" />
+            <CheckBox
+                IsChecked="{Binding IsChecked}" />
+        </HorizontalStackLayout>
         <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
-        <HorizontalStackLayout Spacing="30" HorizontalOptions="Center">
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
             <Label Text="{x:Static m:Strings.ForgotPassword}" />
-            <Label Text="{x:Static m:Strings.ResetPassword}" TextColor="DarkTurquoise" FontAttributes="Bold">
+            <Label
+                FontAttributes="Bold"
+                Text="{x:Static m:Strings.ResetPassword}"
+                TextColor="DarkTurquoise">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
                 </Label.GestureRecognizers>
