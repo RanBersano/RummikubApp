@@ -1,7 +1,7 @@
 ﻿using RummikubApp.ModelLogics;
 namespace RummikubApp.Models
 {
-    internal abstract class UserModel
+    public abstract class UserModel
     {
         protected FbData fbd = new();
         public EventHandler? OnAuthComplete;

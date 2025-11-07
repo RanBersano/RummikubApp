@@ -3,7 +3,7 @@ using Firebase.Auth.Providers;
 using Plugin.CloudFirestore;
 namespace RummikubApp.Models
 {
-    internal abstract class FbDataModel
+    public abstract class FbDataModel
     {
         protected FirebaseAuthClient facl;
         protected IFirestore fs;

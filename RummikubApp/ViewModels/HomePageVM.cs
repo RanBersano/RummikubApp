@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace RummikubApp.ViewModels
 {
-    internal class HomePageVM
+    public class HomePageVM
     {
         private readonly User user = new();
         public ICommand PlayCommand { get; }
@@ -23,7 +23,7 @@ namespace RummikubApp.ViewModels
             {
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Application.Current.MainPage = new PlayPage();
+                    Application.Current.MainPage = new AppShell();
                 });
             }
         }

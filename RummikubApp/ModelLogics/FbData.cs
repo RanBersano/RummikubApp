@@ -5,7 +5,7 @@ using RummikubApp.Models;
 
 namespace RummikubApp.ModelLogics
 {
-    internal class FbData : FbDataModel
+    public partial class FbData : FbDataModel
     {
         public FbData()
         {

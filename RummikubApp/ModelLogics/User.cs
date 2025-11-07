@@ -4,7 +4,7 @@ using RummikubApp.Models;
 
 namespace RummikubApp.ModelLogics
 {
-    internal class User : UserModel
+    public class User : UserModel
     {
         public override void Login(bool IsChecked)
         {

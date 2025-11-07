@@ -7,7 +7,7 @@
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:PlayPageVM"
     IsBusy="{Binding IsBusy}"
-    BackgroundImageSource="homebackgroundimg.jpg">
+    BackgroundImageSource="somebackground.jpg">
     <VerticalStackLayout Spacing="50">
         <Label
             FontAttributes="Bold"
@@ -33,7 +33,7 @@
                 HorizontalOptions="Fill"
                 Text="{x:Static m:Strings.CreateGame}" />
         </Grid>
-        <ListView ItemsSource="{Binding GamesList}">
+        <ListView ItemsSource="{Binding GamesList}" SelectedItem="{Binding SelectedItem}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="m:GameModel">
                     <ViewCell>

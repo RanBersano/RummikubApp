@@ -1,15 +1,16 @@
 ﻿using RummikubApp.Models;
 namespace RummikubApp.ModelLogics
 {
-    internal class Game : GameModel
+    public class Game : GameModel
     {
-        internal Game(GameSize selectedGameSize)
+        public override string OpponentName => IsHost ? GuestName : HostName;
+        public Game(GameSize selectedGameSize)
         {
             HostName = new User().UserName;
             Players = selectedGameSize.Size;
             Created = DateTime.Now;
         }
-        internal Game()
+        public Game()
         {
         }
         public override void SetDocument(Action<System.Threading.Tasks.Task> OnComplete)

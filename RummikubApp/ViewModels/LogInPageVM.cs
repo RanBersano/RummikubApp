@@ -5,7 +5,7 @@ using RummikubApp.Views;
 
 namespace RummikubApp.ViewModels
 {
-    internal class LogInPageVM : ObservableObject
+    public class LogInPageVM : ObservableObject
     {
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();

@@ -2,12 +2,10 @@
 using RummikubApp.Models;
 using RummikubApp.Views;
 using System.Collections.ObjectModel;
-using System.Reactive.Joins;
 using System.Windows.Input;
-
 namespace RummikubApp.ViewModels
 {
-    public class PlayPageVM : ObservableObject
+    public class MainPageVM : ObservableObject
     {
         private readonly Games games = new();
         public bool IsBusy => games.IsBusy;
@@ -36,7 +34,7 @@ namespace RummikubApp.ViewModels
             OnPropertyChanged(nameof(IsBusy));
         }
         public ObservableCollection<Game>? GamesList => games.GamesList;
-        public PlayPageVM()
+        public MainPageVM()
         {
             games.OnGameAdded += OnGameAdded;
             games.OnGamesChanged += OnGamesChanged;

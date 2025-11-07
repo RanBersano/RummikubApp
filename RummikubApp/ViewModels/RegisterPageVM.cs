@@ -5,7 +5,7 @@ using System.Windows.Input;
 
 namespace RummikubApp.ViewModels
 {
-    internal class RegisterPageVM : ObservableObject
+    public class RegisterPageVM : ObservableObject
     {
         public ICommand ToggleIsPasswordCommand { get; }
         public bool IsPassword { get; set; } = true;

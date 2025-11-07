@@ -3,16 +3,17 @@ using RummikubApp.ModelLogics;
 using System.Collections.ObjectModel;
 namespace RummikubApp.Models
 {
-    internal class GamesModel
+    public class GamesModel
     {
         protected FbData fbd = new();
         protected IListenerRegistration? ilr;
-
+        protected Game? currentGame;
+        public Game? CurrentGame { get => currentGame; set => currentGame = value; }
         public bool IsBusy { get; set; }
         public ObservableCollection<Game>? GamesList { get; set; } = [];
         public ObservableCollection<GameSize>? GameSizes { get; set; } = [new GameSize(2), new GameSize(3), new GameSize(4)];
         public GameSize SelectedGameSize { get; set; } = new GameSize();
-        public EventHandler<bool>? OnGameAdded;
+        public EventHandler<Game>? OnGameAdded;
         public EventHandler? OnGamesChanged;
     }
 }
