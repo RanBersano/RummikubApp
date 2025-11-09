@@ -10,6 +10,7 @@ namespace RummikubApp.Models
         public string Email { get; set; } = string.Empty;
         public string ResetEmail { get; set; } = string.Empty;
         public bool IsRegistered => (!string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email));
+        public bool IsBusy { get; protected set; } = false;
         public abstract void Login(bool IsChecked);
         public abstract void Register();
         public abstract bool CanLogIn();

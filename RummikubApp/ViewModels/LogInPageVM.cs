@@ -9,10 +9,10 @@ namespace RummikubApp.ViewModels
     {
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();
+        public bool IsBusy => user.IsBusy;
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand LogInCommand {  get; }
         public ICommand ForgotPasswordCommand { get; }
-        public bool IsBusy { get; set; } = false;
         private bool IsCheckedValue;
         public LogInPageVM()
         {
@@ -36,11 +36,12 @@ namespace RummikubApp.ViewModels
         }
         private void OnAuthComplete(object? sender, EventArgs e)
         {
+            OnPropertyChanged(nameof(IsBusy));
             if (Application.Current != null)
             {
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Application.Current.MainPage = new HomePage();
+                    Application.Current.MainPage = new AppShell();
                 });
             }
         }

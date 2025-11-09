@@ -8,6 +8,7 @@ namespace RummikubApp.ModelLogics
     {
         public override void Login(bool IsChecked)
         {
+            IsBusy = true;
             if (IsChecked)
             {
                 Preferences.Set(Keys.UserNameKey, UserName);
@@ -16,7 +17,6 @@ namespace RummikubApp.ModelLogics
             }
             else
                 Preferences.Clear();
-
             fbd.SignInWithEmailAndPasswordAsync(Email, Password, OnComplete);
         }
         public async override Task ResetPassword()
@@ -36,10 +36,12 @@ namespace RummikubApp.ModelLogics
         }
         public override void Register()
         {
+            IsBusy = true;
             fbd.CreateUserWithEmailAndPasswordAsync(Email, Password, UserName, OnComplete);
         }
         private void OnComplete(Task task)
         {
+            IsBusy = false;
             if (task.IsCompletedSuccessfully)
             {
                 SaveToPreferences();

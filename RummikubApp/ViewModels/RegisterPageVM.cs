@@ -7,9 +7,10 @@ namespace RummikubApp.ViewModels
 {
     public class RegisterPageVM : ObservableObject
     {
-        public ICommand ToggleIsPasswordCommand { get; }
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();
+        public bool IsBusy => user.IsBusy;
+        public ICommand ToggleIsPasswordCommand { get; }
         public ICommand RegisterCommand { get; }
         public RegisterPageVM()
         {
@@ -22,9 +23,10 @@ namespace RummikubApp.ViewModels
         {
             if(Application.Current != null)
             {
+                OnPropertyChanged(nameof(IsBusy));
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Application.Current.MainPage = new HomePage();
+                    Application.Current.MainPage = new AppShell();
                 });
             }
         }

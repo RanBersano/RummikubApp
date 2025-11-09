@@ -6,6 +6,7 @@
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:LogInPageVM"
+    IsBusy="{Binding IsBusy}"
     BackgroundImageSource="loginandregisterbackground.png">
     <VerticalStackLayout Margin="10" Spacing="8">
         <Label

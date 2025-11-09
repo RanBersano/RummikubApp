@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-    x:DataType="vm:PlayPageVM"
+    x:DataType="vm:MainPageVM"
     BackgroundImageSource="somebackground.jpg"
     IsBusy="{Binding IsBusy}">
     <VerticalStackLayout Spacing="50">
@@ -60,6 +60,4 @@
             </ListView.ItemTemplate>
         </ListView>
     </VerticalStackLayout>
-
-
 </ContentPage>
