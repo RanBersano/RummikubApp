@@ -1,10 +1,16 @@
-﻿using Plugin.CloudFirestore.Attributes;
+﻿using Plugin.CloudFirestore;
+using Plugin.CloudFirestore.Attributes;
 using RummikubApp.ModelLogics;
 namespace RummikubApp.Models
 {
     public abstract class GameModel
     {
         protected FbData fbd = new();
+        protected IListenerRegistration? ilr;
+        [Ignored]
+        public EventHandler? OnGameChanged;
+        [Ignored]
+        public EventHandler? OnGameDeleted;
         [Ignored]
         public string Id { get; set; } = string.Empty; 
         public string HostName { get; set; } = string.Empty;
@@ -17,7 +23,10 @@ namespace RummikubApp.Models
         [Ignored]
         public string MyName { get; set; } = new User().UserName; 
         [Ignored]
-        public bool IsHost { get; set; }
+        public bool IsHostUser { get; set; }
         public abstract void SetDocument(Action<System.Threading.Tasks.Task> OnComplete);
+        public abstract void AddSnapshotListener();
+        public abstract void RemoveSnapshotListener();
+        public abstract void DeleteDocument(Action<Task> onComplete);
     }
 }

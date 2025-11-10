@@ -10,9 +10,11 @@
     IsBusy="{Binding IsBusy}">
     <VerticalStackLayout Spacing="50">
         <Label
-            FontAttributes="Bold"
-            FontSize="30"
-            HorizontalOptions="Center" />
+            FontSize="28"
+            HeightRequest="150"
+            HorizontalOptions="Center"
+            Text="{Binding UserName, StringFormat='Hello {0}!'}"
+            TextColor="Black" />
         <Grid
             Padding="5"
             ColumnDefinitions="*,1.4*"

@@ -3,7 +3,7 @@ using RummikubApp.ModelLogics;
 using System.Collections.ObjectModel;
 namespace RummikubApp.Models
 {
-    public class GamesModel
+    public abstract class GamesModel
     {
         protected FbData fbd = new();
         protected IListenerRegistration? ilr;
@@ -15,5 +15,7 @@ namespace RummikubApp.Models
         public GameSize SelectedGameSize { get; set; } = new GameSize();
         public EventHandler<Game>? OnGameAdded;
         public EventHandler? OnGamesChanged;
+        public abstract void AddSnapshotListener();
+        public abstract void RemoveSnapshotListener();
     }
 }

@@ -41,5 +41,6 @@
         public const string SelectGameSize = "Select Game Size";
         public const string RummyInstructions = "Goal:\r\nBe the first player to place all your tiles on the table.\r\n\r\nSetup:\r\nEach player takes 14 tiles.\r\nPlace the rest face-down as the pool.\r\nArrange tiles on racks so others can’t see them.\r\n\r\nGameplay:\r\n\r\nStarting move: To play your first tiles, you must make one or more sets totaling at least 30 points. Points are the face value of each tile. You can’t use other players’ tiles for your first move.\r\n\r\nSets: Run – 3 or more consecutive numbers of the same color (e.g., 4-5-6 blue). Group – 3 or 4 of the same number in different colors (e.g., 7 red, 7 blue, 7 black).\r\n\r\nTurns after starting: Add tiles to existing sets or rearrange sets freely to play tiles from your rack. All sets on the table must remain valid at the end of your turn. If you can’t play, draw one tile from the pool and end your turn.\r\n\r\nJoker Rules:\r\nJokers can replace any tile. If you take a Joker from the table, you must replace it with the exact tile it represents in the same turn.\r\n\r\nWinning:\r\nFirst to empty their rack wins. Others add up their remaining tiles’ values as penalty points.";
         public const string JoinGameErr = "Error joining game.";
+        public const string GameDeleted = "Deleted.";
     }
 }

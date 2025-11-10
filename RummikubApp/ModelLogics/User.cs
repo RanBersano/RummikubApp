@@ -19,7 +19,7 @@ namespace RummikubApp.ModelLogics
                 Preferences.Clear();
             fbd.SignInWithEmailAndPasswordAsync(Email, Password, OnComplete);
         }
-        public async override Task ResetPassword()
+        public override async Task ResetPassword()
         {
             await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
         }
@@ -27,11 +27,11 @@ namespace RummikubApp.ModelLogics
         {
             if (task.IsCompletedSuccessfully)
             {
-                await Application.Current!.MainPage!.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
+                await Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
             }
             else
             {
-                await Application.Current!.MainPage!.DisplayAlert(Strings.ResetPWErrorTitle, "errorMessage", Strings.ResetPWErrorButton);
+                await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, "errorMessage", Strings.ResetPWErrorButton);
             }
         }
         public override void Register()

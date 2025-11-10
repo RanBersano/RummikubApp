@@ -9,7 +9,7 @@ namespace RummikubApp.ViewModels
     {
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();
-        public bool IsBusy => user.IsBusy;
+        public bool IsBusy { get; set; } = false;
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand LogInCommand {  get; }
         public ICommand ForgotPasswordCommand { get; }
@@ -28,7 +28,11 @@ namespace RummikubApp.ViewModels
         }
         private async Task ForgotPassword()
         {
+            IsBusy = true;
+            OnPropertyChanged(nameof(IsBusy));
             await user.ResetPassword();
+            IsBusy = false;
+            OnPropertyChanged(nameof(IsBusy));
         }
         public bool CanLogIn()
         {

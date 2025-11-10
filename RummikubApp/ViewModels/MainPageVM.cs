@@ -7,6 +7,7 @@ namespace RummikubApp.ViewModels
 {
     public class MainPageVM : ObservableObject
     {
+        private readonly User user = new();
         private readonly Games games = new();
         public bool IsBusy => games.IsBusy;
         public ObservableCollection<GameSize>? GameSizes { get => games.GameSizes; set => games.GameSizes = value; }
@@ -58,6 +59,14 @@ namespace RummikubApp.ViewModels
         public void RemoveSnapshotListener()
         {
             games.RemoveSnapshotListener();
+        }
+        public string UserName
+        {
+            get => user.UserName;
+            set
+            {
+                user.UserName = value;
+            }
         }
     }
 }

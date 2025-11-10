@@ -10,7 +10,7 @@
     <VerticalStackLayout Padding="0,60,0,0" Spacing="50">
         <Label
             FontSize="28"
-            HeightRequest="150"
+            HeightRequest="110"
             HorizontalOptions="Center"
             Text="{Binding UserName, StringFormat='Hello {0}!'}"
             TextColor="Black" />

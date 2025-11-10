@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 using Plugin.CloudFirestore;
 using RummikubApp.Models;
 namespace RummikubApp.ModelLogics
@@ -8,10 +9,22 @@ namespace RummikubApp.ModelLogics
         public void AddGame()
         {
             IsBusy = true;
-            currentGame = new(SelectedGameSize);
-            currentGame.IsHost = true;
+            currentGame = new(SelectedGameSize)
+            {
+                IsHostUser = true
+            };
+            currentGame.OnGameDeleted += OnGameDeleted;
             currentGame.SetDocument(OnComplete);
         }
+
+        private void OnGameDeleted(object? sender, EventArgs e)
+        {
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Toast.Make(Strings.GameDeleted, ToastDuration.Long).Show();
+            });
+        }
+
         private void OnComplete(Task task)
         {
             IsBusy = false;
@@ -21,11 +34,11 @@ namespace RummikubApp.ModelLogics
         {
 
         }
-        public void AddSnapshotListener()
+        public override void AddSnapshotListener()
         {
             ilr = fbd.AddSnapshotListener(Keys.GamesCollection, OnChange!);
         }
-        public void RemoveSnapshotListener()
+        public override void RemoveSnapshotListener()
         {
             ilr?.Remove();
         }
