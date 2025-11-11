@@ -9,7 +9,9 @@ namespace RummikubApp.ViewModels
     {
         private readonly Game game;
         public string MyName => game.MyName;
-        public string OpponentName => game.OpponentName;
+        public string OtherPlayerName1 => game.GetOtherPlayerName(0);
+        public string OtherPlayerName2 => game.GetOtherPlayerName(1);
+        public string OtherPlayerName3 => game.GetOtherPlayerName(2);
         public GamePageVM(Game game)
         {
             game.OnGameChanged += OnGameChanged;
@@ -19,7 +21,9 @@ namespace RummikubApp.ViewModels
         }
         private void OnGameChanged(object? sender, EventArgs e)
         {
-            OnPropertyChanged(nameof(OpponentName));
+            OnPropertyChanged(nameof(OtherPlayerName1));
+            OnPropertyChanged(nameof(OtherPlayerName2));
+            OnPropertyChanged(nameof(OtherPlayerName3));
         }
         private void OnComplete(Task task)
         {

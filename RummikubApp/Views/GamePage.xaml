@@ -7,7 +7,9 @@
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:GamePageVM">
     <VerticalStackLayout>
-        <Label HorizontalOptions="Center" Text="{Binding OpponentName}" />
+        <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName1}" />
+        <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName2}" />
+        <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName3}" />
         <Label HorizontalOptions="Center" Text="{Binding MyName}" />
     </VerticalStackLayout>
 </ContentPage>

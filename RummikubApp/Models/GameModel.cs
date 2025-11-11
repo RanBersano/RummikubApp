@@ -13,13 +13,14 @@ namespace RummikubApp.Models
         public EventHandler? OnGameDeleted;
         [Ignored]
         public string Id { get; set; } = string.Empty; 
-        public string HostName { get; set; } = string.Empty;
-        public string GuestName { get; set; } = string.Empty;
         public DateTime Created { get; set; }
         public int Players { get; set; }
         public bool IsFull { get; set; }
-        [Ignored]
-        public abstract string OpponentName { get;}
+        public int CurrentNumOfPlayers { get; set; } = 1;
+        public string HostName { get; set; } = string.Empty;
+        public string PlayerName2 { get; set; } = string.Empty;
+        public string PlayerName3 { get; set; } = string.Empty;
+        public string PlayerName4 { get; set; } = string.Empty;
         [Ignored]
         public string MyName { get; set; } = new User().UserName; 
         [Ignored]
