@@ -1,4 +1,6 @@
-﻿using Plugin.CloudFirestore;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using Plugin.CloudFirestore;
 using RummikubApp.Models;
 
 namespace RummikubApp.ModelLogics
@@ -107,29 +109,48 @@ namespace RummikubApp.ModelLogics
         }
         private void OnChange(IDocumentSnapshot? snapshot, Exception? error)
         {
-            if (error != null || snapshot == null || !snapshot.Exists)
+            Game? updatedGame = snapshot?.ToObject<Game>();
+            if (updatedGame != null)
             {
-                return;
+                Players = updatedGame.Players;
+                IsFull = updatedGame.IsFull;
+                CurrentNumOfPlayers = updatedGame.CurrentNumOfPlayers;
+                HostName = updatedGame.HostName;
+                PlayerName2 = updatedGame.PlayerName2;
+                PlayerName3 = updatedGame.PlayerName3;
+                PlayerName4 = updatedGame.PlayerName4;
+                OnGameChanged?.Invoke(this, EventArgs.Empty);
             }
-
-            Game? updatedGame = snapshot.ToObject<Game>();
-            if (updatedGame == null)
+            else
             {
-                return;
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    Shell.Current.Navigation.PopAsync();
+                    Toast.Make(Strings.GameDeleted, ToastDuration.Long).Show();
+                });
             }
-            Players = updatedGame.Players;
-            IsFull = updatedGame.IsFull;
-            CurrentNumOfPlayers = updatedGame.CurrentNumOfPlayers;
-            HostName = updatedGame.HostName;
-            PlayerName2 = updatedGame.PlayerName2;
-            PlayerName3 = updatedGame.PlayerName3;
-            PlayerName4 = updatedGame.PlayerName4;
-
-            OnGameChanged?.Invoke(this, EventArgs.Empty);
         }
         public override void DeleteDocument(Action<Task> onComplete)
         {
             fbd.DeleteDocument(Keys.GamesCollection, Id, onComplete);
+        }
+
+        public override void InitGrid(Grid board)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                board.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                board.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            }
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                {
+                    IndexedButton btn = new(i, j)
+                    {
+                        BackgroundColor = Color.FromArgb("#C8BFB1")
+                    };
+                    board.Add(btn, j, i);
+                }
         }
     }
 }

@@ -12,9 +12,10 @@ namespace RummikubApp.ViewModels
         public string OtherPlayerName1 => game.GetOtherPlayerName(0);
         public string OtherPlayerName2 => game.GetOtherPlayerName(1);
         public string OtherPlayerName3 => game.GetOtherPlayerName(2);
-        public GamePageVM(Game game)
+        public GamePageVM(Game game, Grid board)
         {
             game.OnGameChanged += OnGameChanged;
+            game.InitGrid(board);
             this.game = game;
             if (!game.IsHostUser)
                 game.UpdateGuestUser(OnComplete);

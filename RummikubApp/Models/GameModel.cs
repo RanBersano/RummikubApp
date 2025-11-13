@@ -29,5 +29,6 @@ namespace RummikubApp.Models
         public abstract void AddSnapshotListener();
         public abstract void RemoveSnapshotListener();
         public abstract void DeleteDocument(Action<Task> onComplete);
+        public abstract void InitGrid(Grid board);
     }
 }

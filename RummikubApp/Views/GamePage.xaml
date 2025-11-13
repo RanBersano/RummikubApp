@@ -6,10 +6,42 @@
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:GamePageVM">
-    <VerticalStackLayout>
-        <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName1}" />
-        <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName2}" />
-        <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName3}" />
-        <Label HorizontalOptions="Center" Text="{Binding MyName}" />
-    </VerticalStackLayout>
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          ColumnDefinitions="Auto,*,Auto"
+          Padding="10">
+
+        <!-- שם למעלה -->
+        <Label Grid.Row="0" Grid.Column="1"
+               HorizontalOptions="Center"
+               Text="{Binding OtherPlayerName1}" />
+
+        <!-- שם בצד שמאל (מאונך באמצע) -->
+        <Label Grid.Row="1" Grid.Column="0"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               Rotation="270"
+               Text="{Binding OtherPlayerName3}" />
+
+        <!-- שם בצד ימין (מאונך באמצע) -->
+        <Label Grid.Row="1" Grid.Column="2"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               Rotation="90"
+               Text="{Binding OtherPlayerName2}" />
+
+        <!-- הלוח באמצע -->
+        <Grid x:Name="grdBoard"
+              Grid.Row="1" Grid.Column="1"
+              HorizontalOptions="Center"
+              VerticalOptions="Center"
+              RowSpacing="3"
+              ColumnSpacing="3" />
+
+        <!-- השם שלך למטה -->
+        <Label Grid.Row="2" Grid.Column="1"
+               HorizontalOptions="Center"
+               Text="{Binding MyName}" />
+
+    </Grid>
 </ContentPage>
