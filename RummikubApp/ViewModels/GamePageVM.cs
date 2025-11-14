@@ -2,6 +2,7 @@
 using CommunityToolkit.Maui.Core;
 using RummikubApp.ModelLogics;
 using RummikubApp.Models;
+using System.Collections.ObjectModel;
 
 namespace RummikubApp.ViewModels
 {
@@ -12,10 +13,13 @@ namespace RummikubApp.ViewModels
         public string OtherPlayerName1 => game.GetOtherPlayerName(0);
         public string OtherPlayerName2 => game.GetOtherPlayerName(1);
         public string OtherPlayerName3 => game.GetOtherPlayerName(2);
-        public GamePageVM(Game game, Grid board)
+        public string StatusMessage => game.StatusMessage;
+        public ObservableCollection<Tile> Board { get; set; } = new ObservableCollection<Tile>();
+
+        public GamePageVM(Game game, Grid deck)
         {
             game.OnGameChanged += OnGameChanged;
-            game.InitGrid(board);
+            game.InitGrid(deck);
             this.game = game;
             if (!game.IsHostUser)
                 game.UpdateGuestUser(OnComplete);

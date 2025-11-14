@@ -1,6 +1,18 @@
-﻿namespace RummikubApp.ModelLogics
+﻿using RummikubApp.Models;
+
+namespace RummikubApp.ModelLogics
 {
-    internal class Tile
+    public class Tile : TileModel
     {
+        public Tile(Colors color, int number)
+        {
+            Color = color;
+            Number = number;
+        }
+
+        public override string ToString()
+        {
+            return $"{Color} {Number}";
+        }
     }
 }

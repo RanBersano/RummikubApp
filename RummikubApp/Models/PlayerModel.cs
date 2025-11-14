@@ -1,6 +1,6 @@
 ﻿namespace RummikubApp.Models
 {
-    public class BoardModel
+    public class PlayerModel
     {
     }
 }

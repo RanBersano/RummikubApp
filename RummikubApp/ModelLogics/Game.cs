@@ -6,7 +6,10 @@ using RummikubApp.Models;
 namespace RummikubApp.ModelLogics
 {
     public class Game : GameModel
-    { 
+    {
+        protected override GameStatusModel Status => IsHostUser && IsHostTurn || !IsHostUser && !IsHostTurn ?
+            new GameStatusModel { CurrentStatus = GameStatusModel.Status.Play } :
+            new GameStatusModel { CurrentStatus = GameStatusModel.Status.Wait };
         public Game(GameSize selectedGameSize)
         {
             HostName = new User().UserName;
@@ -135,12 +138,12 @@ namespace RummikubApp.ModelLogics
             fbd.DeleteDocument(Keys.GamesCollection, Id, onComplete);
         }
 
-        public override void InitGrid(Grid board)
+        public override void InitGrid(Grid deck)
         {
             for (int i = 0; i < 4; i++)
             {
-                board.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                board.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                deck.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                deck.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             }
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
@@ -149,7 +152,7 @@ namespace RummikubApp.ModelLogics
                     {
                         BackgroundColor = Color.FromArgb("#C8BFB1")
                     };
-                    board.Add(btn, j, i);
+                    deck.Add(btn, j, i);
                 }
         }
     }

@@ -11,11 +11,15 @@ namespace RummikubApp.Models
         public EventHandler? OnGameChanged;
         [Ignored]
         public EventHandler? OnGameDeleted;
+        protected abstract GameStatusModel Status { get; }
+        [Ignored]
+        public string StatusMessage => Status.StatusMessage;
         [Ignored]
         public string Id { get; set; } = string.Empty; 
         public DateTime Created { get; set; }
         public int Players { get; set; }
         public bool IsFull { get; set; }
+        public bool IsHostTurn { get; set; } = false;
         public int CurrentNumOfPlayers { get; set; } = 1;
         public string HostName { get; set; } = string.Empty;
         public string PlayerName2 { get; set; } = string.Empty;
@@ -29,6 +33,6 @@ namespace RummikubApp.Models
         public abstract void AddSnapshotListener();
         public abstract void RemoveSnapshotListener();
         public abstract void DeleteDocument(Action<Task> onComplete);
-        public abstract void InitGrid(Grid board);
+        public abstract void InitGrid(Grid deck);
     }
 }

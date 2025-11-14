@@ -7,41 +7,66 @@
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:GamePageVM">
 
-    <Grid RowDefinitions="Auto,*,Auto"
-          ColumnDefinitions="Auto,*,Auto"
-          Padding="10">
-
-        <!-- שם למעלה -->
-        <Label Grid.Row="0" Grid.Column="1"
-               HorizontalOptions="Center"
-               Text="{Binding OtherPlayerName1}" />
-
-        <!-- שם בצד שמאל (מאונך באמצע) -->
-        <Label Grid.Row="1" Grid.Column="0"
-               VerticalOptions="Center"
-               HorizontalOptions="Center"
-               Rotation="270"
-               Text="{Binding OtherPlayerName3}" />
-
-        <!-- שם בצד ימין (מאונך באמצע) -->
-        <Label Grid.Row="1" Grid.Column="2"
-               VerticalOptions="Center"
-               HorizontalOptions="Center"
-               Rotation="90"
-               Text="{Binding OtherPlayerName2}" />
-
-        <!-- הלוח באמצע -->
-        <Grid x:Name="grdBoard"
-              Grid.Row="1" Grid.Column="1"
-              HorizontalOptions="Center"
-              VerticalOptions="Center"
-              RowSpacing="3"
-              ColumnSpacing="3" />
-
-        <!-- השם שלך למטה -->
-        <Label Grid.Row="2" Grid.Column="1"
-               HorizontalOptions="Center"
-               Text="{Binding MyName}" />
-
+    <Grid
+        Padding="10"
+        ColumnDefinitions="Auto,Auto,*,Auto,Auto"
+        RowDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+        <Label
+            Grid.Row="0"
+            Grid.Column="2"
+            HorizontalOptions="Center"
+            Text="{Binding OtherPlayerName1}" />
+        <Label
+            Grid.Row="2"
+            Grid.Column="0"
+            HorizontalOptions="Center"
+            Rotation="270"
+            Text="{Binding OtherPlayerName3}"
+            VerticalOptions="Center" />
+        <Label
+            Grid.Row="2"
+            Grid.Column="4"
+            HorizontalOptions="Center"
+            Rotation="90"
+            Text="{Binding OtherPlayerName2}"
+            VerticalOptions="Center" />
+        <Label
+            Grid.Row="1"
+            Grid.Column="2"
+            Margin="10"
+            HorizontalOptions="Center"
+            Text="{Binding StatusMessage}" />
+        <Grid
+            x:Name="grdDeck"
+            Grid.Row="2"
+            Grid.Column="2"
+            ColumnSpacing="3"
+            HorizontalOptions="Center"
+            RowSpacing="3"
+            VerticalOptions="Center" />
+        <Button
+            Grid.Row="3"
+            Grid.Column="1"
+            BackgroundColor = "#C8BFB1"
+            HeightRequest="50"
+            WidthRequest="40" />
+        <Button
+            Grid.Row="3"
+            Grid.Column="3"
+            BackgroundColor = "#C8BFB1"
+            HeightRequest="50"
+            WidthRequest="40" />
+        <BoxView
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="5"
+            Margin="10"
+            HeightRequest="170"
+            Color="Black" />
+        <Label
+            Grid.Row="5"
+            Grid.Column="2"
+            HorizontalOptions="Center"
+            Text="{Binding MyName}" />
     </Grid>
 </ContentPage>
