@@ -9,10 +9,5 @@ namespace RummikubApp.ModelLogics
             Color = color;
             Number = number;
         }
-
-        public override string ToString()
-        {
-            return $"{Color} {Number}";
-        }
     }
 }

@@ -34,5 +34,7 @@ namespace RummikubApp.Models
         public abstract void RemoveSnapshotListener();
         public abstract void DeleteDocument(Action<Task> onComplete);
         public abstract void InitGrid(Grid deck);
+        protected abstract void OnButtonClicked(object? sender, EventArgs e);
+        protected abstract void TakeTileFromDeck();
     }
 }

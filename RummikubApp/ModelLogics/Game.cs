@@ -140,6 +140,7 @@ namespace RummikubApp.ModelLogics
 
         public override void InitGrid(Grid deck)
         {
+            IndexedButton btn;
             for (int i = 0; i < 4; i++)
             {
                 deck.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -148,12 +149,25 @@ namespace RummikubApp.ModelLogics
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
                 {
-                    IndexedButton btn = new(i, j)
+                    btn = new IndexedButton(i, j)
                     {
                         BackgroundColor = Color.FromArgb("#C8BFB1")
                     };
+                    btn.Clicked += OnButtonClicked;
                     deck.Add(btn, j, i);
                 }
+        }
+
+        protected override void OnButtonClicked(object? sender, EventArgs e)
+        {
+            IndexedButton? btn = sender as IndexedButton;
+            if (btn != null)
+                TakeTileFromDeck();
+        }
+
+        protected override void TakeTileFromDeck()
+        {
+            
         }
     }
 }
