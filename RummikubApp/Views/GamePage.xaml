@@ -44,7 +44,7 @@
             Grid.Row="5"
             Grid.Column="0"
             BackgroundColor = "#C8BFB1"
-            HeightRequest="50"
+            HeightRequest="51"
             WidthRequest="40" />
         <Button
             Grid.Row="5"
