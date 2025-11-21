@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Core;
 using RummikubApp.ModelLogics;
 using RummikubApp.Models;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace RummikubApp.ViewModels
 {
@@ -13,9 +14,19 @@ namespace RummikubApp.ViewModels
         public string OtherPlayerName1 => game.GetOtherPlayerName(0);
         public string OtherPlayerName2 => game.GetOtherPlayerName(1);
         public string OtherPlayerName3 => game.GetOtherPlayerName(2);
-        public string StatusMessage => game.StatusMessage;
+        public bool IsMyTurn => game.CurrentPlayerName == game.MyName;
+        public bool IsPlayer1Turn => game.CurrentPlayerName == game.GetOtherPlayerName(0);
+        public bool IsPlayer2Turn => game.CurrentPlayerName == game.GetOtherPlayerName(1);
+        public bool IsPlayer3Turn => game.CurrentPlayerName == game.GetOtherPlayerName(2);
         public ObservableCollection<Tile> Board { get; set; } = new ObservableCollection<Tile>();
-
+        public ICommand MoveCommand => new Command(() =>
+        {
+            game.MoveToNextTurn(OnCompleteMove);
+        });
+        private void OnCompleteMove(Task t)
+        {
+            // אפשר להראות Toast במקרה של שגיאה אם תרצה
+        }
         public GamePageVM(Game game, Grid deck)
         {
             game.OnGameChanged += OnGameChanged;
@@ -29,6 +40,10 @@ namespace RummikubApp.ViewModels
             OnPropertyChanged(nameof(OtherPlayerName1));
             OnPropertyChanged(nameof(OtherPlayerName2));
             OnPropertyChanged(nameof(OtherPlayerName3));
+            OnPropertyChanged(nameof(IsMyTurn));
+            OnPropertyChanged(nameof(IsPlayer1Turn));
+            OnPropertyChanged(nameof(IsPlayer2Turn));
+            OnPropertyChanged(nameof(IsPlayer3Turn));
         }
         private void OnComplete(Task task)
         {

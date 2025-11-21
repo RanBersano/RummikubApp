@@ -7,9 +7,6 @@ namespace RummikubApp.ModelLogics
 {
     public class Game : GameModel
     {
-        protected override GameStatusModel Status => IsHostUser && IsHostTurn || !IsHostUser && !IsHostTurn ?
-            new GameStatusModel { CurrentStatus = GameStatusModel.Status.Play } :
-            new GameStatusModel { CurrentStatus = GameStatusModel.Status.Wait };
         public Game(GameSize selectedGameSize)
         {
             HostName = new User().UserName;
@@ -38,7 +35,7 @@ namespace RummikubApp.ModelLogics
                     !string.Equals(name, MyName, StringComparison.Ordinal))
                 {
                     validNames.Add(name);
-                }
+                } 
             }
 
             if (index < validNames.Count)
@@ -46,7 +43,19 @@ namespace RummikubApp.ModelLogics
             else
                 return string.Empty;
         }
+        public override void MoveToNextTurn(Action<Task> onComplete)
+        {
+            int next = CurrentTurnIndex + 1;
+            if (next > Players)
+                next = 1;
 
+            CurrentTurnIndex = next;
+
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
+
+            fbd.UpdateFields(Keys.GamesCollection, Id, dict, onComplete);
+        }
         public override void SetDocument(Action<Task> OnComplete)
         {
             Id = fbd.SetDocument(this, Keys.GamesCollection, Id, OnComplete);
@@ -122,6 +131,7 @@ namespace RummikubApp.ModelLogics
                 PlayerName2 = updatedGame.PlayerName2;
                 PlayerName3 = updatedGame.PlayerName3;
                 PlayerName4 = updatedGame.PlayerName4;
+                CurrentTurnIndex = updatedGame.CurrentTurnIndex;
                 OnGameChanged?.Invoke(this, EventArgs.Empty);
             }
             else
@@ -160,9 +170,19 @@ namespace RummikubApp.ModelLogics
 
         protected override void OnButtonClicked(object? sender, EventArgs e)
         {
+            if (CurrentPlayerName != MyName)
+                return;
             IndexedButton? btn = sender as IndexedButton;
             if (btn != null)
+            {
                 TakeTileFromDeck();
+                MoveToNextTurn(OnCompleteTurn);
+            }
+        }
+
+        private void OnCompleteTurn(Task task)
+        {
+            // במידה ותרצה Toast / טיפול בשגיאה
         }
 
         protected override void TakeTileFromDeck()

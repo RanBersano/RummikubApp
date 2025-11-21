@@ -11,27 +11,66 @@
         Padding="10"
         ColumnDefinitions="Auto,*,Auto"
         RowDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto,Auto">
-        <Label
+        <Border
             Grid.Row="0"
             Grid.Column="1"
-            HorizontalOptions="Center"
-            Text="{Binding OtherPlayerName1}" />
-        <Label
+            Padding="2"
+            Stroke="DarkTurquoise"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 10">
+            <Border.Triggers>
+                <DataTrigger
+                    Binding="{Binding IsPlayer1Turn}"
+                    TargetType="Border"
+                    Value="True">
+                    <Setter Property="StrokeThickness" Value="2" />
+                </DataTrigger>
+            </Border.Triggers>
+            <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName1}" />
+        </Border>
+        <Border
             Grid.Row="1"
             Grid.Column="1"
-            HorizontalOptions="Center"
-            Text="{Binding OtherPlayerName2}" />
-        <Label
+            Padding="2"
+            Stroke="DarkTurquoise"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 10">
+            <Border.Triggers>
+                <DataTrigger
+                    Binding="{Binding IsPlayer2Turn}"
+                    TargetType="Border"
+                    Value="True">
+                    <Setter Property="StrokeThickness" Value="2" />
+                </DataTrigger>
+            </Border.Triggers>
+            <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName2}" />
+        </Border>
+        <Border
             Grid.Row="2"
             Grid.Column="1"
-            HorizontalOptions="Center"
-            Text="{Binding OtherPlayerName3}" />
+            Padding="2"
+            Stroke="DarkTurquoise"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 10">
+            <Border.Triggers>
+                <DataTrigger
+                    Binding="{Binding IsPlayer3Turn}"
+                    TargetType="Border"
+                    Value="True">
+                    <Setter Property="StrokeThickness" Value="2" />
+                </DataTrigger>
+            </Border.Triggers>
+            <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName3}" />
+        </Border>
         <Label
             Grid.Row="3"
             Grid.Column="1"
             Margin="10"
+            FontSize="28"
             HorizontalOptions="Center"
-            Text="{Binding StatusMessage}" />
+            IsVisible="{Binding IsMyTurn}"
+            Text="{x:Static m:Strings.YourTurn}"
+            TextColor="DarkOrange" />
         <Grid
             x:Name="grdDeck"
             Grid.Row="4"
@@ -43,25 +82,44 @@
         <Button
             Grid.Row="5"
             Grid.Column="0"
-            BackgroundColor = "#C8BFB1"
+            BackgroundColor="#C8BFB1"
+            Command="{Binding MoveCommand}"
             HeightRequest="50"
-            WidthRequest="40" />
+            IsEnabled="{Binding IsMyTurn}"
+            WidthRequest="40" 
+            Style="{StaticResource StayColoredWhenDisabled}"/>
         <Button
             Grid.Row="5"
             Grid.Column="2"
-            BackgroundColor = "#C8BFB1"
+            BackgroundColor="#C8BFB1"
+            Command="{Binding MoveCommand}"
             HeightRequest="50"
-            WidthRequest="40" />
+            IsEnabled="{Binding IsMyTurn}"
+            WidthRequest="40"
+            Style="{StaticResource StayColoredWhenDisabled}"/>
         <BoxView
             Grid.Row="6"
             Grid.ColumnSpan="3"
             Margin="10"
             HeightRequest="170"
             Color="Black" />
-        <Label
+        <Border
             Grid.Row="7"
             Grid.Column="1"
-            HorizontalOptions="Center"
-            Text="{Binding MyName}" />
+            Padding="2"
+            Stroke="DarkTurquoise"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 10">
+            <Border.Triggers>
+                <DataTrigger
+                    Binding="{Binding IsMyTurn}"
+                    TargetType="Border"
+                    Value="True">
+                    <Setter Property="StrokeThickness" Value="2" />
+                </DataTrigger>
+            </Border.Triggers>
+
+            <Label HorizontalOptions="Center" Text="{Binding MyName}" />
+        </Border>
     </Grid>
 </ContentPage>

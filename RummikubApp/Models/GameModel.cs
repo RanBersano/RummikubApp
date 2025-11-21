@@ -11,9 +11,6 @@ namespace RummikubApp.Models
         public EventHandler? OnGameChanged;
         [Ignored]
         public EventHandler? OnGameDeleted;
-        protected abstract GameStatusModel Status { get; }
-        [Ignored]
-        public string StatusMessage => Status.StatusMessage;
         [Ignored]
         public string Id { get; set; } = string.Empty; 
         public DateTime Created { get; set; }
@@ -25,10 +22,26 @@ namespace RummikubApp.Models
         public string PlayerName2 { get; set; } = string.Empty;
         public string PlayerName3 { get; set; } = string.Empty;
         public string PlayerName4 { get; set; } = string.Empty;
+        public int CurrentTurnIndex { get; set; } = 1;
         [Ignored]
         public string MyName { get; set; } = new User().UserName; 
         [Ignored]
         public bool IsHostUser { get; set; }
+        [Ignored]
+        public string CurrentPlayerName
+        {
+            get
+            {
+                return CurrentTurnIndex switch
+                {
+                    1 => HostName,
+                    2 => PlayerName2,
+                    3 => PlayerName3,
+                    4 => PlayerName4,
+                    _ => HostName
+                };
+            }
+        }
         public abstract void SetDocument(Action<System.Threading.Tasks.Task> OnComplete);
         public abstract void AddSnapshotListener();
         public abstract void RemoveSnapshotListener();
@@ -36,5 +49,6 @@ namespace RummikubApp.Models
         public abstract void InitGrid(Grid deck);
         protected abstract void OnButtonClicked(object? sender, EventArgs e);
         protected abstract void TakeTileFromDeck();
+        public abstract void MoveToNextTurn(Action<Task> onComplete);
     }
 }

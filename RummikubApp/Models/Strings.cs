@@ -45,5 +45,6 @@
         public const string GameFull = "Game is already full.";
         public const string WaitMessage = "Please wait";
         public const string PlayMessage = "Play please";
+        public const string YourTurn = "Your Turn!";
     }
 }
