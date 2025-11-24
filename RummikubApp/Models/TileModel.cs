@@ -11,6 +11,7 @@
         }
         public Colors Color { get; set; }
         public int Number { get; set; }
+        public bool IsJoker { get; set; }
     }
 }
  

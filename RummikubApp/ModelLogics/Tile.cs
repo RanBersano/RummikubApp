@@ -8,6 +8,12 @@ namespace RummikubApp.ModelLogics
         {
             Color = color;
             Number = number;
+            IsJoker = false;
+        }
+
+        public Tile() // ג'וקר
+        {
+            IsJoker = true;
         }
     }
 }

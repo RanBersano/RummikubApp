@@ -17,7 +17,7 @@ namespace RummikubApp.ModelLogics
         public Game()
         {
         }
-        public string GetOtherPlayerName(int index)
+        public override string GetOtherPlayerName(int index)
         {
             string[] others = new string[]
             {
@@ -60,7 +60,7 @@ namespace RummikubApp.ModelLogics
         {
             Id = fbd.SetDocument(this, Keys.GamesCollection, Id, OnComplete);
         }
-        public void UpdateGuestUser(Action<Task> onComplete)
+        public override void UpdateGuestUser(Action<Task> onComplete)
         {
             if (IsFull)
             {
@@ -114,12 +114,12 @@ namespace RummikubApp.ModelLogics
             ilr?.Remove();
             DeleteDocument(OnComplete);
         }
-        private void OnComplete(Task task)
+        protected override void OnComplete(Task task)
         {
             if(task.IsCompletedSuccessfully)
                 OnGameDeleted?.Invoke(this, EventArgs.Empty);
         }
-        private void OnChange(IDocumentSnapshot? snapshot, Exception? error)
+        protected override void OnChange(IDocumentSnapshot? snapshot, Exception? error)
         {
             Game? updatedGame = snapshot?.ToObject<Game>();
             if (updatedGame != null)

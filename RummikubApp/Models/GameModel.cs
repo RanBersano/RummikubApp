@@ -50,5 +50,9 @@ namespace RummikubApp.Models
         protected abstract void OnButtonClicked(object? sender, EventArgs e);
         protected abstract void TakeTileFromDeck();
         public abstract void MoveToNextTurn(Action<Task> onComplete);
+        public abstract string GetOtherPlayerName(int index);
+        public abstract void UpdateGuestUser(Action<Task> onComplete);
+        protected abstract void OnComplete(Task task);
+        protected abstract void OnChange(IDocumentSnapshot? snapshot, Exception? error);
     }
 }
