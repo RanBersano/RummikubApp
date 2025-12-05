@@ -10,13 +10,16 @@ namespace RummikubApp.ModelLogics
             Board = new Board();
         }
 
-        public void DrawFromDeck(Deck deck)
+        public Tile? DrawFromDeck(Deck deck)
         {
-            Tile tile = (Tile)deck.DrawTile();
-            if (tile != null)
-            {
-                Board.AddTile(tile);
-            }
+            TileModel model = deck.DrawTile();
+            if (model == null)
+                return null;
+            Tile? tile = model as Tile;
+            if (tile == null)
+                return null;
+            Board.AddTile(tile);
+            return tile;
         }
     }
 }

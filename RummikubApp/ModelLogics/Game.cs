@@ -170,6 +170,8 @@ namespace RummikubApp.ModelLogics
 
         protected override void OnButtonClicked(object? sender, EventArgs e)
         {
+            if (!IsFull)
+                return;
             if (CurrentPlayerName != MyName)
                 return;
             IndexedButton? btn = sender as IndexedButton;

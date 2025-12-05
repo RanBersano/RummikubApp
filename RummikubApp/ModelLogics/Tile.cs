@@ -4,14 +4,14 @@ namespace RummikubApp.ModelLogics
 {
     public class Tile : TileModel
     {
-        public Tile(Colors color, int number)
+        public Tile(Colors color, int number) : base(color, number)
         {
             Color = color;
             Number = number;
             IsJoker = false;
         }
 
-        public Tile() // ג'וקר
+        public Tile() : base() // ג'וקר
         {
             IsJoker = true;
         }

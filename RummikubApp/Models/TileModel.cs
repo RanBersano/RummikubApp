@@ -38,6 +38,10 @@
             HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
             WidthRequest = 50;
         }
+
+        public TileModel()
+        {
+        }
     }
 }
  

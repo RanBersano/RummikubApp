@@ -6,7 +6,7 @@ namespace RummikubApp.ModelLogics
     {
         public Deck()
         {
-            Tiles = new List<TileModel>();
+            Tiles = new List<Tile>();
             CreateTiles();
             Shuffle();
         }

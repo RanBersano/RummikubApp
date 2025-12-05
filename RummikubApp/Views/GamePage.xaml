@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-    x:DataType="vm:GamePageVM">
+    x:DataType="vm:GamePageVM"
+    xmlns:ml="clr-namespace:RummikubApp.ModelLogics">
 
     <Grid
         Padding="10"
@@ -16,8 +17,8 @@
             Grid.Column="1"
             Padding="2"
             Stroke="DarkTurquoise"
-            StrokeThickness="0"
-            StrokeShape="RoundRectangle 10">
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="0">
             <Border.Triggers>
                 <DataTrigger
                     Binding="{Binding IsPlayer1Turn}"
@@ -33,8 +34,8 @@
             Grid.Column="1"
             Padding="2"
             Stroke="DarkTurquoise"
-            StrokeThickness="0"
-            StrokeShape="RoundRectangle 10">
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="0">
             <Border.Triggers>
                 <DataTrigger
                     Binding="{Binding IsPlayer2Turn}"
@@ -50,8 +51,8 @@
             Grid.Column="1"
             Padding="2"
             Stroke="DarkTurquoise"
-            StrokeThickness="0"
-            StrokeShape="RoundRectangle 10">
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="0">
             <Border.Triggers>
                 <DataTrigger
                     Binding="{Binding IsPlayer3Turn}"
@@ -86,8 +87,8 @@
             Command="{Binding MoveCommand}"
             HeightRequest="50"
             IsEnabled="{Binding IsMyTurn}"
-            WidthRequest="40" 
-            Style="{StaticResource StayColoredWhenDisabled}"/>
+            Style="{StaticResource StayColoredWhenDisabled}"
+            WidthRequest="40" />
         <Button
             Grid.Row="5"
             Grid.Column="2"
@@ -95,21 +96,36 @@
             Command="{Binding MoveCommand}"
             HeightRequest="50"
             IsEnabled="{Binding IsMyTurn}"
-            WidthRequest="40"
-            Style="{StaticResource StayColoredWhenDisabled}"/>
-        <BoxView
+            Style="{StaticResource StayColoredWhenDisabled}"
+            WidthRequest="40" />
+
+        <CollectionView
             Grid.Row="6"
             Grid.ColumnSpan="3"
             Margin="10"
             HeightRequest="170"
-            Color="Black" />
+            ItemsLayout="HorizontalList"
+            ItemsSource="{Binding Board}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="ml:Tile">
+                    <Image
+                        Aspect="AspectFit"
+                        HorizontalOptions="Start"
+                        Source="{Binding Source}"
+                        WidthRequest="50" />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
         <Border
             Grid.Row="7"
             Grid.Column="1"
             Padding="2"
             Stroke="DarkTurquoise"
-            StrokeThickness="0"
-            StrokeShape="RoundRectangle 10">
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="0">
             <Border.Triggers>
                 <DataTrigger
                     Binding="{Binding IsMyTurn}"
