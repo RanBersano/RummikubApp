@@ -11,9 +11,14 @@ namespace RummikubApp.ModelLogics
             IsJoker = false;
         }
 
-        public Tile() : base() // ג'וקר
+        public Tile() : base()
         {
             IsJoker = true;
+            Number = 0;
+            Source = Strings.Joker;
+            Aspect = Aspect.AspectFit;
+            HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
+            WidthRequest = 40;
         }
     }
 }

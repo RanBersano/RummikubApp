@@ -4,14 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:RummikubApp.Models"
+    xmlns:ml="clr-namespace:RummikubApp.ModelLogics"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-    x:DataType="vm:GamePageVM"
-    xmlns:ml="clr-namespace:RummikubApp.ModelLogics">
-
+    x:DataType="vm:GamePageVM">
     <Grid
+        x:Name="GameGrid"
         Padding="10"
         ColumnDefinitions="Auto,*,Auto"
         RowDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto,Auto">
+
         <Border
             Grid.Row="0"
             Grid.Column="1"
@@ -98,27 +99,30 @@
             IsEnabled="{Binding IsMyTurn}"
             Style="{StaticResource StayColoredWhenDisabled}"
             WidthRequest="40" />
-
         <CollectionView
             Grid.Row="6"
             Grid.ColumnSpan="3"
             Margin="10"
-            HeightRequest="170"
-            ItemsLayout="HorizontalList"
+            HeightRequest="120"
             ItemsSource="{Binding Board}">
-
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="9" />
+            </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="ml:Tile">
                     <Image
                         Aspect="AspectFit"
-                        HorizontalOptions="Start"
+                        HeightRequest="50"
                         Source="{Binding Source}"
-                        WidthRequest="50" />
+                        WidthRequest="40">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.TileTappedCommand, Source={x:Reference GameGrid}}" CommandParameter="{Binding .}" />
+                        </Image.GestureRecognizers>
+                    </Image>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
+
         </CollectionView>
-
-
         <Border
             Grid.Row="7"
             Grid.Column="1"
@@ -134,7 +138,6 @@
                     <Setter Property="StrokeThickness" Value="2" />
                 </DataTrigger>
             </Border.Triggers>
-
             <Label HorizontalOptions="Center" Text="{Binding MyName}" />
         </Border>
     </Grid>

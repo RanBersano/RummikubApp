@@ -98,5 +98,6 @@
         public const string ThirteenRed = "thirteenred.png";
         public const string ThirteenBlue = "thirteenblue.png";
         public const string ThirteenGreen = "thirteengreen.png";
+        public const string Joker = "jokertile.png";
     }
 }
