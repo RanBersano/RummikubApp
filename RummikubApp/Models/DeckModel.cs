@@ -1,9 +1,12 @@
-﻿using RummikubApp.ModelLogics;
-
-namespace RummikubApp.Models
+﻿namespace RummikubApp.Models
 {
     public class DeckModel
     {
-        public List<Tile> Tiles { get; set; }
+        public List<TileData> Tiles { get; set; }
+
+        public DeckModel()
+        {
+            Tiles = new List<TileData>();
+        }
     }
 }

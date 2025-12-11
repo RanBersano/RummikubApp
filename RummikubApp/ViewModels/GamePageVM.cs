@@ -10,8 +10,6 @@ namespace RummikubApp.ViewModels
     public class GamePageVM : ObservableObject
     {
         private readonly Game game;
-        private readonly Deck deck;
-        private readonly Player me;
         private readonly Command<Tile> tileTappedCommand;
         private int selectedIndex = -1;
         public string MyName => game.MyName;
@@ -34,6 +32,20 @@ namespace RummikubApp.ViewModels
             () => IsMyTurn
         );
         public ICommand TileTappedCommand => tileTappedCommand;
+        private Tile CreateTileFromData(TileData data)
+        {
+            if (data.IsJoker)
+            {
+                Tile joker = new Tile();
+                return joker;
+            }
+
+            TileModel.Colors color = (TileModel.Colors)data.Color;
+            int number = data.Number;
+
+            Tile tile = new Tile(color, number);
+            return tile;
+        }
         private void OnTileTapped(Tile tappedTile)
         {
             int index = Board.IndexOf(tappedTile);
@@ -70,19 +82,20 @@ namespace RummikubApp.ViewModels
         public GamePageVM(Game game, Grid deckGrid)
         {
             this.game = game;
+
             game.OnGameChanged += OnGameChanged;
             game.InitGrid(deckGrid);
-            deck = new Deck();
-            me = new Player(MyName);
-            for (int i = 0; i < 14; i++)
+
+            // לוקחים את היד שלי מה-Game (שבא מהפיירסטור)
+            List<TileData> myHandData = game.GetHandDataForPlayer(MyName);
+            for (int i = 0; i < myHandData.Count; i++)
             {
-                me.DrawFromDeck(deck);
-            }
-            foreach (Tile tile in me.Board.Tiles)
-            {
+                Tile tile = CreateTileFromData(myHandData[i]);
                 Board.Add(tile);
             }
+
             tileTappedCommand = new Command<Tile>(OnTileTapped);
+
             if (!game.IsHostUser)
             {
                 game.UpdateGuestUser(OnComplete);
@@ -97,6 +110,16 @@ namespace RummikubApp.ViewModels
             OnPropertyChanged(nameof(IsPlayer1Turn));
             OnPropertyChanged(nameof(IsPlayer2Turn));
             OnPropertyChanged(nameof(IsPlayer3Turn));
+
+            // ריענון היד שלי מהפיירסטור
+            Board.Clear();
+            List<TileData> myHandData = game.GetHandDataForPlayer(MyName);
+            for (int i = 0; i < myHandData.Count; i++)
+            {
+                Tile tile = CreateTileFromData(myHandData[i]);
+                Board.Add(tile);
+            }
+
             _moveCommand?.ChangeCanExecute();
         }
         private void OnComplete(Task task)

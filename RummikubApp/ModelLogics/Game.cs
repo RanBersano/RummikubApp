@@ -13,9 +13,19 @@ namespace RummikubApp.ModelLogics
             Players = selectedGameSize.Size;
             Created = DateTime.Now;
             CurrentNumOfPlayers = 1;
+
+            Deck = new Deck();                 // בונה קופה מלאה ומערבב
+            DeckData = new List<TileData>(Deck.Tiles);
+
+            HostHand = Deck.DealTiles(14);     // מחלק יד למארח
+            DeckData = new List<TileData>(Deck.Tiles);
         }
         public Game()
         {
+        }
+        private void RebuildDeckFromData()
+        {
+            Deck = new Deck(DeckData);
         }
         public override string GetOtherPlayerName(int index)
         {
@@ -43,6 +53,30 @@ namespace RummikubApp.ModelLogics
             else
                 return string.Empty;
         }
+        public List<TileData> GetHandDataForPlayer(string playerName)
+        {
+            if (playerName == HostName)
+            {
+                return HostHand ?? new List<TileData>();
+            }
+
+            if (playerName == PlayerName2)
+            {
+                return Player2Hand ?? new List<TileData>();
+            }
+
+            if (playerName == PlayerName3)
+            {
+                return Player3Hand ?? new List<TileData>();
+            }
+
+            if (playerName == PlayerName4)
+            {
+                return Player4Hand ?? new List<TileData>();
+            }
+
+            return new List<TileData>();
+        }
         public override void MoveToNextTurn(Action<Task> onComplete)
         {
             int next = CurrentTurnIndex + 1;
@@ -69,22 +103,52 @@ namespace RummikubApp.ModelLogics
                 onComplete(failedTask);
                 return;
             }
+
             Dictionary<string, object> updates = new Dictionary<string, object>();
+
+            bool handDealt = false;
+
+            if (Deck == null)
+            {
+                // אם Deck עדיין לא נבנה בצד הזה (למשל אצל אורח) – נבנה אותו מתוך DeckData
+                RebuildDeckFromData();
+            }
 
             if (string.IsNullOrEmpty(PlayerName2))
             {
                 PlayerName2 = MyName;
                 updates[nameof(PlayerName2)] = PlayerName2;
+
+                if (Player2Hand == null || Player2Hand.Count == 0)
+                {
+                    Player2Hand = Deck!.DealTiles(14);
+                    updates[nameof(Player2Hand)] = Player2Hand;
+                    handDealt = true;
+                }
             }
             else if (Players >= 3 && string.IsNullOrEmpty(PlayerName3))
             {
                 PlayerName3 = MyName;
                 updates[nameof(PlayerName3)] = PlayerName3;
+
+                if (Player3Hand == null || Player3Hand.Count == 0)
+                {
+                    Player3Hand = Deck!.DealTiles(14);
+                    updates[nameof(Player3Hand)] = Player3Hand;
+                    handDealt = true;
+                }
             }
             else if (Players == 4 && string.IsNullOrEmpty(PlayerName4))
             {
                 PlayerName4 = MyName;
                 updates[nameof(PlayerName4)] = PlayerName4;
+
+                if (Player4Hand == null || Player4Hand.Count == 0)
+                {
+                    Player4Hand = Deck!.DealTiles(14);
+                    updates[nameof(Player4Hand)] = Player4Hand;
+                    handDealt = true;
+                }
             }
             else
             {
@@ -101,6 +165,12 @@ namespace RummikubApp.ModelLogics
             {
                 IsFull = true;
                 updates[nameof(IsFull)] = true;
+            }
+
+            if (handDealt)
+            {
+                DeckData = new List<TileData>(Deck!.Tiles);
+                updates[nameof(DeckData)] = DeckData;
             }
 
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
@@ -132,6 +202,12 @@ namespace RummikubApp.ModelLogics
                 PlayerName3 = updatedGame.PlayerName3;
                 PlayerName4 = updatedGame.PlayerName4;
                 CurrentTurnIndex = updatedGame.CurrentTurnIndex;
+                DeckData = updatedGame.DeckData ?? new List<TileData>();
+                HostHand = updatedGame.HostHand ?? new List<TileData>();
+                Player2Hand = updatedGame.Player2Hand ?? new List<TileData>();
+                Player3Hand = updatedGame.Player3Hand ?? new List<TileData>();
+                Player4Hand = updatedGame.Player4Hand ?? new List<TileData>();
+                RebuildDeckFromData();
                 OnGameChanged?.Invoke(this, EventArgs.Empty);
             }
             else

@@ -1,47 +1,96 @@
-﻿using RummikubApp.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace RummikubApp.ModelLogics
+namespace RummikubApp.Models
 {
     public class Deck : DeckModel
     {
         public Deck()
         {
-            Tiles = new List<Tile>();
-            CreateTiles();
+            Tiles = new List<TileData>();
+            BuildFullDeck();
             Shuffle();
         }
 
-        private void CreateTiles()
+        public Deck(List<TileData> existingTiles)
         {
-            // 2 קבוצות של 1–13 לכל צבע
-            foreach (TileModel.Colors color in Enum.GetValues(typeof(TileModel.Colors)))
+            Tiles = existingTiles ?? new List<TileData>();
+        }
+
+        private void BuildFullDeck()
+        {
+            Tiles.Clear();
+
+            Array colors = Enum.GetValues(typeof(TileModel.Colors));
+            for (int i = 0; i < colors.Length; i++)
             {
+                TileModel.Colors color = (TileModel.Colors)colors.GetValue(i)!;
                 for (int n = 1; n <= 13; n++)
                 {
-                    Tiles.Add(new Tile(color, n));
-                    Tiles.Add(new Tile(color, n));
+                    TileData tile1 = new TileData
+                    {
+                        Color = (int)color,
+                        Number = n,
+                        IsJoker = false
+                    };
+
+                    TileData tile2 = new TileData
+                    {
+                        Color = (int)color,
+                        Number = n,
+                        IsJoker = false
+                    };
+
+                    Tiles.Add(tile1);
+                    Tiles.Add(tile2);
                 }
             }
 
-            // 2 ג'וקרים
-            Tiles.Add(new Tile());
-            Tiles.Add(new Tile());
+            TileData joker1 = new TileData
+            {
+                Color = 0,
+                Number = 0,
+                IsJoker = true
+            };
+
+            TileData joker2 = new TileData
+            {
+                Color = 0,
+                Number = 0,
+                IsJoker = true
+            };
+
+            Tiles.Add(joker1);
+            Tiles.Add(joker2);
         }
 
         private void Shuffle()
         {
             Random rnd = new Random();
-            Tiles = Tiles.OrderBy(x => rnd.Next()).ToList();
+            List<TileData> shuffled = Tiles
+                .OrderBy(tile => rnd.Next())
+                .ToList();
+            Tiles = shuffled;
         }
 
-        public TileModel DrawTile()
+        public List<TileData> DealTiles(int count)
         {
-            if (Tiles.Count == 0)
-                return null;
+            List<TileData> hand = new List<TileData>();
 
-            TileModel t = Tiles[0];
-            Tiles.RemoveAt(0);
-            return t;
+            for (int i = 0; i < count; i++)
+            {
+                if (Tiles.Count == 0)
+                {
+                    break;
+                }
+
+                TileData top = Tiles[0];
+                Tiles.RemoveAt(0);
+                hand.Add(top);
+            }
+
+            return hand;
         }
     }
 }

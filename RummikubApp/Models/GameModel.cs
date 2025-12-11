@@ -23,6 +23,13 @@ namespace RummikubApp.Models
         public string PlayerName3 { get; set; } = string.Empty;
         public string PlayerName4 { get; set; } = string.Empty;
         public int CurrentTurnIndex { get; set; } = 1;
+        public List<TileData> DeckData { get; set; } = new List<TileData>();
+        public List<TileData> HostHand { get; set; } = new List<TileData>();
+        public List<TileData> Player2Hand { get; set; } = new List<TileData>();
+        public List<TileData> Player3Hand { get; set; } = new List<TileData>();
+        public List<TileData> Player4Hand { get; set; } = new List<TileData>();
+        [Ignored]
+        public Deck? Deck { get; set; }
         [Ignored]
         public string MyName { get; set; } = new User().UserName; 
         [Ignored]
