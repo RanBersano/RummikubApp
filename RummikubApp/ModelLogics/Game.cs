@@ -385,7 +385,7 @@ namespace RummikubApp.ModelLogics
 
             if (Deck == null)
             {
-                onComplete(Task.FromException(new InvalidOperationException("Deck not available")));
+                onComplete(Task.FromException(new InvalidOperationException("Deck not availabe")));
                 return;
             }
 
