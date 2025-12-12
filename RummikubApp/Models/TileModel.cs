@@ -9,10 +9,10 @@
             {Strings.OneGreen, Strings.TwoGreen, Strings.ThreeGreen, Strings.FourGreen, Strings.FiveGreen, Strings.SixGreen, Strings.SevenGreen, Strings.EightGreen, Strings.NineGreen, Strings.TenGreen, Strings.ElevenGreen, Strings.TwelveGreen, Strings.ThirteenGreen}};
         public enum Colors
         {
+            Orange,
             Red,
             Blue,
-            Yellow,
-            Black
+            Green
         }
         public static int TilesInColor
         {
@@ -26,7 +26,11 @@
         public bool IsJoker { get; set; }
         public bool IsSelected { get; set; }
         public int Index { get; set; }
-        public bool IsEmpty => Number == 0;
+        public bool IsEmptySlot { get; set; }
+        public bool IsEmpty
+        {
+            get { return IsEmptySlot; }
+        }
         public TileModel(Colors color, int number)
         {
             Color = color;

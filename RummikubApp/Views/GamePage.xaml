@@ -110,18 +110,34 @@
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="ml:Tile">
-                    <Image
-                        Aspect="AspectFit"
+                    <Border
+                        Padding="0"
                         HeightRequest="50"
-                        Source="{Binding Source}"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0"
                         WidthRequest="40">
-                        <Image.GestureRecognizers>
+
+                        <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.TileTappedCommand, Source={x:Reference GameGrid}}" CommandParameter="{Binding .}" />
-                        </Image.GestureRecognizers>
-                    </Image>
+                        </Border.GestureRecognizers>
+
+                        <Border.Triggers>
+                            <DataTrigger
+                                Binding="{Binding IsSelected}"
+                                TargetType="Border"
+                                Value="True">
+                                <Setter Property="StrokeThickness" Value="2" />
+                            </DataTrigger>
+                        </Border.Triggers>
+
+                        <Image
+                            Aspect="AspectFit"
+                            HeightRequest="50"
+                            Source="{Binding Source}"
+                            WidthRequest="40" />
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-
         </CollectionView>
         <Border
             Grid.Row="7"

@@ -50,16 +50,22 @@ namespace RummikubApp.ViewModels
         {
             int index = Board.IndexOf(tappedTile);
             if (index < 0)
+            {
                 return;
-            // אם עוד לא נבחר אריח – זה האריח הנבחר הראשון
+            }
+            // בחירה ראשונה – לא לבחור מקום ריק
             if (selectedIndex == -1)
             {
+                if (tappedTile.IsEmptySlot)
+                {
+                    return;
+                }
                 selectedIndex = index;
                 tappedTile.IsSelected = true;
                 OnPropertyChanged(nameof(Board));
                 return;
             }
-            // אם לוחצים שוב על אותו אריח – ביטול בחירה
+            // לחיצה חוזרת על אותו אריח
             if (selectedIndex == index)
             {
                 tappedTile.IsSelected = false;
@@ -67,13 +73,56 @@ namespace RummikubApp.ViewModels
                 OnPropertyChanged(nameof(Board));
                 return;
             }
-            // אם נבחר כבר אחד ועכשיו לוחצים על אריח אחר – מחליפים ביניהם
+            // החלפה (גם אם אחד ריק)
             Tile firstTile = Board[selectedIndex];
             Tile secondTile = Board[index];
             firstTile.IsSelected = false;
             Board[selectedIndex] = secondTile;
             Board[index] = firstTile;
             selectedIndex = -1;
+            List<TileData> newHand = BuildHandDataFromBoard();
+            game.UpdateHandForPlayer(MyName, newHand, OnHandSaved);
+        }
+        private void OnHandSaved(Task task)
+        {
+            // אפשר Toast אם יש שגיאה
+        }
+        private List<TileData> BuildHandDataFromBoard()
+        {
+            List<TileData> list = new List<TileData>();
+
+            for (int i = 0; i < Board.Count; i++)
+            {
+                Tile tile = Board[i];
+
+                TileData data = new TileData();
+
+                if (tile.IsEmptySlot)
+                {
+                    data.IsEmptySlot = true;
+                    data.IsJoker = false;
+                    data.Color = 0;
+                    data.Number = 0;
+                }
+                else if (tile.IsJoker)
+                {
+                    data.IsEmptySlot = false;
+                    data.IsJoker = true;
+                    data.Color = 0;
+                    data.Number = 0;
+                }
+                else
+                {
+                    data.IsEmptySlot = false;
+                    data.IsJoker = false;
+                    data.Color = (int)tile.Color;
+                    data.Number = tile.Number;
+                }
+
+                list.Add(data);
+            }
+
+            return list;
         }
         private void OnCompleteMove(Task t)
         {
@@ -82,20 +131,28 @@ namespace RummikubApp.ViewModels
         public GamePageVM(Game game, Grid deckGrid)
         {
             this.game = game;
-
             game.OnGameChanged += OnGameChanged;
             game.InitGrid(deckGrid);
-
-            // לוקחים את היד שלי מה-Game (שבא מהפיירסטור)
+            Board.Clear();
             List<TileData> myHandData = game.GetHandDataForPlayer(MyName);
             for (int i = 0; i < myHandData.Count; i++)
             {
                 Tile tile = CreateTileFromData(myHandData[i]);
+                if (myHandData[i].IsEmptySlot)
+                {
+                    tile.IsEmptySlot = true;
+                    tile.Source = null;
+                    tile.IsJoker = false;
+                    tile.Number = 0;
+                }
                 Board.Add(tile);
             }
-
+            while (Board.Count < 18)
+            {
+                Tile emptySlot = Tile.CreateEmptySlot();
+                Board.Add(emptySlot);
+            }
             tileTappedCommand = new Command<Tile>(OnTileTapped);
-
             if (!game.IsHostUser)
             {
                 game.UpdateGuestUser(OnComplete);
@@ -119,7 +176,11 @@ namespace RummikubApp.ViewModels
                 Tile tile = CreateTileFromData(myHandData[i]);
                 Board.Add(tile);
             }
-
+            while (Board.Count < 18)
+            {
+                Tile emptySlot = Tile.CreateEmptySlot();
+                Board.Add(emptySlot);
+            }
             _moveCommand?.ChangeCanExecute();
         }
         private void OnComplete(Task task)

@@ -247,25 +247,195 @@ namespace RummikubApp.ModelLogics
         protected override void OnButtonClicked(object? sender, EventArgs e)
         {
             if (!IsFull)
-                return;
-            if (CurrentPlayerName != MyName)
-                return;
-            IndexedButton? btn = sender as IndexedButton;
-            if (btn != null)
             {
-                TakeTileFromDeck();
-                MoveToNextTurn(OnCompleteTurn);
+                return;
+            }
+            if (CurrentPlayerName != MyName)
+            {
+                return;
+            }
+            IndexedButton? btn = sender as IndexedButton;
+            if (btn == null)
+            {
+                return;
+            }
+            TakeTileFromDeckAndSave(OnTakeTileComplete);
+        }
+        private void OnTakeTileComplete(Task task)
+        {
+            if (!task.IsCompletedSuccessfully)
+            {
+                return;
+            }
+            MoveToNextTurn(OnCompleteTurn);
+        }
+        public string GetHandFieldNameForPlayer(string playerName)
+        {
+            if (playerName == HostName)
+            {
+                return nameof(HostHand);
+            }
+
+            if (playerName == PlayerName2)
+            {
+                return nameof(Player2Hand);
+            }
+
+            if (playerName == PlayerName3)
+            {
+                return nameof(Player3Hand);
+            }
+
+            if (playerName == PlayerName4)
+            {
+                return nameof(Player4Hand);
+            }
+
+            return string.Empty;
+        }
+        private List<TileData> GetHandListByName(string playerName)
+        {
+            if (playerName == HostName)
+            {
+                return HostHand;
+            }
+
+            if (playerName == PlayerName2)
+            {
+                return Player2Hand;
+            }
+
+            if (playerName == PlayerName3)
+            {
+                return Player3Hand;
+            }
+
+            if (playerName == PlayerName4)
+            {
+                return Player4Hand;
+            }
+
+            return new List<TileData>();
+        }
+
+        private void SetHandListByName(string playerName, List<TileData> hand)
+        {
+            if (playerName == HostName)
+            {
+                HostHand = hand;
+                return;
+            }
+
+            if (playerName == PlayerName2)
+            {
+                Player2Hand = hand;
+                return;
+            }
+
+            if (playerName == PlayerName3)
+            {
+                Player3Hand = hand;
+                return;
+            }
+
+            if (playerName == PlayerName4)
+            {
+                Player4Hand = hand;
+                return;
             }
         }
 
+        public void UpdateHandForPlayer(string playerName, List<TileData> newHand, Action<Task> onComplete)
+        {
+            string fieldName = GetHandFieldNameForPlayer(playerName);
+            if (string.IsNullOrEmpty(fieldName))
+            {
+                onComplete(Task.FromException(new InvalidOperationException("Player not found")));
+                return;
+            }
+
+            Dictionary<string, object> updates = new Dictionary<string, object>();
+            updates[fieldName] = newHand;
+
+            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+        }
         private void OnCompleteTurn(Task task)
         {
             // במידה ותרצה Toast / טיפול בשגיאה
         }
 
+        public void TakeTileFromDeckAndSave(Action<Task> onComplete)
+        {
+            if (!IsFull)
+            {
+                onComplete(Task.FromException(new InvalidOperationException("Game is not full")));
+                return;
+            }
+
+            if (CurrentPlayerName != MyName)
+            {
+                onComplete(Task.FromException(new InvalidOperationException("Not your turn")));
+                return;
+            }
+
+            if (Deck == null)
+            {
+                RebuildDeckFromData();
+            }
+
+            if (Deck == null)
+            {
+                onComplete(Task.FromException(new InvalidOperationException("Deck not available")));
+                return;
+            }
+
+            TileData? drawn = Deck.DrawTileData();
+            if (drawn == null)
+            {
+                onComplete(Task.FromException(new InvalidOperationException("Deck is empty")));
+                return;
+            }
+
+            List<TileData> hand = GetHandListByName(MyName);
+            if (hand == null)
+            {
+                hand = new List<TileData>();
+            }
+
+            int emptyIndex = -1;
+            for (int i = 0; i < hand.Count; i++)
+            {
+                if (hand[i] != null && hand[i].IsEmptySlot)
+                {
+                    emptyIndex = i;
+                    break;
+                }
+            }
+
+            if (emptyIndex == -1)
+            {
+                onComplete(Task.FromException(new InvalidOperationException("No empty slot in hand")));
+                return;
+            }
+
+            drawn.IsEmptySlot = false;
+            hand[emptyIndex] = drawn;
+
+            SetHandListByName(MyName, hand);
+
+            DeckData = new List<TileData>(Deck.Tiles);
+
+            Dictionary<string, object> updates = new Dictionary<string, object>();
+            updates[nameof(DeckData)] = DeckData;
+
+            string handFieldName = GetHandFieldNameForPlayer(MyName);
+            updates[handFieldName] = hand;
+
+            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+        }
+
         protected override void TakeTileFromDeck()
         {
-            
         }
     }
 }

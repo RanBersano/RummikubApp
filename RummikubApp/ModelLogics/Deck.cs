@@ -92,5 +92,17 @@ namespace RummikubApp.Models
 
             return hand;
         }
+        public TileData? DrawTileData()
+        {
+            if (Tiles == null || Tiles.Count == 0)
+            {
+                return null;
+            }
+
+            TileData t = Tiles[0];
+            Tiles.RemoveAt(0);
+            return t;
+        }
+
     }
 }

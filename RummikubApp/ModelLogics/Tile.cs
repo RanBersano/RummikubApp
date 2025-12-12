@@ -10,7 +10,6 @@ namespace RummikubApp.ModelLogics
             Number = number;
             IsJoker = false;
         }
-
         public Tile() : base()
         {
             IsJoker = true;
@@ -20,5 +19,22 @@ namespace RummikubApp.ModelLogics
             HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
             WidthRequest = 40;
         }
+        public Tile(bool isEmptySlot) : base()
+        {
+            IsEmptySlot = isEmptySlot;
+            IsJoker = false;
+            Number = 0;
+            Source = null;
+            Aspect = Aspect.AspectFit;
+            HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
+            WidthRequest = 40;
+        }
+        public static Tile CreateEmptySlot()
+        {
+            Tile empty = new Tile(true);
+            return empty;
+        }
+
+
     }
 }
