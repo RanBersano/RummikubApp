@@ -53,6 +53,52 @@ namespace RummikubApp.ModelLogics
             else
                 return string.Empty;
         }
+        private int selectedIndex = -1;
+        public void HandleTileTap(int tappedIndex, Action<Task> onComplete)
+        {
+            List<TileData> hand = GetHandDataForPlayer(MyName);
+            if (tappedIndex < 0 || tappedIndex >= hand.Count)
+            {
+                return;
+            }
+            // בחירה ראשונה – לא לבחור מקום ריק
+            if (selectedIndex == -1)
+            {
+                if (hand[tappedIndex].IsEmptySlot)
+                {
+                    onComplete(Task.CompletedTask);
+                    return;
+                }
+
+                selectedIndex = tappedIndex;
+                hand[tappedIndex].IsSelected = true; // צריך שדה כזה ב-TileData (ראה למטה)
+                UpdateHandForPlayer(MyName, hand, onComplete);
+                return;
+            }
+
+            // לחיצה חוזרת על אותו אריח – ביטול בחירה
+            if (selectedIndex == tappedIndex)
+            {
+                hand[tappedIndex].IsSelected = false;
+                selectedIndex = -1;
+                UpdateHandForPlayer(MyName, hand, onComplete);
+                return;
+            }
+
+            // החלפה (גם אם אחד ריק)
+            TileData first = hand[selectedIndex];
+            TileData second = hand[tappedIndex];
+
+            first.IsSelected = false;
+
+            hand[selectedIndex] = second;
+            hand[tappedIndex] = first;
+
+            selectedIndex = -1;
+
+            UpdateHandForPlayer(MyName, hand, onComplete);
+        }
+
         public List<TileData> GetHandDataForPlayer(string playerName)
         {
             if (playerName == HostName)
@@ -348,11 +394,11 @@ namespace RummikubApp.ModelLogics
         public void UpdateHandForPlayer(string playerName, List<TileData> newHand, Action<Task> onComplete)
         {
             string fieldName = GetHandFieldNameForPlayer(playerName);
-            if (string.IsNullOrEmpty(fieldName))
-            {
-                onComplete(Task.FromException(new InvalidOperationException("Player not found")));
-                return;
-            }
+            //if (string.IsNullOrEmpty(fieldName))
+            //{
+            //    onComplete(Task.FromException(new InvalidOperationException("Player not found")));
+            //    return;
+            //}
 
             Dictionary<string, object> updates = new Dictionary<string, object>();
             updates[fieldName] = newHand;
@@ -366,41 +412,41 @@ namespace RummikubApp.ModelLogics
 
         public void TakeTileFromDeckAndSave(Action<Task> onComplete)
         {
-            if (!IsFull)
-            {
-                onComplete(Task.FromException(new InvalidOperationException("Game is not full")));
-                return;
-            }
+            //if (!IsFull)
+            //{
+            //    onComplete(Task.FromException(new InvalidOperationException("Game is not full")));
+            //    return;
+            //}
 
-            if (CurrentPlayerName != MyName)
-            {
-                onComplete(Task.FromException(new InvalidOperationException("Not your turn")));
-                return;
-            }
+            //if (CurrentPlayerName != MyName)
+            //{
+            //    onComplete(Task.FromException(new InvalidOperationException("Not your turn")));
+            //    return;
+            //}
 
-            if (Deck == null)
-            {
-                RebuildDeckFromData();
-            }
+            //if (Deck == null)
+            //{
+            //    RebuildDeckFromData();
+            //}
 
-            if (Deck == null)
-            {
-                onComplete(Task.FromException(new InvalidOperationException("Deck not availabe")));
-                return;
-            }
+            //if (Deck == null)
+            //{
+            //    onComplete(Task.FromException(new InvalidOperationException("Deck not availabe")));
+            //    return;
+            //}
 
-            TileData? drawn = Deck.DrawTileData();
-            if (drawn == null)
-            {
-                onComplete(Task.FromException(new InvalidOperationException("Deck is empty")));
-                return;
-            }
+            TileData? drawn = Deck?.DrawTileData();
+            //if (drawn == null)
+            //{
+            //    onComplete(Task.FromException(new InvalidOperationException("Deck is empty")));
+            //    return;
+            //}
 
             List<TileData> hand = GetHandListByName(MyName);
-            if (hand == null)
-            {
-                hand = new List<TileData>();
-            }
+            //if (hand == null)
+            //{
+            //    hand = new List<TileData>();
+            //}
 
             int emptyIndex = -1;
             for (int i = 0; i < hand.Count; i++)
@@ -412,18 +458,18 @@ namespace RummikubApp.ModelLogics
                 }
             }
 
-            if (emptyIndex == -1)
-            {
-                onComplete(Task.FromException(new InvalidOperationException("No empty slot in hand")));
-                return;
-            }
+            //if (emptyIndex == -1)
+            //{
+            //    onComplete(Task.FromException(new InvalidOperationException("No empty slot in hand")));
+            //    return;
+            //}
 
-            drawn.IsEmptySlot = false;
+            drawn!.IsEmptySlot = false;
             hand[emptyIndex] = drawn;
 
             SetHandListByName(MyName, hand);
 
-            DeckData = new List<TileData>(Deck.Tiles);
+            DeckData = new List<TileData>(Deck!.Tiles);
 
             Dictionary<string, object> updates = new Dictionary<string, object>();
             updates[nameof(DeckData)] = DeckData;

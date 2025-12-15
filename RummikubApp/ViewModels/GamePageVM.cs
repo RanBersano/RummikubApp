@@ -53,36 +53,10 @@ namespace RummikubApp.ViewModels
             {
                 return;
             }
-            // בחירה ראשונה – לא לבחור מקום ריק
-            if (selectedIndex == -1)
-            {
-                if (tappedTile.IsEmptySlot)
-                {
-                    return;
-                }
-                selectedIndex = index;
-                tappedTile.IsSelected = true;
-                OnPropertyChanged(nameof(Board));
-                return;
-            }
-            // לחיצה חוזרת על אותו אריח
-            if (selectedIndex == index)
-            {
-                tappedTile.IsSelected = false;
-                selectedIndex = -1;
-                OnPropertyChanged(nameof(Board));
-                return;
-            }
-            // החלפה (גם אם אחד ריק)
-            Tile firstTile = Board[selectedIndex];
-            Tile secondTile = Board[index];
-            firstTile.IsSelected = false;
-            Board[selectedIndex] = secondTile;
-            Board[index] = firstTile;
-            selectedIndex = -1;
-            List<TileData> newHand = BuildHandDataFromBoard();
-            game.UpdateHandForPlayer(MyName, newHand, OnHandSaved);
+
+            game.HandleTileTap(index, OnHandSaved);
         }
+
         private void OnHandSaved(Task task)
         {
             // אפשר Toast אם יש שגיאה

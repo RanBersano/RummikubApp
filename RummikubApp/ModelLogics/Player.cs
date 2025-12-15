@@ -10,16 +10,5 @@
 //            Board = new Board();
 //        }
 
-//        public Tile? DrawFromDeck(Deck deck)
-//        {
-//            TileModel model = deck.DrawTile();
-//            if (model == null)
-//                return null;
-//            Tile? tile = model as Tile;
-//            if (tile == null)
-//                return null;
-//            Board.AddTile(tile);
-//            return tile;
-//        }
 //    }
 //}
