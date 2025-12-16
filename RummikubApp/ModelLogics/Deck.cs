@@ -1,108 +1,158 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using RummikubApp.Models;
 
-namespace RummikubApp.Models
+namespace RummikubApp.ModelLogics
 {
     public class Deck : DeckModel
     {
+        private readonly Random rnd = new Random();
+
         public Deck()
         {
-            Tiles = new List<TileData>();
             BuildFullDeck();
             Shuffle();
         }
 
-        public Deck(List<TileData> existingTiles)
+        public Deck(TileData[] existingTiles)
         {
-            Tiles = existingTiles ?? new List<TileData>();
+            LoadFromArray(existingTiles);
         }
 
-        private void BuildFullDeck()
+        public override int Count
         {
-            Tiles.Clear();
+            get { return Tiles.Length; }
+        }
 
+        public override void LoadFromArray(TileData[] tiles)
+        {
+            if (tiles == null)
+            {
+                Tiles = new TileData[0];
+                return;
+            }
+
+            TileData[] copy = new TileData[tiles.Length];
+            for (int i = 0; i < tiles.Length; i++)
+            {
+                copy[i] = tiles[i];
+            }
+            Tiles = copy;
+        }
+
+        public override TileData[] ExportToArray()
+        {
+            TileData[] copy = new TileData[Tiles.Length];
+            for (int i = 0; i < Tiles.Length; i++)
+            {
+                copy[i] = Tiles[i];
+            }
+            return copy;
+        }
+
+        public override void BuildFullDeck()
+        {
+            // 4 צבעים * 13 מספרים * 2 עותקים = 104 + 2 ג'וקרים = 106
+            int total = (4 * 13 * 2) + 2;
+            Tiles = new TileData[total];
+
+            int index = 0;
             Array colors = Enum.GetValues(typeof(TileModel.Colors));
             for (int i = 0; i < colors.Length; i++)
             {
                 TileModel.Colors color = (TileModel.Colors)colors.GetValue(i)!;
+
                 for (int n = 1; n <= 13; n++)
                 {
                     TileData tile1 = new TileData
                     {
                         Color = (int)color,
                         Number = n,
-                        IsJoker = false
+                        IsJoker = false,
+                        IsEmptySlot = false,
+                        IsSelected = false
                     };
 
                     TileData tile2 = new TileData
                     {
                         Color = (int)color,
                         Number = n,
-                        IsJoker = false
+                        IsJoker = false,
+                        IsEmptySlot = false,
+                        IsSelected = false
                     };
 
-                    Tiles.Add(tile1);
-                    Tiles.Add(tile2);
+                    Tiles[index] = tile1;
+                    index++;
+                    Tiles[index] = tile2;
+                    index++;
                 }
             }
 
-            TileData joker1 = new TileData
-            {
-                Color = 0,
-                Number = 0,
-                IsJoker = true
-            };
-
-            TileData joker2 = new TileData
-            {
-                Color = 0,
-                Number = 0,
-                IsJoker = true
-            };
-
-            Tiles.Add(joker1);
-            Tiles.Add(joker2);
+            Tiles[index] = new TileData { Color = 0, Number = 0, IsJoker = true, IsEmptySlot = false, IsSelected = false };
+            index++;
+            Tiles[index] = new TileData { Color = 0, Number = 0, IsJoker = true, IsEmptySlot = false, IsSelected = false };
         }
 
-        private void Shuffle()
+        public override void Shuffle()
         {
-            Random rnd = new Random();
-            List<TileData> shuffled = Tiles
-                .OrderBy(tile => rnd.Next())
-                .ToList();
-            Tiles = shuffled;
+            // Fisher-Yates
+            for (int i = Tiles.Length - 1; i > 0; i--)
+            {
+                int j = rnd.Next(i + 1);
+
+                TileData temp = Tiles[i];
+                Tiles[i] = Tiles[j];
+                Tiles[j] = temp;
+            }
         }
 
-        public List<TileData> DealTiles(int count)
+        public override TileData[] DealTiles(int count)
         {
-            List<TileData> hand = new List<TileData>();
-
-            for (int i = 0; i < count; i++)
+            if (count <= 0 || Tiles.Length == 0)
             {
-                if (Tiles.Count == 0)
-                {
-                    break;
-                }
-
-                TileData top = Tiles[0];
-                Tiles.RemoveAt(0);
-                hand.Add(top);
+                return new TileData[0];
             }
 
+            int take = count;
+            if (take > Tiles.Length)
+            {
+                take = Tiles.Length;
+            }
+
+            TileData[] hand = new TileData[take];
+            for (int i = 0; i < take; i++)
+            {
+                hand[i] = Tiles[i];
+            }
+
+            int remaining = Tiles.Length - take;
+            TileData[] newDeck = new TileData[remaining];
+            for (int i = 0; i < remaining; i++)
+            {
+                newDeck[i] = Tiles[take + i];
+            }
+
+            Tiles = newDeck;
             return hand;
         }
-        public TileData? DrawTileData()
+
+        public override TileData? DrawTileData()
         {
-            if (Tiles == null || Tiles.Count == 0)
+            if (Tiles.Length == 0)
             {
                 return null;
             }
 
-            TileData t = Tiles[0];
-            Tiles.RemoveAt(0);
-            return t;
-        }
+            TileData top = Tiles[0];
 
+            int remaining = Tiles.Length - 1;
+            TileData[] newDeck = new TileData[remaining];
+            for (int i = 0; i < remaining; i++)
+            {
+                newDeck[i] = Tiles[i + 1];
+            }
+
+            Tiles = newDeck;
+            return top;
+        }
     }
 }

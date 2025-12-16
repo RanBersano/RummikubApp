@@ -7,94 +7,124 @@ namespace RummikubApp.ModelLogics
         public Board()
         {
             Capacity = 18;
-            Slots = new List<TileData>();
-            SelectedIndex = -1;
-        }
-
-        public Board(List<TileData> existingSlots)
-        {
-            Capacity = 18;
-            Slots = existingSlots ?? new List<TileData>();
+            Slots = new TileData[0];
             SelectedIndex = -1;
             EnsureCapacity();
+        }
+
+        public Board(TileData[] existingSlots)
+        {
+            Capacity = 18;
+            LoadFromArray(existingSlots);
+            SelectedIndex = -1;
+            EnsureCapacity();
+        }
+
+        public override void LoadFromArray(TileData[] slots)
+        {
+            if (slots == null)
+            {
+                Slots = new TileData[0];
+                return;
+            }
+
+            TileData[] copy = new TileData[slots.Length];
+            for (int i = 0; i < slots.Length; i++)
+            {
+                copy[i] = slots[i];
+            }
+            Slots = copy;
+        }
+
+        public override TileData[] ExportToArray()
+        {
+            TileData[] copy = new TileData[Slots.Length];
+            for (int i = 0; i < Slots.Length; i++)
+            {
+                copy[i] = Slots[i];
+            }
+            return copy;
         }
 
         public override void EnsureCapacity()
         {
             if (Slots == null)
             {
-                Slots = new List<TileData>();
+                Slots = new TileData[0];
             }
 
-            while (Slots.Count < Capacity)
+            if (Slots.Length == Capacity)
             {
-                TileData empty = new TileData();
-                empty.IsEmptySlot = true;
-                empty.IsJoker = false;
-                empty.Color = 0;
-                empty.Number = 0;
-                Slots.Add(empty);
+                return;
             }
 
-            if (Slots.Count > Capacity)
+            TileData[] newSlots = new TileData[Capacity];
+
+            int copyLen = Slots.Length;
+            if (copyLen > Capacity)
             {
-                Slots = Slots.Take(Capacity).ToList();
+                copyLen = Capacity;
             }
+
+            for (int i = 0; i < copyLen; i++)
+            {
+                newSlots[i] = Slots[i];
+            }
+
+            for (int i = copyLen; i < Capacity; i++)
+            {
+                newSlots[i] = new TileData
+                {
+                    IsEmptySlot = true,
+                    IsJoker = false,
+                    Color = 0,
+                    Number = 0,
+                    IsSelected = false
+                };
+            }
+
+            Slots = newSlots;
         }
 
-        public override bool TrySelect(int index)
+        public override void ClearSelection()
         {
-            if (index < 0 || index >= Slots.Count)
+            for (int i = 0; i < Slots.Length; i++)
             {
-                return false;
+                Slots[i].IsSelected = false;
             }
-
-            if (Slots[index].IsEmptySlot)
-            {
-                return false;
-            }
-
-            SelectedIndex = index;
-            return true;
-        }
-
-        public override bool TryClearSelection()
-        {
-            if (SelectedIndex == -1)
-            {
-                return false;
-            }
-
             SelectedIndex = -1;
-            return true;
         }
 
-        public override bool TrySwapWithSelected(int index)
+        public override bool HandleTap(int index)
         {
+            if (index < 0 || index >= Slots.Length)
+            {
+                return false;
+            }
+
             if (SelectedIndex == -1)
             {
-                return false;
-            }
+                if (Slots[index].IsEmptySlot)
+                {
+                    return false;
+                }
 
-            if (index < 0 || index >= Slots.Count)
-            {
-                return false;
-            }
-
-            if (SelectedIndex < 0 || SelectedIndex >= Slots.Count)
-            {
-                SelectedIndex = -1;
-                return false;
+                ClearSelection();
+                SelectedIndex = index;
+                Slots[index].IsSelected = true;
+                return true;
             }
 
             if (SelectedIndex == index)
             {
-                SelectedIndex = -1;
+                ClearSelection();
                 return true;
             }
 
             TileData first = Slots[SelectedIndex];
             TileData second = Slots[index];
+
+            first.IsSelected = false;
 
             Slots[SelectedIndex] = second;
             Slots[index] = first;
@@ -105,32 +135,32 @@ namespace RummikubApp.ModelLogics
 
         public override int FindFirstEmptySlotIndex()
         {
-            for (int i = 0; i < Slots.Count; i++)
+            for (int i = 0; i < Slots.Length; i++)
             {
                 if (Slots[i].IsEmptySlot)
                 {
                     return i;
                 }
             }
-
             return -1;
         }
 
-        public override bool TryPlaceTileInFirstEmpty(TileData tile)
+        public override bool PlaceTileInFirstEmpty(TileData tile)
         {
             if (tile == null)
             {
                 return false;
             }
 
-            int emptyIndex = FindFirstEmptySlotIndex();
-            if (emptyIndex == -1)
+            int idx = FindFirstEmptySlotIndex();
+            if (idx == -1)
             {
                 return false;
             }
 
             tile.IsEmptySlot = false;
-            Slots[emptyIndex] = tile;
+            tile.IsSelected = false;
+            Slots[idx] = tile;
             return true;
         }
     }

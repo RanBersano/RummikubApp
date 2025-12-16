@@ -1,25 +1,27 @@
 ﻿using Plugin.CloudFirestore.Attributes;
-using RummikubApp.ModelLogics;
 
 namespace RummikubApp.Models
 {
     public abstract class BoardModel
     {
-        public int Capacity { get; set; } = 18; // להחליף שם
+        public int Capacity { get; protected set; } = 18;
 
-        // זה מה שנשמר בפיירסטור (רשימת סלוטים)
-        public List<TileData> Slots { get; set; } = new List<TileData>();
+        public TileData[] Slots { get; protected set; } = new TileData[0];
 
-        // מצב בחירה - לא נשמר בפיירסטור (UI-STATE)
         [Ignored]
-        public int SelectedIndex { get; set; } = -1;
+        public int SelectedIndex { get; protected set; } = -1;
+
+        public abstract void LoadFromArray(TileData[] slots);
+        public abstract TileData[] ExportToArray();
 
         public abstract void EnsureCapacity();
-        public abstract bool TrySelect(int index);
-        public abstract bool TryClearSelection();
-        public abstract bool TrySwapWithSelected(int index);
+
+        // Tap/Swap
+        public abstract bool HandleTap(int index);
+        public abstract void ClearSelection();
+
+        // Place tile into first empty slot
         public abstract int FindFirstEmptySlotIndex();
-        public abstract bool TryPlaceTileInFirstEmpty(TileData tile);
+        public abstract bool PlaceTileInFirstEmpty(TileData tile);
     }
 }
-
