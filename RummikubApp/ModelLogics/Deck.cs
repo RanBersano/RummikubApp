@@ -62,34 +62,28 @@ namespace RummikubApp.ModelLogics
 
                 for (int n = 1; n <= 13; n++)
                 {
-                    TileData tile1 = new TileData
+                    Tiles[index] = new TileData
                     {
                         Color = (int)color,
                         Number = n,
                         IsJoker = false,
-                        IsEmptySlot = false,
-                        IsSelected = false
+                        IsEmptySlot = false
                     };
-
-                    TileData tile2 = new TileData
-                    {
-                        Color = (int)color,
-                        Number = n,
-                        IsJoker = false,
-                        IsEmptySlot = false,
-                        IsSelected = false
-                    };
-
-                    Tiles[index] = tile1;
                     index++;
-                    Tiles[index] = tile2;
+
+                    Tiles[index] = new TileData
+                    {
+                        Color = (int)color,
+                        Number = n,
+                        IsJoker = false,
+                        IsEmptySlot = false
+                    };
                     index++;
                 }
             }
-
-            Tiles[index] = new TileData { Color = 0, Number = 0, IsJoker = true, IsEmptySlot = false, IsSelected = false };
+            Tiles[index] = new TileData { Color = 0, Number = 0, IsJoker = true, IsEmptySlot = false };
             index++;
-            Tiles[index] = new TileData { Color = 0, Number = 0, IsJoker = true, IsEmptySlot = false, IsSelected = false };
+            Tiles[index] = new TileData { Color = 0, Number = 0, IsJoker = true, IsEmptySlot = false };
         }
 
         public override void Shuffle()

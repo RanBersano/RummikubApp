@@ -78,8 +78,7 @@ namespace RummikubApp.ModelLogics
                     IsEmptySlot = true,
                     IsJoker = false,
                     Color = 0,
-                    Number = 0,
-                    IsSelected = false
+                    Number = 0
                 };
             }
 
@@ -88,50 +87,41 @@ namespace RummikubApp.ModelLogics
 
         public override void ClearSelection()
         {
-            for (int i = 0; i < Slots.Length; i++)
-            {
-                Slots[i].IsSelected = false;
-            }
             SelectedIndex = -1;
         }
+
 
         public override bool HandleTap(int index)
         {
             if (index < 0 || index >= Slots.Length)
-            {
                 return false;
-            }
 
+            // לחיצה ראשונה: לא לבחור ריק
             if (SelectedIndex == -1)
             {
                 if (Slots[index].IsEmptySlot)
-                {
                     return false;
-                }
 
-                ClearSelection();
                 SelectedIndex = index;
-                Slots[index].IsSelected = true;
                 return true;
             }
 
+            // לחיצה על אותו אריח: ביטול בחירה
             if (SelectedIndex == index)
             {
-                ClearSelection();
+                SelectedIndex = -1;
                 return true;
             }
 
-            TileData first = Slots[SelectedIndex];
-            TileData second = Slots[index];
-
-            first.IsSelected = false;
-
-            Slots[SelectedIndex] = second;
-            Slots[index] = first;
+            // החלפה (כולל מול ריק)
+            TileData tmp = Slots[SelectedIndex];
+            Slots[SelectedIndex] = Slots[index];
+            Slots[index] = tmp;
 
             SelectedIndex = -1;
             return true;
         }
+
 
         public override int FindFirstEmptySlotIndex()
         {
@@ -159,7 +149,6 @@ namespace RummikubApp.ModelLogics
             }
 
             tile.IsEmptySlot = false;
-            tile.IsSelected = false;
             Slots[idx] = tile;
             return true;
         }

@@ -29,7 +29,17 @@ namespace RummikubApp.ModelLogics
         public Game()
         {
         }
-
+        [Plugin.CloudFirestore.Attributes.Ignored] private Board? _myBoardCache;
+        private Board GetMyBoard()
+        {
+            if (_myBoardCache == null)
+            {
+                TileData[] hand = GetMyHand();
+                _myBoardCache = new Board(hand);
+                _myBoardCache.EnsureCapacity();
+            }
+            return _myBoardCache;
+        }
         private void RebuildDeckFromData()
         {
             Deck = new Deck(DeckData);
@@ -221,10 +231,11 @@ namespace RummikubApp.ModelLogics
 
         public override void HandleTileTap(int tappedIndex, Action<Task> onComplete)
         {
-            TileData[] hand = GetHandForPlayer(MyName);
+            Board board = GetMyBoard();
 
-            Board board = new Board(hand);
+            int before = board.SelectedIndex;
             bool changed = board.HandleTap(tappedIndex);
+            int after = board.SelectedIndex;
 
             if (!changed)
             {
@@ -232,15 +243,29 @@ namespace RummikubApp.ModelLogics
                 return;
             }
 
-            TileData[] newHand = board.ExportToArray();
-            SetHandForPlayer(MyName, newHand);
+            // אם הייתה החלפה (כלומר היה before != -1 וה־after חזר -1 והאינדקס שונה)
+            bool swapped = (before != -1 && after == -1 && before != tappedIndex);
 
-            Dictionary<string, object> updates = new Dictionary<string, object>();
-            string field = GetHandFieldNameForPlayer(MyName);
-            updates[field] = newHand;
+            // רק אם היה SWAP שומרים ל-Firestore
+            if (swapped)
+            {
+                TileData[] newHand = board.ExportToArray();
 
-            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+                // עדכון היד שלי בתוך ה-Game עצמו
+                SetHandForPlayer(MyName, newHand);
+
+                Dictionary<string, object> updates = new Dictionary<string, object>();
+                string field = GetHandFieldNameForPlayer(MyName);
+                updates[field] = newHand;
+
+                fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+                return;
+            }
+
+            // אם זה רק שינוי בחירה (סימון/ביטול) — לא שומרים בפיירסטור
+            onComplete(Task.CompletedTask);
         }
+
 
         public override void TakeTileFromDeckAndSave(Action<Task> onComplete)
         {
@@ -355,7 +380,7 @@ namespace RummikubApp.ModelLogics
                 Player2Hand = updated.Player2Hand ?? new TileData[0];
                 Player3Hand = updated.Player3Hand ?? new TileData[0];
                 Player4Hand = updated.Player4Hand ?? new TileData[0];
-
+                _myBoardCache = null;
                 RebuildDeckFromData();
                 OnGameChanged?.Invoke(this, EventArgs.Empty);
             }

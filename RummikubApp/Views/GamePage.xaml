@@ -118,7 +118,7 @@
                         WidthRequest="40">
 
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.TileTappedCommand, Source={x:Reference GameGrid}}" CommandParameter="{Binding .}" />
+                            <TapGestureRecognizer Command="{Binding BindingContext.TileTappedCommand, Source={x:Reference GameGrid}}" CommandParameter="{Binding Index}" />
                         </Border.GestureRecognizers>
 
                         <Border.Triggers>
