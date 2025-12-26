@@ -106,7 +106,7 @@ namespace RummikubApp.ModelLogics
             }
 
             CurrentTurnIndex = next;
-
+            HasDrawnThisTurn = false;
             Dictionary<string, object> updates = new Dictionary<string, object>();
             updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
 
@@ -269,6 +269,8 @@ namespace RummikubApp.ModelLogics
 
         public override void TakeTileFromDeckAndSave(Action<Task> onComplete)
         {
+            if (HasDrawnThisTurn) { onComplete(Task.CompletedTask); return; }
+
             if (Deck == null)
             {
                 RebuildDeckFromData();
@@ -295,7 +297,7 @@ namespace RummikubApp.ModelLogics
             SetHandForPlayer(MyName, newHand);
 
             DeckData = Deck!.ExportToArray();
-
+            HasDrawnThisTurn = true;
             Dictionary<string, object> updates = new Dictionary<string, object>();
             updates[nameof(DeckData)] = DeckData;
 
@@ -346,7 +348,6 @@ namespace RummikubApp.ModelLogics
             {
                 return;
             }
-            MoveToNextTurn(OnCompleteTurn);
         }
 
         private void OnCompleteTurn(Task task)
@@ -380,6 +381,7 @@ namespace RummikubApp.ModelLogics
                 Player2Hand = updated.Player2Hand ?? new TileData[0];
                 Player3Hand = updated.Player3Hand ?? new TileData[0];
                 Player4Hand = updated.Player4Hand ?? new TileData[0];
+                DiscardTile = updated.DiscardTile ?? new TileData { IsPresent = false };
                 _myBoardCache = null;
                 RebuildDeckFromData();
                 OnGameChanged?.Invoke(this, EventArgs.Empty);
@@ -397,5 +399,101 @@ namespace RummikubApp.ModelLogics
         {
             return GetHandForPlayer(MyName);
         }
+        public override void DiscardSelectedTileAndSave(int selectedIndex, Action<Task> onComplete)
+        {
+            if (!IsFull) { onComplete(Task.CompletedTask); return; }
+            if (CurrentPlayerName != MyName) { onComplete(Task.CompletedTask); return; }
+            if (!HasDrawnThisTurn) { onComplete(Task.CompletedTask); return; }
+            // לוקחים את היד הנוכחית שלי
+            TileData[] hand = GetMyHand();
+            Board board = new Board(hand);
+            board.EnsureCapacity();
+
+            if (selectedIndex < 0 || selectedIndex >= board.Slots.Length)
+            {
+                onComplete(Task.CompletedTask);
+                return;
+            }
+
+            TileData chosen = board.Slots[selectedIndex];
+            if (chosen == null || chosen.IsEmptySlot)
+            {
+                onComplete(Task.CompletedTask);
+                return;
+            }
+
+            // שמים את האריח שנזרק ב-DiscardTile
+            DiscardTile = new TileData
+            {
+                Color = chosen.Color,
+                Number = chosen.Number,
+                IsJoker = chosen.IsJoker,
+                IsEmptySlot = false,
+                IsPresent = true
+            };
+
+            // מורידים אותו מהיד (הופכים לריק)
+            board.Slots[selectedIndex] = new TileData
+            {
+                Color = 0,
+                Number = 0,
+                IsJoker = false,
+                IsEmptySlot = true,
+                IsPresent = false
+            };
+
+            TileData[] newHand = board.ExportToArray();
+            SetHandForPlayer(MyName, newHand);
+
+            // מעבירים תור לשחקן הבא
+            int next = CurrentTurnIndex + 1;
+            if (next > Players) next = 1;
+            CurrentTurnIndex = next;
+            HasDrawnThisTurn = false;
+            Dictionary<string, object> updates = new Dictionary<string, object>();
+            updates[GetHandFieldNameForPlayer(MyName)] = newHand;
+            updates[nameof(DiscardTile)] = DiscardTile;
+            updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
+
+            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+        }
+
+        public override void TakeDiscardAndSave(Action<Task> onComplete)
+        {
+            if (!IsFull) { onComplete(Task.CompletedTask); return; }
+            if (CurrentPlayerName != MyName) { onComplete(Task.CompletedTask); return; }
+            if (HasDrawnThisTurn) { onComplete(Task.CompletedTask); return; }
+            if (DiscardTile == null || !DiscardTile.IsPresent) { onComplete(Task.CompletedTask); return; }
+
+            // מוסיפים ליד שלי בסלוט הריק הראשון
+            TileData[] hand = GetMyHand();
+            Board board = new Board(hand);
+            board.EnsureCapacity();
+
+            TileData tileToAdd = new TileData
+            {
+                Color = DiscardTile.Color,
+                Number = DiscardTile.Number,
+                IsJoker = DiscardTile.IsJoker,
+                IsEmptySlot = false,
+                IsPresent = false
+            };
+
+            bool placed = board.PlaceTileInFirstEmpty(tileToAdd);
+            if (!placed) { onComplete(Task.CompletedTask); return; }
+
+            TileData[] newHand = board.ExportToArray();
+            SetHandForPlayer(MyName, newHand);
+
+            // מאפסים את ה-Discard (כי לקחת אותו)
+            DiscardTile = new TileData { IsPresent = false };
+            HasDrawnThisTurn = true;
+            Dictionary<string, object> updates = new Dictionary<string, object>();
+            updates[GetHandFieldNameForPlayer(MyName)] = newHand;
+            updates[nameof(DiscardTile)] = DiscardTile;
+
+            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+        }
+
     }
 }

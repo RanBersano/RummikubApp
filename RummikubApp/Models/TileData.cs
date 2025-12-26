@@ -8,5 +8,6 @@ namespace RummikubApp.Models
         public int Number { get; set; }
         public bool IsJoker { get; set; }
         public bool IsEmptySlot { get; set; }
+        public bool IsPresent { get; set; }
     }
 }

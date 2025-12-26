@@ -34,6 +34,44 @@ namespace RummikubApp.ModelLogics
             Tile empty = new Tile(true);
             return empty;
         }
+        public static ImageSource? GetSourceFor(TileModel.Colors color, int number)
+        {
+            // number 1..13
+            if (number <= 0) return null;
+
+            // TileModel בונה Source עם Strings.* שהם שמות קבצים
+            // נחזיר ImageSource לפי אותו שם
+            string file = GetFileName(color, number);
+            return ImageSource.FromFile(file);
+        }
+
+        private static string GetFileName(TileModel.Colors color, int number)
+        {
+            // כאן משתמשים באותו מערך של TileModel (tilesImage)
+            // אבל tilesImage הוא private שם, אז נעשה switch פשוט:
+            // שים לב: אתה כבר מחזיק Strings.OneOrange וכו'
+            // לכן נבנה לפי צבע/מספר בצורה ידנית.
+
+            // הכי פשוט: ליצור Tile זמני ולקחת ממנו Source
+            Tile t = new Tile(color, number);
+            if (t.Source == null) return "";
+            return t.Source.ToString()!;
+        }
+
+        public static Tile FromTileData(TileData data)
+        {
+            if (data == null) return CreateEmptySlot();
+
+            if (data.IsEmptySlot)
+                return CreateEmptySlot();
+
+            if (data.IsJoker)
+                return new Tile();
+
+            Tile t2 = new Tile((TileModel.Colors)data.Color, data.Number);
+            t2.IsEmptySlot = false;
+            return t2;
+        }
 
 
     }

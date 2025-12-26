@@ -25,6 +25,7 @@ namespace RummikubApp.Models
         public string PlayerName4 { get; set; } = string.Empty;
 
         public int CurrentTurnIndex { get; set; } = 1;
+        public bool HasDrawnThisTurn { get; set; } = false;
 
         // ✅ Firestore state - Arrays בלבד
         public TileData[] DeckData { get; set; } = new TileData[0];
@@ -32,6 +33,7 @@ namespace RummikubApp.Models
         public TileData[] Player2Hand { get; set; } = new TileData[0];
         public TileData[] Player3Hand { get; set; } = new TileData[0];
         public TileData[] Player4Hand { get; set; } = new TileData[0];
+        public TileData DiscardTile { get; set; } = new TileData { IsPresent = false };
 
         [Ignored] public ModelLogics.Deck? Deck { get; set; }
 
@@ -73,5 +75,8 @@ namespace RummikubApp.Models
 
         protected abstract void OnComplete(Task task);
         protected abstract void OnChange(IDocumentSnapshot? snapshot, Exception? error);
+        public abstract void DiscardSelectedTileAndSave(int selectedIndex, Action<Task> onComplete);
+        public abstract void TakeDiscardAndSave(Action<Task> onComplete);
+
     }
 }

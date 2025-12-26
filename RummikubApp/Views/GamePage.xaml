@@ -81,20 +81,21 @@
             HorizontalOptions="Center"
             RowSpacing="3"
             VerticalOptions="Center" />
-        <Button
+        <ImageButton
             Grid.Row="5"
             Grid.Column="0"
             BackgroundColor="#C8BFB1"
-            Command="{Binding MoveCommand}"
+            Command="{Binding TakeDiscardCommand}"
             HeightRequest="50"
             IsEnabled="{Binding IsMyTurn}"
+            Source="{Binding DiscardTileSource}"
             Style="{StaticResource StayColoredWhenDisabled}"
             WidthRequest="40" />
         <Button
             Grid.Row="5"
             Grid.Column="2"
             BackgroundColor="#C8BFB1"
-            Command="{Binding MoveCommand}"
+            Command="{Binding DiscardSelectedCommand}"
             HeightRequest="50"
             IsEnabled="{Binding IsMyTurn}"
             Style="{StaticResource StayColoredWhenDisabled}"
@@ -112,9 +113,10 @@
                 <DataTemplate x:DataType="ml:Tile">
                     <Border
                         Padding="0"
-                        HeightRequest="50"
+                        HeightRequest="55"
                         StrokeShape="RoundRectangle 8"
                         StrokeThickness="0"
+                        Stroke="DarkTurquoise"
                         WidthRequest="40">
 
                         <Border.GestureRecognizers>

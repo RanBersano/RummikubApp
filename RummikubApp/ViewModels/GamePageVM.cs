@@ -18,18 +18,32 @@ namespace RummikubApp.ViewModels
         public string OtherPlayerName1 => game.GetOtherPlayerName(0);
         public string OtherPlayerName2 => game.GetOtherPlayerName(1);
         public string OtherPlayerName3 => game.GetOtherPlayerName(2);
-
         public bool IsMyTurn => game.IsFull && game.CurrentPlayerName == game.MyName;
-
         public bool IsPlayer1Turn => game.CurrentPlayerName == game.GetOtherPlayerName(0);
-
         public bool IsPlayer2Turn => game.CurrentPlayerName == game.GetOtherPlayerName(1);
-
         public bool IsPlayer3Turn => game.CurrentPlayerName == game.GetOtherPlayerName(2);
+        public bool CanTakeTile => IsMyTurn && !game.HasDrawnThisTurn;
+        public bool CanDiscard => IsMyTurn && game.HasDrawnThisTurn;
 
         private readonly Command<int> tileTappedCommand;
         public ICommand TileTappedCommand => tileTappedCommand;
-        public ICommand MoveCommand { get; }
+
+        public ICommand TakeDiscardCommand { get; }
+        public ICommand DiscardSelectedCommand { get; }
+
+        private int _selectedIndex = -1;
+
+        private ImageSource? discardTileSource;
+        public ImageSource? DiscardTileSource
+        {
+            get => discardTileSource;
+            set
+            {
+                discardTileSource = value;
+                OnPropertyChanged();
+            }
+        }
+
         public GamePageVM(Game game, Grid deckGrid)
         {
             this.game = game;
@@ -38,78 +52,79 @@ namespace RummikubApp.ViewModels
             game.InitGrid(deckGrid);
 
             tileTappedCommand = new Command<int>(OnTileTapped);
-            RefreshBoardFromGame_NoClear();
-            MoveCommand = new Command(
-                () => game.MoveToNextTurn(_ => { }),
-                () => IsMyTurn
-            );
+
+            TakeDiscardCommand = new Command(
+                () => game.TakeDiscardAndSave(_ => { }),
+                () => IsMyTurn && game.DiscardTile != null && game.DiscardTile.IsPresent && CanTakeTile);
+
+            DiscardSelectedCommand = new Command(
+                () =>
+                {
+                    if (!IsMyTurn) return;
+                    if (_selectedIndex < 0) return;
+                    int idx = _selectedIndex;
+                    _selectedIndex = -1;
+                    game.DiscardSelectedTileAndSave(idx, _ => { });
+                },
+                () => IsMyTurn && _selectedIndex >= 0);
             if (!game.IsHostUser)
             {
                 game.UpdateGuestUser(OnJoinComplete);
             }
-        }
 
-        private int _selectedIndex = -1;
+            RefreshBoardFromGame_NoClear();
+            UpdateDiscardTile();
+        }
 
         private void OnTileTapped(int index)
         {
             if (index < 0 || index >= Board.Count)
                 return;
 
-            int prev = _selectedIndex;
+            // לא נותנים לבחור אריח ריק כבחירה ראשונה
+            if (_selectedIndex == -1 && Board[index].IsEmptySlot)
+                return;
 
-            game.HandleTileTap(index, _ =>
+            // לחיצה על אותו אריח - ביטול
+            if (_selectedIndex == index)
             {
-                // 1) נרענן את המערך מהמשחק (כולל swap אם היה)
+                _selectedIndex = -1;
                 RefreshBoardFromGame_NoClear();
+                return;
+            }
 
-                // 2) לוגיקת selection UI (לא קשורה ל-firestore)
-                if (prev == -1)
-                {
-                    // בחירה ראשונה - לא לבחור ריק
-                    if (!Board[index].IsEmptySlot)
-                    {
-                        _selectedIndex = index;
-                        Board[index].IsSelected = true;
-                    }
-                    return;
-                }
+            // אם כבר נבחר משהו ולוחצים על יעד אחר -> החלפה בלוגיקה של המשחק (ואז שומר ל-Firestore)
+            if (_selectedIndex != -1)
+            {
+                int first = _selectedIndex;
+                int second = index;
 
-                // אם לחץ על אותו אריח - ביטול
-                if (prev == index)
-                {
-                    Board[prev].IsSelected = false;
-                    _selectedIndex = -1;
-                    return;
-                }
+                _selectedIndex = -1;
 
-                // אם לחץ על משהו אחר - swap ואז אין בחירה
-                if (prev != -1)
-                {
-                    Board[prev].IsSelected = false;
-                    _selectedIndex = -1;
-                }
-            });
-        }
-        private void OnHandSaved(Task task)
-        {
-            if (task.IsCompletedSuccessfully)
+                // מבצע swap דרך המשחק (הוא יודע לשמור ל-Firestore רק אם באמת היה swap)
+                game.HandleTileTap(first, _ => { });
+                game.HandleTileTap(second, _ => { });
+
                 RefreshBoardFromGame_NoClear();
+                return;
+            }
+
+            // בחירה ראשונה
+            _selectedIndex = index;
+            RefreshBoardFromGame_NoClear();
+            (DiscardSelectedCommand as Command)?.ChangeCanExecute();
         }
-
-
 
         private void RefreshBoardFromGame_NoClear()
         {
             TileData[] hand = game.GetMyHand();
 
-            // אם צריך לבנות מחדש רק פעם ראשונה
             if (Board.Count != hand.Length)
             {
                 Board.Clear();
                 for (int i = 0; i < hand.Length; i++)
                 {
-                    Tile t = CreateTileFromData(hand[i]);
+                    Tile t = Tile.FromTileData(hand[i]);
                     t.Index = i;
                     t.IsSelected = (i == _selectedIndex);
                     Board.Add(t);
@@ -117,28 +132,68 @@ namespace RummikubApp.ViewModels
                 return;
             }
 
-            // עדכון בלי "העלמות"
             for (int i = 0; i < hand.Length; i++)
             {
-                Tile t = CreateTileFromData(hand[i]);
+                Tile t = Tile.FromTileData(hand[i]);
                 t.Index = i;
                 t.IsSelected = (i == _selectedIndex);
                 Board[i] = t;
             }
         }
 
-        // ריענון מה-Firestore
         private void OnGameChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(OtherPlayerName1));
             OnPropertyChanged(nameof(OtherPlayerName2));
             OnPropertyChanged(nameof(OtherPlayerName3));
+
             OnPropertyChanged(nameof(IsMyTurn));
             OnPropertyChanged(nameof(IsPlayer1Turn));
             OnPropertyChanged(nameof(IsPlayer2Turn));
             OnPropertyChanged(nameof(IsPlayer3Turn));
+            OnPropertyChanged(nameof(CanTakeTile));
+            OnPropertyChanged(nameof(CanDiscard));
             RefreshBoardFromGame_NoClear();
-            (MoveCommand as Command)?.ChangeCanExecute();
+            UpdateDiscardTile();
+            (DiscardSelectedCommand as Command)?.ChangeCanExecute();
+            (TakeDiscardCommand as Command)?.ChangeCanExecute();
+            (TakeDiscardCommand as Command)?.ChangeCanExecute();
+            (DiscardSelectedCommand as Command)?.ChangeCanExecute();
+        }
+
+        private void UpdateDiscardTile()
+        {
+            TileData discarded = game.DiscardTile;
+
+            if (discarded == null || !discarded.IsPresent)
+            {
+                DiscardTileSource = null;
+                return;
+            }
+
+            if (discarded.IsJoker)
+            {
+                DiscardTileSource = Strings.Joker;
+                return;
+            }
+
+            // יצירת Tile זמני רק כדי לקבל Source מהקונסטרקטור
+            Tile t = new Tile((TileModel.Colors)discarded.Color, discarded.Number);
+            DiscardTileSource = t.Source;
+        }
+
+
+        private ImageSource? TileDataToImageSource(TileData data)
+        {
+            if (data == null) return null;
+            if (!data.IsPresent) return null;
+            if (data.IsEmptySlot) return null;
+
+            if (data.IsJoker)
+                return ImageSource.FromFile(Strings.Joker);
+
+            // תמונות לפי TilesImage ב-TileModel
+            return Tile.GetSourceFor((TileModel.Colors)data.Color, data.Number);
         }
 
         private void OnJoinComplete(Task task)
@@ -149,33 +204,7 @@ namespace RummikubApp.ViewModels
             }
         }
 
-        // =========================
-        // TileData → Tile (UI בלבד)
-        // =========================
-        private Tile CreateTileFromData(TileData data)
-        {
-            if (data.IsEmptySlot)
-            {
-                return Tile.CreateEmptySlot();
-            }
-
-            if (data.IsJoker)
-            {
-                return new Tile();
-            }
-
-            return new Tile(
-                (TileModel.Colors)data.Color,
-                data.Number
-            );
-        }
-        public void AddSnapshotListener()
-        {
-            game.AddSnapshotListener();
-        }
-        public void RemoveSnapshotListener()
-        {
-            game.RemoveSnapshotListener();
-        }
+        public void AddSnapshotListener() => game.AddSnapshotListener();
+        public void RemoveSnapshotListener() => game.RemoveSnapshotListener();
     }
 }
