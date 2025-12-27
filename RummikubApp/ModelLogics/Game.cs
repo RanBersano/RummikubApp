@@ -1,14 +1,15 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Mvvm.Messaging;
 using Plugin.CloudFirestore;
 using RummikubApp.Models;
-
 namespace RummikubApp.ModelLogics
 {
     public class Game : GameModel
     {
         public Game(GameSize selectedGameSize)
         {
+            RegisterTimer();
             HostName = new User().UserName;
             Players = selectedGameSize.Size;
             Created = DateTime.Now;
@@ -28,6 +29,20 @@ namespace RummikubApp.ModelLogics
 
         public Game()
         {
+            RegisterTimer();
+        }
+        private void RegisterTimer()
+        {
+            WeakReferenceMessenger.Default.Register<AppMessage<long>>(this, (r, m) =>
+            {
+                OnMessageReceived(m.Value);
+            });
+        }
+
+        private void OnMessageReceived(long timeLeft)
+        {
+            TimeLeft = timeLeft == Keys.FinishedSignal ? Strings.TimeUp : double.Round(timeLeft / 1000, 1).ToString();
+            TimeLeftChanged?.Invoke(this, EventArgs.Empty);
         }
         [Plugin.CloudFirestore.Attributes.Ignored] private Board? _myBoardCache;
         private Board GetMyBoard()
@@ -383,7 +398,7 @@ namespace RummikubApp.ModelLogics
                 Player4Hand = updated.Player4Hand ?? new TileData[0];
                 DiscardTile = updated.DiscardTile ?? new TileData { IsPresent = false };
                 _myBoardCache = null;
-                RebuildDeckFromData();
+                RebuildDeckFromData();  
                 OnGameChanged?.Invoke(this, EventArgs.Empty);
             }
             else
@@ -393,6 +408,18 @@ namespace RummikubApp.ModelLogics
                     Shell.Current.Navigation.PopAsync();
                     Toast.Make(Strings.GameDeleted, ToastDuration.Long).Show();
                 });
+            }
+            if (IsFull)
+            {
+                // מתחילים טיימר כל פעם שמגיע Snapshot חדש בזמן משחק
+                WeakReferenceMessenger.Default.Send(new AppMessage<TimerSettings>(timerSettings));
+            }
+            else
+            {
+                // המשחק לא התחיל/נגמר => עוצרים טיימר
+                WeakReferenceMessenger.Default.Send(new AppMessage<bool>(true));
+                TimeLeft = string.Empty;
+                TimeLeftChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         public TileData[] GetMyHand()

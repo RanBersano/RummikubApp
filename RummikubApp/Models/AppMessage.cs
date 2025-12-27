@@ -4,5 +4,6 @@ namespace RummikubApp.Models
 {
     public class AppMessage<T>(T msg) : ValueChangedMessage<T>(msg)
     {
+
     }
 }

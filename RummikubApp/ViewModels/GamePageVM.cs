@@ -12,7 +12,7 @@ namespace RummikubApp.ViewModels
         private readonly Game game;
 
         public ObservableCollection<Tile> Board { get; } = new ObservableCollection<Tile>();
-
+        public string TimeLeft => game.TimeLeft;
         public string MyName => game.MyName;
 
         public string OtherPlayerName1 => game.GetOtherPlayerName(0);
@@ -50,7 +50,7 @@ namespace RummikubApp.ViewModels
 
             game.OnGameChanged += OnGameChanged;
             game.InitGrid(deckGrid);
-
+            game.TimeLeftChanged += OnTimeLeftChanged;
             tileTappedCommand = new Command<int>(OnTileTapped);
 
             TakeDiscardCommand = new Command(
@@ -75,7 +75,10 @@ namespace RummikubApp.ViewModels
             RefreshBoardFromGame_NoClear();
             UpdateDiscardTile();
         }
-
+        private void OnTimeLeftChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(TimeLeft));
+        }   
         private void OnTileTapped(int index)
         {
             if (index < 0 || index >= Board.Count)

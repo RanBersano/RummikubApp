@@ -11,7 +11,7 @@
         x:Name="GameGrid"
         Padding="10"
         ColumnDefinitions="Auto,*,Auto"
-        RowDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto,Auto">
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto,Auto,Auto">
 
         <Border
             Grid.Row="0"
@@ -73,6 +73,10 @@
             IsVisible="{Binding IsMyTurn}"
             Text="{x:Static m:Strings.YourTurn}"
             TextColor="DarkOrange" />
+        <Label
+            Margin="50"
+            HorizontalOptions="Center"
+            Text="{Binding TimeLeft}" />
         <Grid
             x:Name="grdDeck"
             Grid.Row="4"

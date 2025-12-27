@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RummikubApp.Models
+﻿namespace RummikubApp.Models
 {
-    internal class TimerSettings(long totalTimeInMillseconds, long intervalInMillseconds)
+    public class TimerSettings(long totalTimeInMilliseconds, long intervalInMilliseconds)
     {
-        public long TotalTimeInMillseconds { get; set; } = totalTimeInMillseconds;
-        public long TotalValInMillseconds { get; set; } = intervalInMillseconds;
+        public long TotalTimeInMilliseconds { get; set; } = totalTimeInMilliseconds;
+        public long IntervalInMilliseconds { get; set; } = intervalInMilliseconds;
     }
 }

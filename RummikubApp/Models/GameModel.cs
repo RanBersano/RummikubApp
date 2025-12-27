@@ -11,7 +11,8 @@ namespace RummikubApp.Models
 
         [Ignored] public EventHandler? OnGameChanged;
         [Ignored] public EventHandler? OnGameDeleted;
-
+        [Ignored] public EventHandler? TimeLeftChanged;
+        [Ignored] public string TimeLeft { get; protected set; } = string.Empty;
         [Ignored] public string Id { get; set; } = string.Empty;
 
         public DateTime Created { get; set; }
@@ -55,7 +56,7 @@ namespace RummikubApp.Models
                 };
             }
         }
-
+        protected TimerSettings timerSettings = new(Keys.TimerTotalTime, Keys.TimerInterval);
         public abstract void SetDocument(Action<Task> onComplete);
         public abstract void AddSnapshotListener();
         public abstract void RemoveSnapshotListener();
