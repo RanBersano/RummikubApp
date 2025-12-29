@@ -376,7 +376,7 @@ namespace RummikubApp.ModelLogics
                 OnGameDeleted?.Invoke(this, EventArgs.Empty);
             }
         }
-
+        [Plugin.CloudFirestore.Attributes.Ignored] private bool _startTimerWasTriggered = false;    
         protected override void OnChange(IDocumentSnapshot? snapshot, Exception? error)
         {
             Game? updated = snapshot?.ToObject<Game>();
@@ -409,14 +409,13 @@ namespace RummikubApp.ModelLogics
                     Toast.Make(Strings.GameDeleted, ToastDuration.Long).Show();
                 });
             }
-            if (IsFull)
+            if (IsFull && !_startTimerWasTriggered)
             {
-                // מתחילים טיימר כל פעם שמגיע Snapshot חדש בזמן משחק
+                _startTimerWasTriggered = true;
                 WeakReferenceMessenger.Default.Send(new AppMessage<TimerSettings>(timerSettings));
             }
             else
             {
-                // המשחק לא התחיל/נגמר => עוצרים טיימר
                 WeakReferenceMessenger.Default.Send(new AppMessage<bool>(true));
                 TimeLeft = string.Empty;
                 TimeLeftChanged?.Invoke(this, EventArgs.Empty);
@@ -436,13 +435,13 @@ namespace RummikubApp.ModelLogics
             Board board = new Board(hand);
             board.EnsureCapacity();
 
-            if (selectedIndex < 0 || selectedIndex >= board.Slots.Length)
+            if (selectedIndex < 0 || selectedIndex >= board.Tiles.Length)
             {
                 onComplete(Task.CompletedTask);
                 return;
             }
 
-            TileData chosen = board.Slots[selectedIndex];
+            TileData chosen = board.Tiles[selectedIndex];
             if (chosen == null || chosen.IsEmptySlot)
             {
                 onComplete(Task.CompletedTask);
@@ -460,7 +459,7 @@ namespace RummikubApp.ModelLogics
             };
 
             // מורידים אותו מהיד (הופכים לריק)
-            board.Slots[selectedIndex] = new TileData
+            board.Tiles[selectedIndex] = new TileData
             {
                 Color = 0,
                 Number = 0,

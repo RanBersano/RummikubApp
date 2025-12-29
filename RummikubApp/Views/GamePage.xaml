@@ -74,19 +74,21 @@
             Text="{x:Static m:Strings.YourTurn}"
             TextColor="DarkOrange" />
         <Label
+            Grid.Row="4"
+            Grid.Column="1"
             Margin="50"
             HorizontalOptions="Center"
             Text="{Binding TimeLeft}" />
         <Grid
             x:Name="grdDeck"
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="1"
             ColumnSpacing="3"
             HorizontalOptions="Center"
             RowSpacing="3"
             VerticalOptions="Center" />
         <ImageButton
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.Column="0"
             BackgroundColor="#C8BFB1"
             Command="{Binding TakeDiscardCommand}"
@@ -96,7 +98,7 @@
             Style="{StaticResource StayColoredWhenDisabled}"
             WidthRequest="40" />
         <Button
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.Column="2"
             BackgroundColor="#C8BFB1"
             Command="{Binding DiscardSelectedCommand}"
@@ -105,7 +107,7 @@
             Style="{StaticResource StayColoredWhenDisabled}"
             WidthRequest="40" />
         <CollectionView
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.ColumnSpan="3"
             Margin="10"
             HeightRequest="120"
@@ -118,9 +120,9 @@
                     <Border
                         Padding="0"
                         HeightRequest="55"
+                        Stroke="DarkTurquoise"
                         StrokeShape="RoundRectangle 8"
                         StrokeThickness="0"
-                        Stroke="DarkTurquoise"
                         WidthRequest="40">
 
                         <Border.GestureRecognizers>
@@ -146,7 +148,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
         <Border
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="1"
             Padding="2"
             Stroke="DarkTurquoise"

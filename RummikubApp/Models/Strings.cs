@@ -99,6 +99,6 @@
         public const string ThirteenBlue = "thirteenblue.png";
         public const string ThirteenGreen = "thirteengreen.png";
         public const string Joker = "jokertile.png";
-        public const string TimeUp = "Time Up";
+        public const string TimeUp = "Begin!";
     }
 }

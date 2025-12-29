@@ -1,6 +1,6 @@
 ﻿namespace RummikubApp.Models
 {
-    public class TileModel : ImageButton
+    public abstract class TileModel : ImageButton
     {
         private static readonly string[,] tilesImage ={
             {Strings.OneOrange, Strings.TwoOrange, Strings.ThreeOrange, Strings.FourOrange, Strings.FiveOrange, Strings.SixOrange, Strings.SevenOrange, Strings.EightOrange, Strings.NineOrange, Strings.TenOrange, Strings.ElevenOrange, Strings.TwelveOrange, Strings.ThirteenOrange},
@@ -27,10 +27,6 @@
         public bool IsSelected { get; set; }
         public int Index { get; set; }
         public bool IsEmptySlot { get; set; }
-        public bool IsEmpty
-        {
-            get { return IsEmptySlot; }
-        }
         public TileModel(Colors color, int number)
         {
             Color = color;
@@ -41,7 +37,6 @@
             HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
             WidthRequest = 40;
         }
-
         public TileModel()
         {
         }
