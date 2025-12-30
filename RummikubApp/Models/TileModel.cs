@@ -26,7 +26,7 @@
         public bool IsJoker { get; set; }
         public bool IsSelected { get; set; }
         public int Index { get; set; }
-        public bool IsEmptySlot { get; set; }
+        public bool IsEmptyTile { get; set; }
         public TileModel(Colors color, int number)
         {
             Color = color;

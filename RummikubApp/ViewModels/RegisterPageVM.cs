@@ -2,7 +2,6 @@
 using RummikubApp.Models;
 using RummikubApp.Views;
 using System.Windows.Input;
-
 namespace RummikubApp.ViewModels
 {
     public class RegisterPageVM : ObservableObject
@@ -18,7 +17,6 @@ namespace RummikubApp.ViewModels
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
             user.OnAuthComplete += OnAuthComplete;
         }
-
         private void OnAuthComplete(object? sender, EventArgs e)
         {
             if(Application.Current != null)
@@ -30,7 +28,6 @@ namespace RummikubApp.ViewModels
                 });
             }
         }
-
         private void ToggleIsPassword()
         {
             IsPassword = !IsPassword;
@@ -40,12 +37,10 @@ namespace RummikubApp.ViewModels
         {
             return user.CanRegister();
         }
-
         private void Register()
         {
             user.Register();
         }
-
         public string UserName
         {
             get => user.UserName;

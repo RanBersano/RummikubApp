@@ -28,7 +28,6 @@ namespace RummikubApp.ViewModels
                 }
             }
         }
-
         private void AddGame()
         {
             games.AddGame();

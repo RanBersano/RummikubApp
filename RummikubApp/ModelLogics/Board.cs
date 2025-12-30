@@ -35,37 +35,24 @@ namespace RummikubApp.ModelLogics
         {
             TileData[] copy = new TileData[Tiles.Length];
             for (int i = 0; i < Tiles.Length; i++)
-            {
                 copy[i] = Tiles[i];
-            }
             return copy;
         }
 
         public override void EnsureCapacity()
         {
             if (Tiles == null)
-            {
                 Tiles = new TileData[0];
-            }
             if (Tiles.Length == Capacity)
-            {
                 return;
-            }
             TileData[] newTiles = new TileData[Capacity];
-            int copyLen = Tiles.Length;
-            if (copyLen > Capacity)
-            {
-                copyLen = Capacity;
-            }
-            for (int i = 0; i < copyLen; i++)
-            {
+            for (int i = 0; i < Tiles.Length; i++)
                 newTiles[i] = Tiles[i];
-            }
-            for (int i = copyLen; i < Capacity; i++)
+            for (int i = Tiles.Length; i < Capacity; i++)
             {
                 newTiles[i] = new TileData
                 {
-                    IsEmptySlot = true,
+                    IsEmptyTile = true,
                     IsJoker = false,
                     Color = 0,
                     Number = 0
@@ -83,7 +70,7 @@ namespace RummikubApp.ModelLogics
                 return false;
             if (SelectedIndex == -1)
             {
-                if (Tiles[index].IsEmptySlot)
+                if (Tiles[index].IsEmptyTile)
                     return false;
                 SelectedIndex = index;
                 return true;
@@ -99,29 +86,21 @@ namespace RummikubApp.ModelLogics
             SelectedIndex = -1;
             return true;
         }
-        public override int FindFirstEmptySlotIndex()
+        public override int FindFirstEmptyTileIndex()
         {
             for (int i = 0; i < Tiles.Length; i++)
-            {
-                if (Tiles[i].IsEmptySlot)
-                {
+                if (Tiles[i].IsEmptyTile)
                     return i;
-                }
-            }
             return -1;
         }
         public override bool PlaceTileInFirstEmpty(TileData tile)
         {
             if (tile == null)
-            {
                 return false;
-            }
-            int idx = FindFirstEmptySlotIndex();
+            int idx = FindFirstEmptyTileIndex();
             if (idx == -1)
-            {
                 return false;
-            }
-            tile.IsEmptySlot = false;
+            tile.IsEmptyTile = false;
             Tiles[idx] = tile;
             return true;
         }

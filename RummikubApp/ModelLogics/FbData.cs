@@ -2,14 +2,12 @@
 using Firebase.Auth.Providers;
 using Plugin.CloudFirestore;
 using RummikubApp.Models;
-
 namespace RummikubApp.ModelLogics
 {
     public partial class FbData : FbDataModel
     {
         public FbData()
         {
-            
         }
         public async override void CreateUserWithEmailAndPasswordAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete)
         {

@@ -7,7 +7,7 @@ namespace RummikubApp.Models
         public int Color { get; set; }
         public int Number { get; set; }
         public bool IsJoker { get; set; }
-        public bool IsEmptySlot { get; set; }
+        public bool IsEmptyTile { get; set; }
         public bool IsPresent { get; set; }
     }
 }

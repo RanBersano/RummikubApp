@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using RummikubApp.Models;
-
 namespace RummikubApp.ModelLogics
 {
     public class User : UserModel

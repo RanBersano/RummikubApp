@@ -13,7 +13,7 @@ namespace RummikubApp.Models
         public abstract void EnsureCapacity();
         public abstract bool HandleTap(int index);
         public abstract void ClearSelection();
-        public abstract int FindFirstEmptySlotIndex();
+        public abstract int FindFirstEmptyTileIndex();
         public abstract bool PlaceTileInFirstEmpty(TileData tile);
     }
 }

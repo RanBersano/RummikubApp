@@ -442,7 +442,7 @@ namespace RummikubApp.ModelLogics
             }
 
             TileData chosen = board.Tiles[selectedIndex];
-            if (chosen == null || chosen.IsEmptySlot)
+            if (chosen == null || chosen.IsEmptyTile)
             {
                 onComplete(Task.CompletedTask);
                 return;
@@ -454,7 +454,7 @@ namespace RummikubApp.ModelLogics
                 Color = chosen.Color,
                 Number = chosen.Number,
                 IsJoker = chosen.IsJoker,
-                IsEmptySlot = false,
+                IsEmptyTile = false,
                 IsPresent = true
             };
 
@@ -464,7 +464,7 @@ namespace RummikubApp.ModelLogics
                 Color = 0,
                 Number = 0,
                 IsJoker = false,
-                IsEmptySlot = true,
+                IsEmptyTile = true,
                 IsPresent = false
             };
 
@@ -501,7 +501,7 @@ namespace RummikubApp.ModelLogics
                 Color = DiscardTile.Color,
                 Number = DiscardTile.Number,
                 IsJoker = DiscardTile.IsJoker,
-                IsEmptySlot = false,
+                IsEmptyTile = false,
                 IsPresent = false
             };
 
