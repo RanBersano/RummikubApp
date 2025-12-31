@@ -58,7 +58,7 @@ namespace RummikubApp.ViewModels
                 () => IsMyTurn && _selectedIndex >= 0);
             if (!game.IsHostUser)
                 game.UpdateGuestUser(OnJoinComplete);
-            RefreshBoardFromGame_NoClear();
+            RefreshBoardFromGame();
             UpdateDiscardTile();
         }
         private void OnTimeLeftChanged(object? sender, EventArgs e)
@@ -74,7 +74,7 @@ namespace RummikubApp.ViewModels
             if (_selectedIndex == index)
             {
                 _selectedIndex = -1;
-                RefreshBoardFromGame_NoClear();
+                RefreshBoardFromGame();
                 return;
             }
             if (_selectedIndex != -1)
@@ -84,14 +84,14 @@ namespace RummikubApp.ViewModels
                 _selectedIndex = -1;
                 game.HandleTileTap(first, _ => { });
                 game.HandleTileTap(second, _ => { });
-                RefreshBoardFromGame_NoClear();
+                RefreshBoardFromGame();
                 return;
             }
             _selectedIndex = index;
-            RefreshBoardFromGame_NoClear();
+            RefreshBoardFromGame();
             (DiscardSelectedCommand as Command)?.ChangeCanExecute();
         }
-        private void RefreshBoardFromGame_NoClear()
+        private void RefreshBoardFromGame()
         {
             TileData[] hand = game.GetMyHand();
             if (Board.Count != hand.Length)
@@ -114,55 +114,44 @@ namespace RummikubApp.ViewModels
                 Board[i] = t;
             }
         }
-        private void OnGameChanged(object? sender, EventArgs e)
-        {
-            OnPropertyChanged(nameof(OtherPlayerName1));
-            OnPropertyChanged(nameof(OtherPlayerName2));
-            OnPropertyChanged(nameof(OtherPlayerName3));
-            OnPropertyChanged(nameof(IsMyTurn));
-            OnPropertyChanged(nameof(IsPlayer1Turn));
-            OnPropertyChanged(nameof(IsPlayer2Turn));
-            OnPropertyChanged(nameof(IsPlayer3Turn));
-            OnPropertyChanged(nameof(CanTakeTile));
-            OnPropertyChanged(nameof(CanDiscard));
-            RefreshBoardFromGame_NoClear();
-            UpdateDiscardTile();
-            (DiscardSelectedCommand as Command)?.ChangeCanExecute();
-            (TakeDiscardCommand as Command)?.ChangeCanExecute();
-            (TakeDiscardCommand as Command)?.ChangeCanExecute();
-            (DiscardSelectedCommand as Command)?.ChangeCanExecute();
-        }
-        private void UpdateDiscardTile()
-        {
-            TileData discarded = game.DiscardTile;
-            if (discarded == null || !discarded.IsPresent)
+            private void OnGameChanged(object? sender, EventArgs e)
             {
-                DiscardTileSource = null;
-                return;
+                OnPropertyChanged(nameof(OtherPlayerName1));
+                OnPropertyChanged(nameof(OtherPlayerName2));
+                OnPropertyChanged(nameof(OtherPlayerName3));
+                OnPropertyChanged(nameof(IsMyTurn));
+                OnPropertyChanged(nameof(IsPlayer1Turn));
+                OnPropertyChanged(nameof(IsPlayer2Turn));
+                OnPropertyChanged(nameof(IsPlayer3Turn));
+                OnPropertyChanged(nameof(CanTakeTile));
+                OnPropertyChanged(nameof(CanDiscard));
+                RefreshBoardFromGame();
+                UpdateDiscardTile();
+                (DiscardSelectedCommand as Command)?.ChangeCanExecute();
+                (TakeDiscardCommand as Command)?.ChangeCanExecute();
             }
-            if (discarded.IsJoker)
+            private void UpdateDiscardTile()
             {
-                DiscardTileSource = Strings.Joker;
-                return;
+                TileData discarded = game.DiscardTile;
+                if (discarded == null || !discarded.IsPresent)
+                {
+                    DiscardTileSource = null;
+                    return;
+                }
+                if (discarded.IsJoker)
+                {
+                    DiscardTileSource = Strings.Joker;
+                    return;
+                }
+                Tile t = new Tile((TileModel.Colors)discarded.Color, discarded.Number);
+                DiscardTileSource = t.Source;
             }
-            Tile t = new Tile((TileModel.Colors)discarded.Color, discarded.Number);
-            DiscardTileSource = t.Source;
+            private void OnJoinComplete(Task task)
+            {
+                if (!task.IsCompletedSuccessfully)
+                    Toast.Make(Strings.JoinGameErr, ToastDuration.Long).Show();
+            }
+            public void AddSnapshotListener() => game.AddSnapshotListener();
+            public void RemoveSnapshotListener() => game.RemoveSnapshotListener();
         }
-        private ImageSource? TileDataToImageSource(TileData data)
-        {
-            if (data == null) return null;
-            if (!data.IsPresent) return null;
-            if (data.IsEmptyTile) return null;
-            if (data.IsJoker)
-                return ImageSource.FromFile(Strings.Joker);
-            return Tile.GetSourceFor((TileModel.Colors)data.Color, data.Number);
-        }
-        private void OnJoinComplete(Task task)
-        {
-            if (!task.IsCompletedSuccessfully)
-                Toast.Make(Strings.JoinGameErr, ToastDuration.Long).Show();
-        }
-        public void AddSnapshotListener() => game.AddSnapshotListener();
-        public void RemoveSnapshotListener() => game.RemoveSnapshotListener();
-    }
 }

@@ -319,17 +319,13 @@ namespace RummikubApp.ModelLogics
             if (!task.IsCompletedSuccessfully)
                 return;
         }
-        private void OnCompleteTurn(Task task)
-        {
-        }
         protected override void OnComplete(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
                 OnGameDeleted?.Invoke(this, EventArgs.Empty);
             }
-        }
-        [Plugin.CloudFirestore.Attributes.Ignored] private bool _startTimerWasTriggered = false;    
+        }  
         protected override void OnChange(IDocumentSnapshot? snapshot, Exception? error)
         {
             Game? updated = snapshot?.ToObject<Game>();
@@ -361,9 +357,9 @@ namespace RummikubApp.ModelLogics
                     Toast.Make(Strings.GameDeleted, ToastDuration.Long).Show();
                 });
             }
-            if (IsFull && !_startTimerWasTriggered)
+            if (IsFull && !StartTimerWasTriggered)
             {
-                _startTimerWasTriggered = true;
+                StartTimerWasTriggered = true;
                 WeakReferenceMessenger.Default.Send(new AppMessage<TimerSettings>(timerSettings));
             }
             else

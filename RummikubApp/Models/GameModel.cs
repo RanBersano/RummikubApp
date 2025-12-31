@@ -10,6 +10,8 @@ namespace RummikubApp.Models
         protected IListenerRegistration? ilr;
         [Ignored]
         protected Board? MyBoardCache;
+        [Ignored]
+        protected bool StartTimerWasTriggered = false;
         [Ignored] 
         public EventHandler? OnGameChanged;
         [Ignored] 
