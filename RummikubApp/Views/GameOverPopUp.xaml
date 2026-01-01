@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup
+    x:Class="RummikubApp.Views.GameOverPopUp"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:RummikubApp.ViewModels"
+    x:DataType="vm:GameOverPopUpVM">
+    <VerticalStackLayout>
+        <Label FontSize="28"
+               HorizontalOptions="Center"
+               FontAttributes="Bold"
+               Text="{Binding ResultText}"/>
+        <Label FontSize="18"
+               HorizontalOptions="Center"
+               HorizontalTextAlignment="Center"
+               Text="{Binding ResultMessage}"/>
+        <Button Text="Home"
+                Command="{Binding HomeCommand}"
+                BackgroundColor="#2196F3"
+                TextColor="White"/>
+    </VerticalStackLayout>
+</toolkit:Popup>

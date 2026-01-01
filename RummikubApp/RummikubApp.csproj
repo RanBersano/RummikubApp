@@ -61,6 +61,9 @@
     <MauiXaml Update="Resources\Styles\MyStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Views\GameOverPopUp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Views\GamePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
