@@ -18,11 +18,16 @@ namespace RummikubApp.ModelLogics
                 Preferences.Clear();
             fbd.SignInWithEmailAndPasswordAsync(Email, Password, OnComplete);
         }
+        public override void Register()
+        {
+            IsBusy = true;
+            fbd.CreateUserWithEmailAndPasswordAsync(Email, Password, UserName, OnComplete);
+        }
         public override async Task ResetPassword()
         {
             await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
         }
-        private async Task OnCompleteSendEmail(Task task)
+        protected override async Task OnCompleteSendEmail(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
@@ -33,12 +38,7 @@ namespace RummikubApp.ModelLogics
                 await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, "errorMessage", Strings.ResetPWErrorButton);
             }
         }
-        public override void Register()
-        {
-            IsBusy = true;
-            fbd.CreateUserWithEmailAndPasswordAsync(Email, Password, UserName, OnComplete);
-        }
-        private void OnComplete(Task task)
+        protected override void OnComplete(Task task)
         {
             IsBusy = false;
             if (task.IsCompletedSuccessfully)
@@ -63,14 +63,14 @@ namespace RummikubApp.ModelLogics
                 msg.Contains(Strings.UserNotFound) ? Strings.UserNotFoundmsg : 
                 Strings.UnknownError : Strings.UnknownError;
         }
-        private static void ShowAlert(string msg)
+        protected override void ShowAlert(string msg)
         {
             MainThread.InvokeOnMainThreadAsync(() =>
             {
                Toast.Make(msg, ToastDuration.Long).Show();
             });
         }
-        private void SaveToPreferences()
+        protected override void SaveToPreferences()
         {
             Preferences.Set(Keys.UserNameKey, UserName);
             Preferences.Set(Keys.PasswordKey, Password);

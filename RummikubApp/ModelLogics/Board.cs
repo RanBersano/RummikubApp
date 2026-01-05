@@ -6,11 +6,11 @@ namespace RummikubApp.ModelLogics
         public Board()
         {
             Capacity = 18;
-            Tiles = new TileData[0];
+            Tiles = [];
             SelectedIndex = -1;
             EnsureCapacity();
         }
-        public Board(TileData[] existingTiles)//buh
+        public Board(TileData[] existingTiles)
         {
             Capacity = 18;
             LoadFromArray(existingTiles);
@@ -21,7 +21,7 @@ namespace RummikubApp.ModelLogics
         {
             if (tiles == null)
             {
-                Tiles = new TileData[0];
+                Tiles = [];
                 return;
             }
             TileData[] copy = new TileData[tiles.Length];
@@ -42,7 +42,7 @@ namespace RummikubApp.ModelLogics
         public override void EnsureCapacity()
         {
             if (Tiles == null)
-                Tiles = new TileData[0];
+                Tiles = [];
             if (Tiles.Length == Capacity)
                 return;
             TileData[] newTiles = new TileData[Capacity];

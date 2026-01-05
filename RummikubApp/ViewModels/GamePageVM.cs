@@ -6,9 +6,10 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 namespace RummikubApp.ViewModels
 {
-    public class GamePageVM : ObservableObject
+    public partial class GamePageVM : ObservableObject
     {
         private readonly Game game;
+        private readonly Tile tile = new();
         public ObservableCollection<Tile> Board { get; } = new ObservableCollection<Tile>();
         public string TimeLeft => game.TimeLeft;
         public string MyName => game.MyName;
@@ -99,7 +100,7 @@ namespace RummikubApp.ViewModels
                 Board.Clear();
                 for (int i = 0; i < hand.Length; i++)
                 {
-                    Tile t = Tile.FromTileData(hand[i]);
+                    Tile t = tile.FromTileData(hand[i]);
                     t.Index = i;
                     t.IsSelected = (i == _selectedIndex);
                     Board.Add(t);
@@ -108,7 +109,7 @@ namespace RummikubApp.ViewModels
             }
             for (int i = 0; i < hand.Length; i++)
             {
-                Tile t = Tile.FromTileData(hand[i]);
+                Tile t = tile.FromTileData(hand[i]);
                 t.Index = i;
                 t.IsSelected = (i == _selectedIndex);
                 Board[i] = t;

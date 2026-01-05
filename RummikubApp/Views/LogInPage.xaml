@@ -79,12 +79,12 @@
                 Text="{Binding Email}"
                 VerticalOptions="Center" />
         </Border>
-        <HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
+        <!--<HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
             <Label Text="{x:Static m:Strings.RememberMeCheckBoxText}" />
             <CheckBox IsChecked="{Binding IsChecked}" />
-        </HorizontalStackLayout>
+        </HorizontalStackLayout>-->
         <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
-        <HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
+        <!--<HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
             <Label Text="{x:Static m:Strings.ForgotPassword}" />
             <Label
                 FontAttributes="Bold"
@@ -94,6 +94,6 @@
                     <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
                 </Label.GestureRecognizers>
             </Label>
-        </HorizontalStackLayout>
+        </HorizontalStackLayout>-->
     </VerticalStackLayout>
 </ContentPage>

@@ -2,7 +2,7 @@
 
 namespace RummikubApp.ModelLogics
 {
-    public class Tile : TileModel
+    public partial class Tile : TileModel
     {
         public Tile(Colors color, int number) : base(color, number)
         {
@@ -29,24 +29,24 @@ namespace RummikubApp.ModelLogics
             HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
             WidthRequest = 40;
         }
-        public static Tile CreateEmptyTile()
+        public override Tile CreateEmptyTile()
         {
-            Tile empty = new Tile(true);
+            Tile empty = new(true);
             return empty;
         }
-        public static ImageSource? GetSourceFor(TileModel.Colors color, int number) 
+        public override ImageSource? GetSourceFor(Colors color, int number) 
         {
             if (number <= 0) return null;
             string file = GetFileName(color, number);
             return ImageSource.FromFile(file);
         }
-        private static string GetFileName(TileModel.Colors color, int number) 
+        protected override string GetFileName(Colors color, int number) 
         {
-            Tile t = new Tile(color, number);
+            Tile t = new(color, number);
             if (t.Source == null) return string.Empty;
             return t.Source.ToString()!;
         }
-        public static Tile FromTileData(TileData data)
+        public override Tile FromTileData(TileData data)
         {
             if (data == null)
                 return CreateEmptyTile();
@@ -54,8 +54,10 @@ namespace RummikubApp.ModelLogics
                 return CreateEmptyTile();
             if (data.IsJoker)
                 return new Tile();
-            Tile t2 = new Tile((TileModel.Colors)data.Color, data.Number);
-            t2.IsEmptyTile = false;
+            Tile t2 = new((Colors)data.Color, data.Number)
+            {
+                IsEmptyTile = false
+            };
             return t2;
         }
     }

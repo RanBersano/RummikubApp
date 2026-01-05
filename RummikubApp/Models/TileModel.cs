@@ -1,4 +1,6 @@
-﻿namespace RummikubApp.Models
+﻿using RummikubApp.ModelLogics;
+
+namespace RummikubApp.Models
 {
     public abstract class TileModel : ImageButton
     {
@@ -27,6 +29,10 @@
         public bool IsSelected { get; set; }
         public int Index { get; set; }
         public bool IsEmptyTile { get; set; }
+        public abstract Tile CreateEmptyTile();
+        public abstract ImageSource? GetSourceFor(Colors color, int number);
+        protected abstract string GetFileName(Colors color, int number);
+        public abstract Tile FromTileData(TileData data);
         public TileModel(Colors color, int number)
         {
             Color = color;
