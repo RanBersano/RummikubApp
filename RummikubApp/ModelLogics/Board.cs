@@ -10,7 +10,7 @@ namespace RummikubApp.ModelLogics
             SelectedIndex = -1;
             EnsureCapacity();
         }
-        public Board(TileData[] existingTiles)
+        public Board(TileData[] existingTiles)//buh
         {
             Capacity = 18;
             LoadFromArray(existingTiles);
