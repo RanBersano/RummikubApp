@@ -4,7 +4,7 @@ using RummikubApp.Views;
 using System.Windows.Input;
 namespace RummikubApp.ViewModels
 {
-    public class RegisterPageVM : ObservableObject
+    public partial class RegisterPageVM : ObservableObject
     {
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();
