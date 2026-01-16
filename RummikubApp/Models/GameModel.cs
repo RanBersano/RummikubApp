@@ -32,12 +32,16 @@ namespace RummikubApp.Models
         public string PlayerName4 { get; set; } = string.Empty;
         public int CurrentTurnIndex { get; set; } = 1;
         public bool HasDrawnThisTurn { get; set; } = false;
-        public TileData[] DeckData { get; set; } = new TileData[0];
-        public TileData[] HostHand { get; set; } = new TileData[0];
-        public TileData[] Player2Hand { get; set; } = new TileData[0];
-        public TileData[] Player3Hand { get; set; } = new TileData[0];
-        public TileData[] Player4Hand { get; set; } = new TileData[0];
+        public bool IsGameOver { get; set; } = false;
+        public int WinnerIndex { get; set; } = 0;
+        public TileData[] DeckData { get; set; } = [];
+        public TileData[] HostHand { get; set; } = [];
+        public TileData[] Player2Hand { get; set; } = [];
+        public TileData[] Player3Hand { get; set; } = [];
+        public TileData[] Player4Hand { get; set; } = [];
         public TileData DiscardTile { get; set; } = new TileData { IsPresent = false };
+        [Ignored] public EventHandler? GameOverChanged;
+        [Ignored] public bool DidIWin { get; protected set; } = false;
         [Ignored] public ModelLogics.Deck? Deck { get; set; }
         [Ignored] public string MyName { get; set; } = new User().UserName;
         [Ignored] public bool IsHostUser { get; set; }

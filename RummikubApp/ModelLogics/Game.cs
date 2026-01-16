@@ -244,6 +244,14 @@ namespace RummikubApp.ModelLogics
                 Dictionary<string, object> updates = new Dictionary<string, object>();
                 string field = GetHandFieldNameForPlayer(MyName);
                 updates[field] = newHand;
+                bool win = IsWinningBoard(newHand);
+                if (win)
+                {
+                    IsGameOver = true;
+                    WinnerIndex = CurrentTurnIndex; // זמני: מניח שזה השחקן ששינה עכשיו
+                    updates[nameof(IsGameOver)] = true;
+                    updates[nameof(WinnerIndex)] = WinnerIndex;
+                }
                 fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
                 return;
             }
@@ -448,5 +456,261 @@ namespace RummikubApp.ModelLogics
             updates[nameof(DiscardTile)] = DiscardTile;
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
+        // אריח "משחקי" = קיים ולא ריק
+        private bool IsRealTile(TileData t)
+        {
+            bool result = true;
+
+            if (t == null)
+                result = false;
+            else if (!t.IsPresent)
+                result = false;
+            else if (t.IsEmptyTile)
+                result = false;
+
+            return result;
+        }
+
+        private bool IsWinningBoard(TileData[] hand)
+        {
+            bool result = true;
+
+            if (hand == null || hand.Length == 0)
+            {
+                result = false;
+            }
+            else
+            {
+                int i = 0;
+                bool foundAtLeastOneSet = false;
+
+                while (i < hand.Length && result)
+                {
+                    // מדלגים על "ריקים"/לא-קיימים
+                    while (i < hand.Length && !IsRealTile(hand[i]))
+                        i++;
+
+                    if (i >= hand.Length)
+                        break;
+
+                    // קטע רצוף של אריחים קיימים
+                    int start = i;
+                    while (i < hand.Length && IsRealTile(hand[i]))
+                        i++;
+                    int end = i - 1;
+
+                    foundAtLeastOneSet = true;
+
+                    bool setOk = IsValidSet(hand, start, end);
+                    if (!setOk)
+                        result = false;
+                }
+
+                if (!foundAtLeastOneSet)
+                    result = false;
+            }
+
+            return result;
+        }
+
+        private bool IsValidSet(TileData[] hand, int start, int end)
+        {
+            bool result = true;
+
+            int len = end - start + 1;
+            if (len < 3)
+                result = false;
+
+            // אין "ריקים" בתוך סט (כבר אמור להיות נכון, אבל בטוח)
+            if (result)
+            {
+                for (int i = start; i <= end; i++)
+                {
+                    if (!IsRealTile(hand[i]))
+                        result = false;
+                }
+            }
+
+            if (result)
+            {
+                bool isRunOk = IsValidRun(hand, start, end);
+                bool isGroupOk = IsValidGroup(hand, start, end);
+
+                if (!isRunOk && !isGroupOk)
+                    result = false;
+            }
+
+            return result;
+        }
+
+        private bool IsValidRun(TileData[] hand, int start, int end)
+        {
+            bool result = true;
+
+            int len = end - start + 1;
+
+            int jokerCount = 0;
+            int nonJokerCount = 0;
+
+            int color = -1;
+            int[] nums = new int[len]; // רק מספרים של לא-ג'וקר
+
+            // 1) איסוף: צבע אחד + מספרים + ג'וקרים
+            for (int i = start; i <= end; i++)
+            {
+                TileData t = hand[i];
+
+                if (!IsRealTile(t))
+                    result = false;
+
+                if (result)
+                {
+                    if (t.IsJoker)
+                    {
+                        jokerCount++;
+                    }
+                    else
+                    {
+                        if (color == -1)
+                            color = t.Color;
+                        else if (t.Color != color)
+                            result = false;
+
+                        nums[nonJokerCount] = t.Number;
+                        nonJokerCount++;
+                    }
+                }
+            }
+
+            // חייב להיות לפחות אריח אמיתי אחד כדי לדעת צבע/בסיס
+            if (result && nonJokerCount == 0)
+                result = false;
+
+            // 2) מיון nums (Selection Sort)
+            if (result)
+            {
+                for (int i = 0; i < nonJokerCount - 1; i++)
+                {
+                    int minIdx = i;
+                    for (int j = i + 1; j < nonJokerCount; j++)
+                    {
+                        if (nums[j] < nums[minIdx])
+                            minIdx = j;
+                    }
+                    int tmp = nums[i];
+                    nums[i] = nums[minIdx];
+                    nums[minIdx] = tmp;
+                }
+            }
+
+            // 3) בדיקת תקינות מספרים + חורים
+            int gapsNeeded = 0;
+            int minNum = 0;
+            int maxNum = 0;
+
+            if (result)
+            {
+                minNum = nums[0];
+                maxNum = nums[nonJokerCount - 1];
+
+                // מספרים חייבים להיות 1..13
+                if (minNum < 1 || maxNum > 13)
+                    result = false;
+            }
+
+            if (result)
+            {
+                for (int i = 1; i < nonJokerCount; i++)
+                {
+                    int diff = nums[i] - nums[i - 1];
+                    if (diff <= 0) // כפילות או לא עולה
+                        result = false;
+                    else
+                        gapsNeeded += (diff - 1);
+                }
+            }
+
+            // 4) מספיק ג'וקרים להשלים חורים
+            if (result)
+            {
+                if (gapsNeeded > jokerCount)
+                    result = false;
+            }
+
+            // 5) ג'וקרים עודפים יכולים להרחיב לפני/אחרי, אבל לא לצאת מ-1..13
+            if (result)
+            {
+                int extra = jokerCount - gapsNeeded;
+
+                int roomLeft = minNum - 1;
+                int roomRight = 13 - maxNum;
+
+                if (roomLeft + roomRight < extra)
+                    result = false;
+
+                int span = (maxNum - minNum + 1);
+                if (span > len)
+                    result = false;
+            }
+
+            return result;
+        }
+
+        private bool IsValidGroup(TileData[] hand, int start, int end)
+        {
+            bool result = true;
+
+            int len = end - start + 1;
+            if (len > 4)
+                result = false;
+
+            int jokerCount = 0;
+            int number = -1;
+            int nonJokerCount = 0;
+
+            bool[] usedColors = new bool[4]; // צבעים 0..3
+
+            for (int i = start; i <= end; i++)
+            {
+                TileData t = hand[i];
+
+                if (!IsRealTile(t))
+                    result = false;
+
+                if (result)
+                {
+                    if (t.IsJoker)
+                    {
+                        jokerCount++;
+                    }
+                    else
+                    {
+                        nonJokerCount++;
+
+                        if (number == -1)
+                            number = t.Number;
+                        else if (t.Number != number)
+                            result = false;
+
+                        int c = t.Color;
+                        if (c < 0 || c > 3)
+                            result = false;
+                        else
+                        {
+                            if (usedColors[c])
+                                result = false;
+                            usedColors[c] = true;
+                        }
+                    }
+                }
+            }
+
+            // קבוצה לא יכולה להיות רק ג'וקרים
+            if (result && nonJokerCount == 0)
+                result = false;
+
+            return result;
+        }
+
     }
 }
