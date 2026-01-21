@@ -1,6 +1,7 @@
 ﻿using Plugin.CloudFirestore;
 using Plugin.CloudFirestore.Attributes;
 using RummikubApp.ModelLogics;
+using System.Collections.ObjectModel;
 
 namespace RummikubApp.Models
 {
@@ -18,6 +19,17 @@ namespace RummikubApp.Models
         public EventHandler? OnGameDeleted;
         [Ignored] 
         public EventHandler? TimeLeftChanged;
+        [Ignored]
+        public int SelectedIndex { get; protected set; } = -1;
+
+        [Ignored]
+        public ObservableCollection<Tile> UiBoard { get; protected set; } = new ObservableCollection<Tile>();
+
+        [Ignored]
+        public ImageSource? DiscardTileSource { get; protected set; }
+
+        [Ignored]
+        public EventHandler? UiChanged; // אירוע “עדכון מסך” נקי ל-VM
         [Ignored] 
         public string TimeLeft { get; protected set; } = string.Empty;
         [Ignored] 
@@ -85,5 +97,9 @@ namespace RummikubApp.Models
         public abstract TileData[] GetMyHand();
         public abstract void DiscardSelectedTileAndSave(int selectedIndex, Action<Task> onComplete);
         public abstract void TakeDiscardAndSave(Action<Task> onComplete);
+        public abstract void TileTapped(int index);
+        public abstract void RefreshUi();
+        public abstract void DoTakeDiscard();
+        public abstract void DoDiscardSelected();
     }
 }

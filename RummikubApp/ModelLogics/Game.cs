@@ -7,6 +7,8 @@ namespace RummikubApp.ModelLogics
 {
     public class Game : GameModel
     {
+        private readonly Tile tileFactory = new Tile();
+
         public Game(GameSize selectedGameSize)
         {
             RegisterTimer();
@@ -354,7 +356,8 @@ namespace RummikubApp.ModelLogics
                 Player4Hand = updated.Player4Hand ?? new TileData[0];
                 DiscardTile = updated.DiscardTile ?? new TileData { IsPresent = false };
                 MyBoardCache = null;
-                RebuildDeckFromData();  
+                RebuildDeckFromData();
+                RefreshUi();
                 OnGameChanged?.Invoke(this, EventArgs.Empty);
             }
             else
@@ -710,6 +713,116 @@ namespace RummikubApp.ModelLogics
                 result = false;
 
             return result;
+        }
+        public override void RefreshUi()
+        {
+            // 1) טוענים יד שלי
+            TileData[] hand = GetMyHand();
+
+            // 2) בונים רשימת UI מוכנה למסך
+            UiBoard.Clear();
+            for (int i = 0; i < hand.Length; i++)
+            {
+                Tile t = tileFactory.FromTileData(hand[i]);
+                t.Index = i;
+                t.IsSelected = (i == SelectedIndex);
+                UiBoard.Add(t);
+            }
+
+            // 3) בונים DiscardTileSource
+            bool hasDiscard = (DiscardTile != null && DiscardTile.IsPresent);
+
+            if (!hasDiscard)
+            {
+                DiscardTileSource = null;
+            }
+            else
+            {
+                if (DiscardTile!.IsJoker)
+                {
+                    DiscardTileSource = Strings.Joker;
+                }
+                else
+                {
+                    Tile t = new Tile((TileModel.Colors)DiscardTile.Color, DiscardTile.Number);
+                    DiscardTileSource = t.Source;
+                }
+            }
+
+            // 4) מודיעים ל-VM “תתעדכן”
+            UiChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public override void TileTapped(int index)
+        {
+            bool doWork = true;
+
+            // גבולות
+            if (index < 0 || index >= UiBoard.Count)
+                doWork = false;
+
+            // אם אין בחירה ולחצו על ריק
+            if (doWork)
+            {
+                if (SelectedIndex == -1 && UiBoard[index].IsEmptyTile)
+                    doWork = false;
+            }
+
+            // לחיצה על אותו אינדקס = ביטול בחירה
+            if (doWork)
+            {
+                if (SelectedIndex == index)
+                {
+                    SelectedIndex = -1;
+                    RefreshUi();
+                    doWork = false;
+                }
+            }
+
+            // אם כבר נבחר משהו - זו החלפה
+            if (doWork)
+            {
+                if (SelectedIndex != -1)
+                {
+                    int first = SelectedIndex;
+                    int second = index;
+
+                    SelectedIndex = -1;
+
+                    // הלוגיקה שלך לשמירה ל-Firestore קיימת ב-HandleTileTap
+                    HandleTileTap(first, _ => { });
+                    HandleTileTap(second, _ => { });
+
+                    // אחרי שינוי יד - נרענן תצוגה
+                    RefreshUi();
+
+                    doWork = false;
+                }
+            }
+
+            // אחרת זו בחירה ראשונה
+            if (doWork)
+            {
+                SelectedIndex = index;
+                RefreshUi();
+            }
+        }
+
+        public override void DoDiscardSelected()
+        {
+            int idx = SelectedIndex;
+            SelectedIndex = -1;
+
+            DiscardSelectedTileAndSave(idx, _ => { });
+
+            RefreshUi();
+        }
+
+        public override void DoTakeDiscard()
+        {
+            TakeDiscardAndSave(_ => { });
+
+            RefreshUi();
         }
 
     }
