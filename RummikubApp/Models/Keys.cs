@@ -11,5 +11,6 @@
         public const int TimerTotalTime = 6000;
         public const int TimerInterval = 1000;
         public const long FinishedSignal = -1000;
+        public const int OneHourInMillisconds = 3600000;
     }
 }

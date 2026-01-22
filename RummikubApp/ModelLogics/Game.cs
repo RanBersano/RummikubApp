@@ -103,6 +103,7 @@ namespace RummikubApp.ModelLogics
             CurrentTurnIndex = next;
             HasDrawnThisTurn = false;
             Dictionary<string, object> updates = new Dictionary<string, object>();
+            updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
             updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
@@ -191,7 +192,7 @@ namespace RummikubApp.ModelLogics
                 return Player3Hand;
             if (playerName == PlayerName4) 
                 return Player4Hand;
-            return new TileData[0];
+            return [];
         }
         protected override void SetHandForPlayer(string playerName, TileData[] hand)
         {
@@ -246,14 +247,6 @@ namespace RummikubApp.ModelLogics
                 Dictionary<string, object> updates = new Dictionary<string, object>();
                 string field = GetHandFieldNameForPlayer(MyName);
                 updates[field] = newHand;
-                bool win = IsWinningBoard(newHand);
-                if (win)
-                {
-                    IsGameOver = true;
-                    WinnerIndex = CurrentTurnIndex; // זמני: מניח שזה השחקן ששינה עכשיו
-                    updates[nameof(IsGameOver)] = true;
-                    updates[nameof(WinnerIndex)] = WinnerIndex;
-                }
                 fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
                 return;
             }
@@ -286,10 +279,14 @@ namespace RummikubApp.ModelLogics
             SetHandForPlayer(MyName, newHand);
             DeckData = Deck!.ExportToArray();
             HasDrawnThisTurn = true;
+
             Dictionary<string, object> updates = new Dictionary<string, object>();
             updates[nameof(DeckData)] = DeckData;
+            updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
+
             string handField = GetHandFieldNameForPlayer(MyName);
             updates[handField] = newHand;
+
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
         public override void InitGrid(Grid deck)
@@ -341,6 +338,9 @@ namespace RummikubApp.ModelLogics
             Game? updated = snapshot?.ToObject<Game>();
             if (updated != null)
             {
+                HasDrawnThisTurn = updated.HasDrawnThisTurn;
+                IsGameOver = updated.IsGameOver;
+                WinnerIndex = updated.WinnerIndex;
                 Players = updated.Players;
                 IsFull = updated.IsFull;
                 CurrentNumOfPlayers = updated.CurrentNumOfPlayers;
@@ -421,14 +421,31 @@ namespace RummikubApp.ModelLogics
             };
             TileData[] newHand = board.ExportToArray();
             SetHandForPlayer(MyName, newHand);
-            int next = CurrentTurnIndex + 1;
-            if (next > Players) next = 1;
-            CurrentTurnIndex = next;
-            HasDrawnThisTurn = false;
             Dictionary<string, object> updates = new Dictionary<string, object>();
+
             updates[GetHandFieldNameForPlayer(MyName)] = newHand;
             updates[nameof(DiscardTile)] = DiscardTile;
-            updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
+
+            // 1) קודם בודקים ניצחון (לפי היד אחרי הזריקה)
+            TrySetGameOverByTurn(newHand, updates);
+
+            // 2) רק אם המשחק לא נגמר — מתקדמים לתור הבא
+            bool advanceTurn = true;
+            if (IsGameOver)
+                advanceTurn = false;
+
+            if (advanceTurn)
+            {
+                int next = CurrentTurnIndex + 1;
+                if (next > Players) next = 1;
+
+                CurrentTurnIndex = next;
+                HasDrawnThisTurn = false;
+                updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
+                updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
+            }
+
+            // 3) עדכון לפיירבייס
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
         public override void TakeDiscardAndSave(Action<Task> onComplete)
@@ -454,9 +471,12 @@ namespace RummikubApp.ModelLogics
             SetHandForPlayer(MyName, newHand);
             DiscardTile = new TileData { IsPresent = false };
             HasDrawnThisTurn = true;
+
             Dictionary<string, object> updates = new Dictionary<string, object>();
             updates[GetHandFieldNameForPlayer(MyName)] = newHand;
             updates[nameof(DiscardTile)] = DiscardTile;
+            updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
+
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
         // אריח "משחקי" = קיים ולא ריק
@@ -466,13 +486,12 @@ namespace RummikubApp.ModelLogics
 
             if (t == null)
                 result = false;
-            else if (!t.IsPresent)
-                result = false;
             else if (t.IsEmptyTile)
                 result = false;
 
             return result;
         }
+
 
         private bool IsWinningBoard(TileData[] hand)
         {
@@ -713,6 +732,27 @@ namespace RummikubApp.ModelLogics
                 result = false;
 
             return result;
+        }
+        private void TrySetGameOverByTurn(TileData[] currentPlayerHand, Dictionary<string, object> updates)
+        {
+            bool shouldSet = true;
+
+            if (IsGameOver)
+                shouldSet = false;
+
+            if (shouldSet)
+            {
+                bool win = IsWinningBoard(currentPlayerHand);
+
+                if (win)
+                {
+                    IsGameOver = true;
+                    WinnerIndex = CurrentTurnIndex;
+
+                    updates[nameof(IsGameOver)] = true;
+                    updates[nameof(WinnerIndex)] = WinnerIndex;
+                }
+            }
         }
         public override void RefreshUi()
         {
