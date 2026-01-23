@@ -6,7 +6,8 @@
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:ml="clr-namespace:RummikubApp.ModelLogics"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-    x:DataType="vm:GamePageVM">
+    x:DataType="vm:GamePageVM"
+    BackgroundImageSource="gamebackimg.png">
     <Grid
         x:Name="GameGrid"
         Padding="10"

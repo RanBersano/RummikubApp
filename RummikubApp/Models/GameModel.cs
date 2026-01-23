@@ -21,7 +21,8 @@ namespace RummikubApp.Models
         public EventHandler? TimeLeftChanged;
         [Ignored]
         public int SelectedIndex { get; protected set; } = -1;
-
+        [Ignored]
+        public EventHandler<bool>? GameOver;
         [Ignored]
         public ObservableCollection<Tile> UiBoard { get; protected set; } = new ObservableCollection<Tile>();
 

@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
 using RummikubApp.ModelLogics;
 using RummikubApp.Models;
+using RummikubApp.Views;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -46,6 +48,7 @@ namespace RummikubApp.ViewModels
             game.OnGameChanged += OnGameChanged;
             game.UiChanged += OnUiChanged;
             game.TimeLeftChanged += OnTimeLeftChanged;
+            game.GameOver += GameIsOver;
 
             // UI init (still ok here)
             game.InitGrid(deckGrid);
@@ -66,6 +69,13 @@ namespace RummikubApp.ViewModels
 
             // First UI build
             this.game.RefreshUi();
+        }
+
+        private void GameIsOver(object? sender, bool e)
+        {
+            string title = e? Strings.YouWonTitle : Strings.YouLostTitle;
+            string message = e? Strings.WinMSG : Strings.LoseMSG;
+            Shell.Current.ShowPopup(new GameOverPopUp(title, message));
         }
 
         private void OnTimeLeftChanged(object? sender, EventArgs e)

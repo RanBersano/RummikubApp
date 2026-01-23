@@ -292,18 +292,18 @@ namespace RummikubApp.ModelLogics
         public override void InitGrid(Grid deck)
         {
             IndexedButton btn;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 deck.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 deck.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             }
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
                     btn = new IndexedButton(i, j)
                     {
-                        BackgroundColor = Color.FromArgb("#C8BFB1")
+                        BackgroundColor = Color.FromArgb("#FFF6D6")
                     };
                     btn.Clicked += OnButtonClicked;
                     deck.Add(btn, j, i);
@@ -338,6 +338,8 @@ namespace RummikubApp.ModelLogics
             Game? updated = snapshot?.ToObject<Game>();
             if (updated != null)
             {
+                if(updated.IsGameOver && !IsGameOver)
+                    GameOver?.Invoke(this, false);
                 HasDrawnThisTurn = updated.HasDrawnThisTurn;
                 IsGameOver = updated.IsGameOver;
                 WinnerIndex = updated.WinnerIndex;
@@ -349,11 +351,11 @@ namespace RummikubApp.ModelLogics
                 PlayerName3 = updated.PlayerName3;
                 PlayerName4 = updated.PlayerName4;
                 CurrentTurnIndex = updated.CurrentTurnIndex;
-                DeckData = updated.DeckData ?? new TileData[0];
-                HostHand = updated.HostHand ?? new TileData[0];
-                Player2Hand = updated.Player2Hand ?? new TileData[0];
-                Player3Hand = updated.Player3Hand ?? new TileData[0];
-                Player4Hand = updated.Player4Hand ?? new TileData[0];
+                DeckData = updated.DeckData ?? [];
+                HostHand = updated.HostHand ?? [];
+                Player2Hand = updated.Player2Hand ?? [];
+                Player3Hand = updated.Player3Hand ?? [];
+                Player4Hand = updated.Player4Hand ?? [];
                 DiscardTile = updated.DiscardTile ?? new TileData { IsPresent = false };
                 MyBoardCache = null;
                 RebuildDeckFromData();
@@ -751,6 +753,7 @@ namespace RummikubApp.ModelLogics
 
                     updates[nameof(IsGameOver)] = true;
                     updates[nameof(WinnerIndex)] = WinnerIndex;
+                    GameOver?.Invoke(this,true);
                 }
             }
         }

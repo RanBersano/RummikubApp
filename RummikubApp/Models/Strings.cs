@@ -100,5 +100,9 @@
         public const string ThirteenGreen = "thirteengreen.png";
         public const string Joker = "jokertile.png";
         public const string TimeUp = "Begin!";
+        public const string YouWonTitle = "YOU WON!";
+        public const string YouLostTitle = "YOU LOST!";
+        public const string WinMSG = "You won the game, well done!";
+        public const string LoseMSG = "You lost the game, try again!";
     }
 }

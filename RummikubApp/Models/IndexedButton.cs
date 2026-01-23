@@ -7,7 +7,7 @@
         public IndexedButton(int rowIndex, int columnIndex)
         {
             RowIndex = rowIndex;
-            ColumnIndex = columnIndex;
+            ColumnIndex = columnIndex + 1;
             HeightRequest = 50;
             WidthRequest = 40;
         }

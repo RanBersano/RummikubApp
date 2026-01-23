@@ -6,7 +6,12 @@
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:GameOverPopUpVM">
-    <VerticalStackLayout>
+    <Grid WidthRequest="300">
+        <Image Source="endimg.jpg" Aspect="AspectFill" />
+        <VerticalStackLayout
+        Padding="30"
+        Spacing="20"
+        WidthRequest="300">
         <Label FontSize="28"
                HorizontalOptions="Center"
                FontAttributes="Bold"
@@ -20,4 +25,6 @@
                 BackgroundColor="#2196F3"
                 TextColor="White"/>
     </VerticalStackLayout>
+    </Grid>
+    
 </toolkit:Popup>

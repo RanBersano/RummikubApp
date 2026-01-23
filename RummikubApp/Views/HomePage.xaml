@@ -6,7 +6,7 @@
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:HomePageVM"
-    BackgroundImageSource="somebackground.jpg">
+    BackgroundImageSource="loginandregisterbackground.jpg">
     <VerticalStackLayout Padding="0,60,0,0" Spacing="50">
         <Label
             FontSize="28"

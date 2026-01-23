@@ -24,7 +24,7 @@ namespace RummikubApp.ViewModels
                 OnPropertyChanged(nameof(IsBusy));
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Application.Current.MainPage = new AppShell();
+                    Application.Current.MainPage = new HomePage();
                 });
             }
         }
