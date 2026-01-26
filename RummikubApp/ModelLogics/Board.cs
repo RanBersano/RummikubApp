@@ -41,8 +41,7 @@ namespace RummikubApp.ModelLogics
 
         public override void EnsureCapacity()
         {
-            if (Tiles == null)
-                Tiles = [];
+            Tiles ??= [];
             if (Tiles.Length == Capacity)
                 return;
             TileData[] newTiles = new TileData[Capacity];
@@ -54,8 +53,8 @@ namespace RummikubApp.ModelLogics
                 {
                     IsEmptyTile = true,
                     IsJoker = false,
-                    Color = 0,
-                    Number = 0
+                    ColorIndex = (int)TileModel.ColorIndexes.Orange,
+                    Value = 0
                 };
             }
             Tiles = newTiles;

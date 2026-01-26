@@ -41,33 +41,33 @@ namespace RummikubApp.ModelLogics
             int total = (4 * 13 * 2) + 2;
             Tiles = new TileData[total];
             int index = 0;
-            Array colors = Enum.GetValues(typeof(TileModel.Colors));
+            Array colors = Enum.GetValues(typeof(TileModel.ColorIndexes));
             for (int i = 0; i < colors.Length; i++)
             {
-                TileModel.Colors color = (TileModel.Colors)colors.GetValue(i)!;
+                TileModel.ColorIndexes color = (TileModel.ColorIndexes)colors.GetValue(i)!;
                 for (int n = 1; n <= 13; n++)
                 {
                     Tiles[index] = new TileData
                     {
-                        Color = (int)color,
-                        Number = n,
+                        ColorIndex = (int)color,
+                        Value = n,
                         IsJoker = false,
                         IsEmptyTile = false
                     };
                     index++;
                     Tiles[index] = new TileData
                     {
-                        Color = (int)color,
-                        Number = n,
+                        ColorIndex = (int)color,
+                        Value = n,
                         IsJoker = false,
                         IsEmptyTile = false
                     };
                     index++;
                 }
             }
-            Tiles[index] = new TileData { Color = 0, Number = 0, IsJoker = true, IsEmptyTile = false };
+            Tiles[index] = new TileData { ColorIndex = 0, Value = 0, IsJoker = true, IsEmptyTile = false };
             index++;
-            Tiles[index] = new TileData { Color = 0, Number = 0, IsJoker = true, IsEmptyTile = false };
+            Tiles[index] = new TileData { ColorIndex = 0, Value = 0, IsJoker = true, IsEmptyTile = false };
         }
         public override void Shuffle()
         {

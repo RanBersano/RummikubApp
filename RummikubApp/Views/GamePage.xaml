@@ -7,7 +7,7 @@
     xmlns:ml="clr-namespace:RummikubApp.ModelLogics"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:GamePageVM"
-    BackgroundImageSource="gamebackimg.png">
+    BackgroundImageSource="woodbackimg.png">
     <Grid
         x:Name="GameGrid"
         Padding="10"
@@ -28,7 +28,10 @@
                     <Setter Property="StrokeThickness" Value="2" />
                 </DataTrigger>
             </Border.Triggers>
-            <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName1}" />
+            <Label
+                HorizontalOptions="Center"
+                Text="{Binding OtherPlayerName1}"
+                TextColor="White" />
         </Border>
         <Border
             Grid.Row="1"
@@ -45,7 +48,10 @@
                     <Setter Property="StrokeThickness" Value="2" />
                 </DataTrigger>
             </Border.Triggers>
-            <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName2}" />
+            <Label
+                HorizontalOptions="Center"
+                Text="{Binding OtherPlayerName2}"
+                TextColor="White" />
         </Border>
         <Border
             Grid.Row="2"
@@ -62,7 +68,10 @@
                     <Setter Property="StrokeThickness" Value="2" />
                 </DataTrigger>
             </Border.Triggers>
-            <Label HorizontalOptions="Center" Text="{Binding OtherPlayerName3}" />
+            <Label
+                HorizontalOptions="Center"
+                Text="{Binding OtherPlayerName3}"
+                TextColor="White" />
         </Border>
         <Label
             Grid.Row="3"
@@ -72,13 +81,14 @@
             HorizontalOptions="Center"
             IsVisible="{Binding IsMyTurn}"
             Text="{x:Static m:Strings.YourTurn}"
-            TextColor="DarkOrange" />
+            TextColor="#F2D35E" />
         <Label
             Grid.Row="4"
             Grid.Column="1"
             Margin="50"
             HorizontalOptions="Center"
-            Text="{Binding TimeLeft}" />
+            Text="{Binding TimeLeft}"
+            TextColor="White" />
         <Grid
             x:Name="grdDeck"
             Grid.Row="5"
@@ -87,20 +97,25 @@
             HorizontalOptions="Center"
             RowSpacing="3"
             VerticalOptions="Center" />
-        <ImageButton
+        <Border
             Grid.Row="6"
             Grid.Column="0"
-            BackgroundColor="#C8BFB1"
-            Command="{Binding TakeDiscardCommand}"
+            BackgroundColor="#C7D4CF"
             HeightRequest="50"
-            IsEnabled="{Binding IsMyTurn}"
-            Source="{Binding DiscardTileSource}"
-            Style="{StaticResource StayColoredWhenDisabled}"
-            WidthRequest="40" />
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="0"
+            WidthRequest="40">
+            <ImageButton
+                BackgroundColor="#C7D4CF"
+                Command="{Binding TakeDiscardCommand}"
+                IsEnabled="{Binding IsMyTurn}"
+                Source="{Binding DiscardTileSource}"
+                Style="{StaticResource StayColoredWhenDisabled}" />
+        </Border>
         <Button
             Grid.Row="6"
             Grid.Column="2"
-            BackgroundColor="#C8BFB1"
+            BackgroundColor="#C7D4CF"
             Command="{Binding DiscardSelectedCommand}"
             HeightRequest="50"
             IsEnabled="{Binding IsMyTurn}"
@@ -159,7 +174,10 @@
                     <Setter Property="StrokeThickness" Value="2" />
                 </DataTrigger>
             </Border.Triggers>
-            <Label HorizontalOptions="Center" Text="{Binding MyName}" />
+            <Label
+                HorizontalOptions="Center"
+                Text="{Binding MyName}"
+                TextColor="White" />
         </Border>
     </Grid>
 </ContentPage>

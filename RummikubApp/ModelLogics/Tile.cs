@@ -4,16 +4,16 @@ namespace RummikubApp.ModelLogics
 {
     public partial class Tile : TileModel
     {
-        public Tile(Colors color, int number) : base(color, number)
+        public Tile(ColorIndexes colorIndex, int value) : base(colorIndex, value)
         {
-            Color = color;
-            Number = number;
+            ColorIndex = colorIndex;
+            Value = value;
             IsJoker = false;
         }
         public Tile() : base()
         {
             IsJoker = true;
-            Number = 0;
+            Value = 0;
             Source = Strings.Joker;
             Aspect = Aspect.AspectFit;
             HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
@@ -23,7 +23,7 @@ namespace RummikubApp.ModelLogics
         {
             IsEmptyTile = isEmptyTile;
             IsJoker = false;
-            Number = 0;
+            Value = 0;
             Source = null;
             Aspect = Aspect.AspectFit;
             HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
@@ -34,15 +34,15 @@ namespace RummikubApp.ModelLogics
             Tile empty = new(true);
             return empty;
         }
-        public override ImageSource? GetSourceFor(Colors color, int number) 
+        public override ImageSource? GetSourceFor(ColorIndexes color, int value) 
         {
-            if (number <= 0) return null;
-            string file = GetFileName(color, number);
+            if (value <= 0) return null;
+            string file = GetFileName(color, value);
             return ImageSource.FromFile(file);
         }
-        protected override string GetFileName(Colors color, int number) 
+        protected override string GetFileName(ColorIndexes color, int value) 
         {
-            Tile t = new(color, number);
+            Tile t = new(color, value);
             if (t.Source == null) return string.Empty;
             return t.Source.ToString()!;
         }
@@ -54,7 +54,7 @@ namespace RummikubApp.ModelLogics
                 return CreateEmptyTile();
             if (data.IsJoker)
                 return new Tile();
-            Tile t2 = new((Colors)data.Color, data.Number)
+            Tile t2 = new((ColorIndexes)data.ColorIndex, data.Value)
             {
                 IsEmptyTile = false
             };

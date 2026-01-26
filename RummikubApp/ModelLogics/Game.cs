@@ -230,31 +230,34 @@ namespace RummikubApp.ModelLogics
         }
         public override void HandleTileTap(int tappedIndex, Action<Task> onComplete)
         {
-            Board board = GetMyBoard();
-            int before = board.SelectedIndex;
-            bool changed = board.HandleTap(tappedIndex);
-            int after = board.SelectedIndex;
-            if (!changed)
+            if (!IsGameOver)
             {
+                Board board = GetMyBoard();
+                int before = board.SelectedIndex;
+                bool changed = board.HandleTap(tappedIndex);
+                int after = board.SelectedIndex;
+                if (!changed)
+                {
+                    onComplete(Task.CompletedTask);
+                    return;
+                }
+                bool swapped = (before != -1 && after == -1 && before != tappedIndex);
+                if (swapped)
+                {
+                    TileData[] newHand = board.ExportToArray();
+                    SetHandForPlayer(MyName, newHand);
+                    Dictionary<string, object> updates = new Dictionary<string, object>();
+                    string field = GetHandFieldNameForPlayer(MyName);
+                    updates[field] = newHand;
+                    fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+                    return;
+                }
                 onComplete(Task.CompletedTask);
-                return;
             }
-            bool swapped = (before != -1 && after == -1 && before != tappedIndex);
-            if (swapped)
-            {
-                TileData[] newHand = board.ExportToArray();
-                SetHandForPlayer(MyName, newHand);
-                Dictionary<string, object> updates = new Dictionary<string, object>();
-                string field = GetHandFieldNameForPlayer(MyName);
-                updates[field] = newHand;
-                fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
-                return;
-            }
-            onComplete(Task.CompletedTask);
         }
         public override void TakeTileFromDeckAndSave(Action<Task> onComplete)
         {
-            if (HasDrawnThisTurn) 
+            if (HasDrawnThisTurn || IsGameOver) 
             { 
                 onComplete(Task.CompletedTask); 
                 return; 
@@ -268,7 +271,7 @@ namespace RummikubApp.ModelLogics
                 return;
             }
             TileData[] hand = GetHandForPlayer(MyName);
-            Board board = new Board(hand);
+            Board board = new(hand);
             bool placed = board.PlaceTileInFirstEmpty(drawn);
             if (!placed)
             {
@@ -280,9 +283,11 @@ namespace RummikubApp.ModelLogics
             DeckData = Deck!.ExportToArray();
             HasDrawnThisTurn = true;
 
-            Dictionary<string, object> updates = new Dictionary<string, object>();
-            updates[nameof(DeckData)] = DeckData;
-            updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
+            Dictionary<string, object> updates = new()
+            {
+                [nameof(DeckData)] = DeckData,
+                [nameof(HasDrawnThisTurn)] = HasDrawnThisTurn
+            };
 
             string handField = GetHandFieldNameForPlayer(MyName);
             updates[handField] = newHand;
@@ -388,11 +393,11 @@ namespace RummikubApp.ModelLogics
         }
         public override void DiscardSelectedTileAndSave(int selectedIndex, Action<Task> onComplete)
         {
-            if (!IsFull) { onComplete(Task.CompletedTask); return; }
+            if (!IsFull || IsGameOver) { onComplete(Task.CompletedTask); return; }
             if (CurrentPlayerName != MyName) { onComplete(Task.CompletedTask); return; }
             if (!HasDrawnThisTurn) { onComplete(Task.CompletedTask); return; }
             TileData[] hand = GetMyHand();
-            Board board = new Board(hand);
+            Board board = new(hand);
             board.EnsureCapacity();
             if (selectedIndex < 0 || selectedIndex >= board.Tiles.Length)
             {
@@ -407,16 +412,16 @@ namespace RummikubApp.ModelLogics
             }
             DiscardTile = new TileData
             {
-                Color = chosen.Color,
-                Number = chosen.Number,
+                ColorIndex = chosen.ColorIndex,
+                Value = chosen.Value,
                 IsJoker = chosen.IsJoker,
                 IsEmptyTile = false,
                 IsPresent = true
             };
             board.Tiles[selectedIndex] = new TileData
             {
-                Color = 0,
-                Number = 0,
+                ColorIndex = 0,
+                Value = 0,
                 IsJoker = false,
                 IsEmptyTile = true,
                 IsPresent = false
@@ -452,17 +457,17 @@ namespace RummikubApp.ModelLogics
         }
         public override void TakeDiscardAndSave(Action<Task> onComplete)
         {
-            if (!IsFull) { onComplete(Task.CompletedTask); return; }
+            if (!IsFull || IsGameOver) { onComplete(Task.CompletedTask); return; }
             if (CurrentPlayerName != MyName) { onComplete(Task.CompletedTask); return; }
             if (HasDrawnThisTurn) { onComplete(Task.CompletedTask); return; }
             if (DiscardTile == null || !DiscardTile.IsPresent) { onComplete(Task.CompletedTask); return; }
             TileData[] hand = GetMyHand();
-            Board board = new Board(hand);
+            Board board = new(hand);
             board.EnsureCapacity();
-            TileData tileToAdd = new TileData
+            TileData tileToAdd = new()
             {
-                Color = DiscardTile.Color,
-                Number = DiscardTile.Number,
+                ColorIndex = DiscardTile.ColorIndex,
+                Value = DiscardTile.Value,
                 IsJoker = DiscardTile.IsJoker,
                 IsEmptyTile = false,
                 IsPresent = false
@@ -596,11 +601,11 @@ namespace RummikubApp.ModelLogics
                     else
                     {
                         if (color == -1)
-                            color = t.Color;
-                        else if (t.Color != color)
+                            color = t.ColorIndex;
+                        else if (t.ColorIndex != color)
                             result = false;
 
-                        nums[nonJokerCount] = t.Number;
+                        nums[nonJokerCount] = t.Value;
                         nonJokerCount++;
                     }
                 }
@@ -689,7 +694,7 @@ namespace RummikubApp.ModelLogics
                 result = false;
 
             int jokerCount = 0;
-            int number = -1;
+            int value = -1;
             int nonJokerCount = 0;
 
             bool[] usedColors = new bool[4]; // צבעים 0..3
@@ -711,12 +716,12 @@ namespace RummikubApp.ModelLogics
                     {
                         nonJokerCount++;
 
-                        if (number == -1)
-                            number = t.Number;
-                        else if (t.Number != number)
+                        if (value == -1)
+                            value = t.Value;
+                        else if (t.Value != value)
                             result = false;
 
-                        int c = t.Color;
+                        int c = t.ColorIndex;
                         if (c < 0 || c > 3)
                             result = false;
                         else
@@ -787,7 +792,7 @@ namespace RummikubApp.ModelLogics
                 }
                 else
                 {
-                    Tile t = new Tile((TileModel.Colors)DiscardTile.Color, DiscardTile.Number);
+                    Tile t = new Tile((TileModel.ColorIndexes)DiscardTile.ColorIndex, DiscardTile.Value);
                     DiscardTileSource = t.Source;
                 }
             }
@@ -798,56 +803,59 @@ namespace RummikubApp.ModelLogics
 
         public override void TileTapped(int index)
         {
-            bool doWork = true;
-
-            // גבולות
-            if (index < 0 || index >= UiBoard.Count)
-                doWork = false;
-
-            // אם אין בחירה ולחצו על ריק
-            if (doWork)
+            if (!IsGameOver)
             {
-                if (SelectedIndex == -1 && UiBoard[index].IsEmptyTile)
+                bool doWork = true;
+
+                // גבולות
+                if (index < 0 || index >= UiBoard.Count)
                     doWork = false;
-            }
 
-            // לחיצה על אותו אינדקס = ביטול בחירה
-            if (doWork)
-            {
-                if (SelectedIndex == index)
+                // אם אין בחירה ולחצו על ריק
+                if (doWork)
                 {
-                    SelectedIndex = -1;
-                    RefreshUi();
-                    doWork = false;
+                    if (SelectedIndex == -1 && UiBoard[index].IsEmptyTile)
+                        doWork = false;
                 }
-            }
 
-            // אם כבר נבחר משהו - זו החלפה
-            if (doWork)
-            {
-                if (SelectedIndex != -1)
+                // לחיצה על אותו אינדקס = ביטול בחירה
+                if (doWork)
                 {
-                    int first = SelectedIndex;
-                    int second = index;
-
-                    SelectedIndex = -1;
-
-                    // הלוגיקה שלך לשמירה ל-Firestore קיימת ב-HandleTileTap
-                    HandleTileTap(first, _ => { });
-                    HandleTileTap(second, _ => { });
-
-                    // אחרי שינוי יד - נרענן תצוגה
-                    RefreshUi();
-
-                    doWork = false;
+                    if (SelectedIndex == index)
+                    {
+                        SelectedIndex = -1;
+                        RefreshUi();
+                        doWork = false;
+                    }
                 }
-            }
 
-            // אחרת זו בחירה ראשונה
-            if (doWork)
-            {
-                SelectedIndex = index;
-                RefreshUi();
+                // אם כבר נבחר משהו - זו החלפה
+                if (doWork)
+                {
+                    if (SelectedIndex != -1)
+                    {
+                        int first = SelectedIndex;
+                        int second = index;
+
+                        SelectedIndex = -1;
+
+                        // הלוגיקה שלך לשמירה ל-Firestore קיימת ב-HandleTileTap
+                        HandleTileTap(first, _ => { });
+                        HandleTileTap(second, _ => { });
+
+                        // אחרי שינוי יד - נרענן תצוגה
+                        RefreshUi();
+
+                        doWork = false;
+                    }
+                }
+
+                // אחרת זו בחירה ראשונה
+                if (doWork)
+                {
+                    SelectedIndex = index;
+                    RefreshUi();
+                }
             }
         }
 
