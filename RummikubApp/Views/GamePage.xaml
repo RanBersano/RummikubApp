@@ -100,13 +100,13 @@
         <Border
             Grid.Row="6"
             Grid.Column="0"
-            BackgroundColor="#C7D4CF"
+            BackgroundColor="#6E2B2F"
             HeightRequest="50"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="0"
             WidthRequest="40">
             <ImageButton
-                BackgroundColor="#C7D4CF"
+                BackgroundColor="#6E2B2F"
                 Command="{Binding TakeDiscardCommand}"
                 IsEnabled="{Binding IsMyTurn}"
                 Source="{Binding DiscardTileSource}"
@@ -115,50 +115,19 @@
         <Button
             Grid.Row="6"
             Grid.Column="2"
-            BackgroundColor="#C7D4CF"
+            BackgroundColor="#6E2B2F"
             Command="{Binding DiscardSelectedCommand}"
             HeightRequest="50"
             IsEnabled="{Binding IsMyTurn}"
             Style="{StaticResource StayColoredWhenDisabled}"
             WidthRequest="40" />
-        <CollectionView
+        <Grid
+            x:Name="HandHost"
             Grid.Row="7"
             Grid.ColumnSpan="3"
             Margin="10"
-            HeightRequest="120"
-            ItemsSource="{Binding Board}">
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical" Span="9" />
-            </CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="ml:Tile">
-                    <Border
-                        Padding="0"
-                        HeightRequest="55"
-                        Stroke="DarkTurquoise"
-                        StrokeShape="RoundRectangle 8"
-                        StrokeThickness="0"
-                        WidthRequest="40">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.TileTappedCommand, Source={x:Reference GameGrid}}" CommandParameter="{Binding Index}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger
-                                Binding="{Binding IsSelected}"
-                                TargetType="Border"
-                                Value="True">
-                                <Setter Property="StrokeThickness" Value="2" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Image
-                            Aspect="AspectFit"
-                            HeightRequest="50"
-                            Source="{Binding Source}"
-                            WidthRequest="40" />
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            HorizontalOptions="Center"
+            VerticalOptions="Center" />
         <Border
             Grid.Row="8"
             Grid.Column="1"

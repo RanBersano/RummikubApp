@@ -9,8 +9,9 @@ public partial class GamePage : ContentPage
 	public GamePage(Game game)
 	{
 		InitializeComponent();
-        gpVM = new GamePageVM(game,grdDeck);
+        gpVM = new GamePageVM(game, grdDeck);
         BindingContext = gpVM;
+        HandHost.Children.Add(new PlayerHandCV(game));
     }
     protected override void OnAppearing()
     {

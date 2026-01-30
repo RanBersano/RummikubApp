@@ -71,10 +71,10 @@ namespace RummikubApp.ViewModels
             this.game.RefreshUi();
         }
 
-        private void GameIsOver(object? sender, bool e)
+        private void GameIsOver(object? sender, bool win)
         {
-            string title = e? Strings.YouWonTitle : Strings.YouLostTitle;
-            string message = e? Strings.WinMSG : Strings.LoseMSG;
+            string title = win? Strings.YouWonTitle : Strings.YouLostTitle;
+            string message = win? Strings.WinMSG : Strings.LoseMSG;
             Shell.Current.ShowPopup(new GameOverPopUp(title, message));
         }
 
