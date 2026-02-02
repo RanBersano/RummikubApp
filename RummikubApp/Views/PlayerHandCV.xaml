@@ -10,15 +10,15 @@
 
         <!--  הרקע (הלוח) - תחליף Source לתמונה שלך  -->
         <Border
-            HeightRequest="130"
-            StrokeShape="RoundRectangle 10"
+            HeightRequest="140"
+            StrokeShape="RoundRectangle 12"
             StrokeThickness="0"
-            WidthRequest="380">
+            WidthRequest="390">
 
             <Image
                 Aspect="Fill"
                 HorizontalOptions="Fill"
-                Source="endimg.jpg"
+                Source="boardimg.jpg"
                 VerticalOptions="Fill" />
         </Border>
 
