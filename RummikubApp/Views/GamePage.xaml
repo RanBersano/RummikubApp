@@ -7,7 +7,7 @@
     xmlns:ml="clr-namespace:RummikubApp.ModelLogics"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
     x:DataType="vm:GamePageVM"
-    BackgroundColor="LightBlue">
+    BackgroundColor="FloralWhite">
     <Grid
         x:Name="GameGrid"
         Padding="10"
@@ -31,7 +31,7 @@
             <Label
                 HorizontalOptions="Center"
                 Text="{Binding OtherPlayerName1}"
-                TextColor="White" />
+                TextColor="Black" />
         </Border>
         <Border
             Grid.Row="1"
@@ -51,7 +51,7 @@
             <Label
                 HorizontalOptions="Center"
                 Text="{Binding OtherPlayerName2}"
-                TextColor="White" />
+                TextColor="Black" />
         </Border>
         <Border
             Grid.Row="2"
@@ -71,7 +71,7 @@
             <Label
                 HorizontalOptions="Center"
                 Text="{Binding OtherPlayerName3}"
-                TextColor="White" />
+                TextColor="Black" />
         </Border>
         <Label
             Grid.Row="3"
@@ -81,14 +81,14 @@
             HorizontalOptions="Center"
             IsVisible="{Binding IsMyTurn}"
             Text="{x:Static m:Strings.YourTurn}"
-            TextColor="#F2D35E" />
+            TextColor="DarkOrange" />
         <Label
             Grid.Row="4"
             Grid.Column="1"
             Margin="50"
             HorizontalOptions="Center"
             Text="{Binding TimeLeft}"
-            TextColor="White" />
+            TextColor="Black" />
         <Grid
             x:Name="grdDeck"
             Grid.Row="5"
@@ -146,7 +146,7 @@
             <Label
                 HorizontalOptions="Center"
                 Text="{Binding MyName}"
-                TextColor="White" />
+                TextColor="Black" />
         </Border>
     </Grid>
 </ContentPage>
