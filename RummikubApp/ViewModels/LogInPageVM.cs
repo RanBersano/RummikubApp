@@ -10,6 +10,7 @@ namespace RummikubApp.ViewModels
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();
         public bool IsBusy { get; set; } = false;
+        public ICommand ResetEmail => new Command(ResetPass);
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand LogInCommand {  get; }
         public ICommand ForgotPasswordCommand { get; }
@@ -25,6 +26,19 @@ namespace RummikubApp.ViewModels
         {
             get => IsCheckedValue;
             set => IsCheckedValue = value;
+        }
+        public string EmailForReset
+        {
+            get => user.EmailForReset;
+            set
+            {
+                user.EmailForReset = value;
+            }
+        }
+        private void ResetPass()
+        {
+            user.EmailForReset = EmailForReset;
+            user.ResetEmailPassword();
         }
         private async Task ForgotPassword()
         {

@@ -77,6 +77,10 @@ namespace RummikubApp.ModelLogics
             IDocumentReference dr = fs.Collection(collectonName).Document(id);
             await dr.DeleteAsync().ContinueWith(OnComplete);
         }
+        public async void ResetEmailPasswordAsync(string email, Action<Task> OnComplete)
+        {
+            await facl.ResetEmailPasswordAsync(email).ContinueWith(OnComplete);
+        }
         public override string DisplayName
         {
             get
