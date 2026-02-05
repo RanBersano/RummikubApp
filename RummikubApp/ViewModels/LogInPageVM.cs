@@ -13,14 +13,12 @@ namespace RummikubApp.ViewModels
         public ICommand ResetEmail => new Command(ResetPass);
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand LogInCommand {  get; }
-        public ICommand ForgotPasswordCommand { get; }
         private bool IsCheckedValue;
         public LogInPageVM()
         {
             LogInCommand = new Command(LogIn, CanLogIn);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
             user.OnAuthComplete += OnAuthComplete;
-            ForgotPasswordCommand = new Command(async () => await ForgotPassword());
         }
         public bool IsChecked
         {
@@ -39,14 +37,6 @@ namespace RummikubApp.ViewModels
         {
             user.EmailForReset = EmailForReset;
             user.ResetEmailPassword();
-        }
-        private async Task ForgotPassword()
-        {
-            IsBusy = true;
-            OnPropertyChanged(nameof(IsBusy));
-            await user.ResetPassword();
-            IsBusy = false;
-            OnPropertyChanged(nameof(IsBusy));
         }
         public bool CanLogIn()
         {

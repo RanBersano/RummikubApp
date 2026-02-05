@@ -5,7 +5,6 @@ namespace RummikubApp.ModelLogics
 {
     public class User : UserModel
     {
-        public string EmailForReset;
         public override void Login(bool IsChecked)
         {
             IsBusy = true;
@@ -24,29 +23,12 @@ namespace RummikubApp.ModelLogics
             IsBusy = true;
             fbd.CreateUserWithEmailAndPasswordAsync(Email, Password, UserName, OnComplete);
         }
-        public override async Task ResetPassword()
-        {
-            await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
-        }
-        public void ResetEmailPassword()
+        public override void ResetEmailPassword()
         {
              fbd.ResetEmailPasswordAsync(EmailForReset, OnResetComplete);
         }
-
-        private void OnResetComplete(Task task)
+        protected override void OnResetComplete(Task task)
         {
-        }
-
-        protected override async Task OnCompleteSendEmail(Task task)
-        {
-            if (task.IsCompletedSuccessfully)
-            {
-                await Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
-            }
-            else
-            {
-                await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, "errorMessage", Strings.ResetPWErrorButton);
-            }
         }
         protected override void OnComplete(Task task)
         {

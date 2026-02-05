@@ -13,14 +13,15 @@ namespace RummikubApp.Models
         public bool IsBusy { get; protected set; } = false;
         public abstract void Login(bool IsChecked);
         public abstract void Register();
-        protected abstract Task OnCompleteSendEmail(Task task);
         protected abstract void OnComplete(Task task);
         protected abstract void ShowAlert(string msg);
         protected abstract void SaveToPreferences();
         public abstract bool CanLogIn();
         public abstract bool CanRegister();
-        public abstract Task ResetPassword();
+        public abstract void ResetEmailPassword();
+        protected abstract void OnResetComplete(Task task);
         public abstract string GetFirebaseErrorMessage(string msg);
+        public string EmailForReset = string.Empty;
 
     }
 }

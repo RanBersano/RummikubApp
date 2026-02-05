@@ -25,7 +25,7 @@
         public const string Instructions = "Instructions";
         public const string Settings = "Settings";
         public const string ForgotPassword = "Forgot password?";
-        public const string ResetPassword = "Reset";
+        public const string ResetPassword = "Reset Password";
         public const string ResetPWPrompt = "Reset Password";
         public const string ResetEmailPrompt = "Please Enter Your Account's Email:";
         public const string Cancel = "Cancel";

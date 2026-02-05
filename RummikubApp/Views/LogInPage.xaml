@@ -73,31 +73,27 @@
             BackgroundColor="#99FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
+            
             StrokeThickness="1">
             <Entry
                 Placeholder="{x:Static m:Strings.Email}"
                 Text="{Binding Email}"
                 VerticalOptions="Center" />
         </Border>
-        <!--<HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
-            <Label Text="{x:Static m:Strings.RememberMeCheckBoxText}" />
-            <CheckBox IsChecked="{Binding IsChecked}" />
-        </HorizontalStackLayout>-->
         <Button Command="{Binding LogInCommand}" Text="{x:Static m:Strings.LogIn}" />
-        <HorizontalStackLayout HorizontalOptions="Center" Spacing="30">
-            <Label Text="{x:Static m:Strings.ForgotPassword}" />
-            <Label
-                FontAttributes="Bold"
-                Text="{x:Static m:Strings.ResetPassword}"
-                TextColor="DarkTurquoise">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
+        <Label
+            FontAttributes="Bold"
+            FontSize="15"
+            Text="{x:Static m:Strings.ForgotPassword}" />
+        <HorizontalStackLayout>
+            <Entry
+                Placeholder="{x:Static m:Strings.Email}"
+                Text="{Binding EmailForReset}"
+                VerticalOptions="Center" />
+            <Button
+                BackgroundColor="DarkTurquoise"
+                Command="{Binding ResetEmail}"
+                Text="{x:Static m:Strings.ResetPassword}" />
         </HorizontalStackLayout>
-        <Grid RowDefinitions="*,*">
-            <Entry Text="{Binding EmailForReset}" Grid.Row="0"/>
-            <Button Text="Reset" Command="{Binding ResetEmail}" Grid.Row="1"/>
-        </Grid>
     </VerticalStackLayout>
 </ContentPage>
