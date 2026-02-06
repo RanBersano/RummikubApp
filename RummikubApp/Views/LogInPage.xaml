@@ -73,7 +73,6 @@
             BackgroundColor="#99FFFFFF"
             Stroke="Turquoise"
             StrokeShape="RoundRectangle 10"
-            
             StrokeThickness="1">
             <Entry
                 Placeholder="{x:Static m:Strings.Email}"
