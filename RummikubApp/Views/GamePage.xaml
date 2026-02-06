@@ -6,8 +6,13 @@
     xmlns:m="clr-namespace:RummikubApp.Models"
     xmlns:ml="clr-namespace:RummikubApp.ModelLogics"
     xmlns:vm="clr-namespace:RummikubApp.ViewModels"
-    x:DataType="vm:GamePageVM"
-    BackgroundColor="FloralWhite">
+    x:DataType="vm:GamePageVM">
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="DarkOrange" Offset="0.0" />
+            <GradientStop Color="Cornsilk" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
     <Grid
         x:Name="GameGrid"
         Padding="10"
@@ -79,9 +84,10 @@
             Margin="10"
             FontSize="28"
             HorizontalOptions="Center"
+            FontAttributes="Bold"
             IsVisible="{Binding IsMyTurn}"
             Text="{x:Static m:Strings.YourTurn}"
-            TextColor="DarkOrange" />
+            TextColor="DarkRed" />
         <Label
             Grid.Row="4"
             Grid.Column="1"
@@ -100,13 +106,13 @@
         <Border
             Grid.Row="6"
             Grid.Column="0"
-            BackgroundColor="#7A2E33"
+            BackgroundColor="#8A2E33"
             HeightRequest="50"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="0"
             WidthRequest="40">
             <ImageButton
-                BackgroundColor="#7A2E33"
+                BackgroundColor="#8A2E33"
                 Command="{Binding TakeDiscardCommand}"
                 IsEnabled="{Binding IsMyTurn}"
                 Source="{Binding DiscardTileSource}"
@@ -115,7 +121,7 @@
         <Button
             Grid.Row="6"
             Grid.Column="2"
-            BackgroundColor="#7A2E33"
+            BackgroundColor="#8A2E33"
             Command="{Binding DiscardSelectedCommand}"
             HeightRequest="50"
             IsEnabled="{Binding IsMyTurn}"

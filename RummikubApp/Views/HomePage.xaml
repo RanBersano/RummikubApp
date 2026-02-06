@@ -47,7 +47,7 @@
                     </Button.ImageSource>
                 </Button>
             </Border>
-            <Border
+            <!--<Border
                 Stroke="DarkTurquoise"
                 StrokeShape="RoundRectangle 70"
                 StrokeThickness="3">
@@ -62,7 +62,7 @@
                         </FontImageSource>
                     </Button.ImageSource>
                 </Button>
-            </Border>
+            </Border>-->
         </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>

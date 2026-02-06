@@ -13,20 +13,20 @@
         <Setter Property="BorderColor" Value="{AppThemeBinding Dark=White, Light=Black}" />
     </Style>
     <Style x:Key="StayColoredWhenDisabled" TargetType="Button">
-        <Setter Property="BackgroundColor" Value="#7A2E33" />
+        <Setter Property="BackgroundColor" Value="#8A2E33" />
         <Setter Property="Opacity" Value="1" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal">
                         <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="#7A2E33" />
+                            <Setter Property="BackgroundColor" Value="#8A2E33" />
                             <Setter Property="Opacity" Value="1" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="#7A2E33" />
+                            <Setter Property="BackgroundColor" Value="#8A2E33" />
                             <Setter Property="Opacity" Value="1" />
                         </VisualState.Setters>
                     </VisualState>

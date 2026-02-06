@@ -308,7 +308,7 @@ namespace RummikubApp.ModelLogics
                 {
                     btn = new IndexedButton(i, j)
                     {
-                        BackgroundColor = Color.FromArgb("#FF800000")
+                        BackgroundColor = Color.FromArgb("#FFF6D6")
                     };
                     btn.Clicked += OnButtonClicked;
                     deck.Add(btn, j, i);
