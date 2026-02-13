@@ -20,9 +20,7 @@ namespace RummikubApp.ViewModels
             MainThread.InvokeOnMainThreadAsync(() =>
             {
                 if (Application.Current != null)
-                {
                     Application.Current.MainPage = new HomePage();
-                }
             });
             _gameOverPopUp.Close();
         }

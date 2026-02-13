@@ -11,8 +11,6 @@ namespace RummikubApp.Models
         protected IListenerRegistration? ilr;
         [Ignored]
         protected Board? MyBoardCache;
-        [Ignored]
-        protected bool StartTimerWasTriggered = false;
         [Ignored] 
         public EventHandler? OnGameChanged;
         [Ignored] 
@@ -20,17 +18,17 @@ namespace RummikubApp.Models
         [Ignored] 
         public EventHandler? TimeLeftChanged;
         [Ignored]
-        public int SelectedIndex { get; protected set; } = -1;
-        [Ignored]
         public EventHandler<bool>? GameOver;
         [Ignored]
-        public ObservableCollection<Tile> UiBoard { get; protected set; } = new ObservableCollection<Tile>();
-
+        public EventHandler? UiChanged;
+        [Ignored]
+        public ObservableCollection<Tile> UiBoard { get; protected set; } = [];
         [Ignored]
         public ImageSource? DiscardTileSource { get; protected set; }
-
         [Ignored]
-        public EventHandler? UiChanged; // אירוע “עדכון מסך” נקי ל-VM
+        protected bool StartTimerWasTriggered = false;
+        [Ignored]
+        public int SelectedIndex { get; protected set; } = -1;
         [Ignored] 
         public string TimeLeft { get; protected set; } = string.Empty;
         [Ignored] 
@@ -97,10 +95,16 @@ namespace RummikubApp.Models
         protected abstract void OnChange(IDocumentSnapshot? snapshot, Exception? error);
         public abstract TileData[] GetMyHand();
         public abstract void DiscardSelectedTileAndSave(int selectedIndex, Action<Task> onComplete);
+        public abstract bool CanTakeDiscard();
         public abstract void TakeDiscardAndSave(Action<Task> onComplete);
-        public abstract void TileTapped(int index);
+        protected abstract bool IsRealTile(TileData t);
+        protected abstract bool IsWinningBoard(TileData[] hand);
+        protected abstract bool IsValidSet(TileData[] hand, int start, int end);
+        protected abstract bool IsValidRun(TileData[] hand, int start, int end);
+        protected abstract bool IsValidGroup(TileData[] hand, int start, int end);
+        protected abstract void TrySetGameOverByTurn(TileData[] currentPlayerHand, Dictionary<string, object> updates);
         public abstract void RefreshUi();
-        public abstract void DoTakeDiscard();
+        public abstract void TileTapped(int index);
         public abstract void DoDiscardSelected();
     }
 }

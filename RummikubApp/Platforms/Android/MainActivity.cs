@@ -4,7 +4,6 @@ using Android.OS;
 using CommunityToolkit.Mvvm.Messaging;
 using RummikubApp.Models;
 using Android.Content;
-
 namespace RummikubApp.Platforms.Android
 {
     [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
@@ -17,13 +16,11 @@ namespace RummikubApp.Platforms.Android
             RegisterTimerMessages();
             StartDeleteFbDocsService();
         }
-
         private void StartDeleteFbDocsService()
         {
             Intent intent = new(this, typeof(DeleteFbDocsService));
             StartService(intent);
         }
-
         private void RegisterTimerMessages()
         {
             WeakReferenceMessenger.Default.Register<AppMessage<TimerSettings>>(this, (r, m) =>

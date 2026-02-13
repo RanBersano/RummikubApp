@@ -21,13 +21,12 @@ namespace RummikubApp.Platforms.Android
             thread.Start();
             return base.OnStartCommand(intent, flags, startId);
         }
-
         private void DeleteFbDocs()
         {
             while (isRunning)
             {
                 fbd.GetDocumentsWhereLessThan(Keys.GamesCollection, nameof(GameModel.Created), DateTime.Now.AddDays(-1), OnComplete);
-                Thread.Sleep(Keys.OneHourInMillisconds);
+                Thread.Sleep(Keys.OneHourInMilliseconds);
             }
             StopSelf();
         }

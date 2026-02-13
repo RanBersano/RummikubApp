@@ -16,16 +16,13 @@ namespace RummikubApp.ViewModels
             PlayCommand = new Command(Play);
             InstructionsPopupCommand = new Command(InstructionsPopup);
         }
-
         private void Play (object? sender)
         {
             if (Application.Current != null)
-            {
                 MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     Application.Current.MainPage = new AppShell();
                 });
-            }
         }
         private void InstructionsPopup(object obj)
         {

@@ -44,7 +44,7 @@ namespace RummikubApp.ModelLogics
             ICollectionReference cr = fs.Collection(collectonName);
             IQuerySnapshot qs = await cr.WhereLessThan(fName, fValue).GetAsync();
             OnComplete(qs);
-        }
+        }   
         public override async void UpdateFields(string collectonName, string id, Dictionary<string, object> dict, Action<Task> OnComplete)
         {
             IDocumentReference dr = fs.Collection(collectonName).Document(id);

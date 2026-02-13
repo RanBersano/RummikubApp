@@ -7,7 +7,7 @@ namespace RummikubApp.ModelLogics
 {
     public class Game : GameModel
     {
-        private readonly Tile tileFactory = new Tile();
+        private readonly Tile tileFactory = new();
 
         public Game(GameSize selectedGameSize)
         {
@@ -19,7 +19,7 @@ namespace RummikubApp.ModelLogics
             Deck = new Deck();
             DeckData = Deck.ExportToArray();
             TileData[] first14 = Deck.DealTiles(14);
-            Board hostBoard = new Board(first14);
+            Board hostBoard = new(first14);
             hostBoard.EnsureCapacity();
             HostHand = hostBoard.ExportToArray();
             DeckData = Deck.ExportToArray();
@@ -56,23 +56,21 @@ namespace RummikubApp.ModelLogics
         }
         public override string GetOtherPlayerName(int index)
         {
-            string[] others = new string[]
-            {
+            string[] others =
+            [
                 HostName, PlayerName2, PlayerName3, PlayerName4
-            };
+            ];
             string[] valid = new string[3];
             int count = 0;
             for (int i = 0; i < others.Length; i++)
             {
                 string name = others[i];
                 if (!string.IsNullOrWhiteSpace(name) && !string.Equals(name, MyName, StringComparison.Ordinal))
-                {
                     if (count < valid.Length)
                     {
                         valid[count] = name;
                         count++;
                     }
-                }
             }
             if (index >= 0 && index < count)
                 return valid[index];
@@ -102,9 +100,11 @@ namespace RummikubApp.ModelLogics
                 next = 1;
             CurrentTurnIndex = next;
             HasDrawnThisTurn = false;
-            Dictionary<string, object> updates = new Dictionary<string, object>();
-            updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
-            updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
+            Dictionary<string, object> updates = new()
+            {
+                [nameof(HasDrawnThisTurn)] = HasDrawnThisTurn,
+                [nameof(CurrentTurnIndex)] = CurrentTurnIndex
+            };
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
         public override void UpdateGuestUser(Action<Task> onComplete)
@@ -117,7 +117,7 @@ namespace RummikubApp.ModelLogics
             }
             if (Deck == null)
                 RebuildDeckFromData();
-            Dictionary<string, object> updates = new Dictionary<string, object>();
+            Dictionary<string, object> updates = [];
             bool handDealt = false;
             if (string.IsNullOrEmpty(PlayerName2))
             {
@@ -126,7 +126,7 @@ namespace RummikubApp.ModelLogics
                 if (Player2Hand == null || Player2Hand.Length == 0)
                 {
                     TileData[] first14 = Deck!.DealTiles(14);
-                    Board b = new Board(first14);
+                    Board b = new(first14);
                     b.EnsureCapacity();
                     Player2Hand = b.ExportToArray();
                     updates[nameof(Player2Hand)] = Player2Hand;
@@ -140,7 +140,7 @@ namespace RummikubApp.ModelLogics
                 if (Player3Hand == null || Player3Hand.Length == 0)
                 {
                     TileData[] first14 = Deck!.DealTiles(14);
-                    Board b = new Board(first14);
+                    Board b = new(first14);
                     b.EnsureCapacity();
                     Player3Hand = b.ExportToArray();
                     updates[nameof(Player3Hand)] = Player3Hand;
@@ -154,7 +154,7 @@ namespace RummikubApp.ModelLogics
                 if (Player4Hand == null || Player4Hand.Length == 0)
                 {
                     TileData[] first14 = Deck!.DealTiles(14);
-                    Board b = new Board(first14);
+                    Board b = new(first14);
                     b.EnsureCapacity();
                     Player4Hand = b.ExportToArray();
 
@@ -246,7 +246,7 @@ namespace RummikubApp.ModelLogics
                 {
                     TileData[] newHand = board.ExportToArray();
                     SetHandForPlayer(MyName, newHand);
-                    Dictionary<string, object> updates = new Dictionary<string, object>();
+                    Dictionary<string, object> updates = [];
                     string field = GetHandFieldNameForPlayer(MyName);
                     updates[field] = newHand;
                     fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
@@ -321,8 +321,7 @@ namespace RummikubApp.ModelLogics
                 return;
             if (CurrentPlayerName != MyName)
                 return;
-            IndexedButton? btn = sender as IndexedButton;
-            if (btn == null)
+            if (sender is not IndexedButton btn)
                 return;
             TakeTileFromDeckAndSave(OnTakeTileComplete);
         }
@@ -334,9 +333,7 @@ namespace RummikubApp.ModelLogics
         protected override void OnComplete(Task task)
         {
             if (task.IsCompletedSuccessfully)
-            {
                 OnGameDeleted?.Invoke(this, EventArgs.Empty);
-            }
         }  
         protected override void OnChange(IDocumentSnapshot? snapshot, Exception? error)
         {
@@ -391,6 +388,15 @@ namespace RummikubApp.ModelLogics
         {
             return GetHandForPlayer(MyName);
         }
+        public override void DoDiscardSelected()
+        {
+            int idx = SelectedIndex;
+            SelectedIndex = -1;
+
+            DiscardSelectedTileAndSave(idx, _ => { });
+
+            RefreshUi();
+        }
         public override void DiscardSelectedTileAndSave(int selectedIndex, Action<Task> onComplete)
         {
             if (!IsFull || IsGameOver) { onComplete(Task.CompletedTask); return; }
@@ -428,32 +434,29 @@ namespace RummikubApp.ModelLogics
             };
             TileData[] newHand = board.ExportToArray();
             SetHandForPlayer(MyName, newHand);
-            Dictionary<string, object> updates = new Dictionary<string, object>();
-
-            updates[GetHandFieldNameForPlayer(MyName)] = newHand;
-            updates[nameof(DiscardTile)] = DiscardTile;
-
-            // 1) קודם בודקים ניצחון (לפי היד אחרי הזריקה)
+            Dictionary<string, object> updates = new()
+            {
+                [GetHandFieldNameForPlayer(MyName)] = newHand,
+                [nameof(DiscardTile)] = DiscardTile
+            };
             TrySetGameOverByTurn(newHand, updates);
-
-            // 2) רק אם המשחק לא נגמר — מתקדמים לתור הבא
             bool advanceTurn = true;
             if (IsGameOver)
                 advanceTurn = false;
-
             if (advanceTurn)
             {
                 int next = CurrentTurnIndex + 1;
                 if (next > Players) next = 1;
-
                 CurrentTurnIndex = next;
                 HasDrawnThisTurn = false;
                 updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
                 updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
             }
-
-            // 3) עדכון לפיירבייס
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+        }
+        public override bool CanTakeDiscard()
+        {
+            return IsFull && CurrentPlayerName == MyName && this.DiscardTile != null && this.DiscardTile.IsPresent && !HasDrawnThisTurn;
         }
         public override void TakeDiscardAndSave(Action<Task> onComplete)
         {
@@ -478,249 +481,177 @@ namespace RummikubApp.ModelLogics
             SetHandForPlayer(MyName, newHand);
             DiscardTile = new TileData { IsPresent = false };
             HasDrawnThisTurn = true;
-
-            Dictionary<string, object> updates = new Dictionary<string, object>();
-            updates[GetHandFieldNameForPlayer(MyName)] = newHand;
-            updates[nameof(DiscardTile)] = DiscardTile;
-            updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
-
+            Dictionary<string, object> updates = new()
+            {
+                [GetHandFieldNameForPlayer(MyName)] = newHand,
+                [nameof(DiscardTile)] = DiscardTile,
+                [nameof(HasDrawnThisTurn)] = HasDrawnThisTurn
+            };
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
-        // אריח "משחקי" = קיים ולא ריק
-        private bool IsRealTile(TileData t)
+        protected override bool IsRealTile(TileData t)
         {
             bool result = true;
-
             if (t == null)
                 result = false;
             else if (t.IsEmptyTile)
                 result = false;
-
             return result;
         }
-
-
-        private bool IsWinningBoard(TileData[] hand)
+        protected override bool IsWinningBoard(TileData[] hand)
         {
             bool result = true;
-
             if (hand == null || hand.Length == 0)
-            {
                 result = false;
-            }
             else
             {
                 int i = 0;
                 bool foundAtLeastOneSet = false;
-
                 while (i < hand.Length && result)
                 {
-                    // מדלגים על "ריקים"/לא-קיימים
                     while (i < hand.Length && !IsRealTile(hand[i]))
                         i++;
-
                     if (i >= hand.Length)
                         break;
-
-                    // קטע רצוף של אריחים קיימים
                     int start = i;
                     while (i < hand.Length && IsRealTile(hand[i]))
                         i++;
                     int end = i - 1;
-
                     foundAtLeastOneSet = true;
-
                     bool setOk = IsValidSet(hand, start, end);
                     if (!setOk)
                         result = false;
                 }
-
                 if (!foundAtLeastOneSet)
                     result = false;
             }
-
             return result;
         }
-
-        private bool IsValidSet(TileData[] hand, int start, int end)
+        protected override bool IsValidSet(TileData[] hand, int start, int end)
         {
             bool result = true;
-
             int len = end - start + 1;
             if (len < 3)
                 result = false;
-
-            // אין "ריקים" בתוך סט (כבר אמור להיות נכון, אבל בטוח)
             if (result)
             {
                 for (int i = start; i <= end; i++)
-                {
                     if (!IsRealTile(hand[i]))
                         result = false;
-                }
             }
-
             if (result)
             {
                 bool isRunOk = IsValidRun(hand, start, end);
                 bool isGroupOk = IsValidGroup(hand, start, end);
-
                 if (!isRunOk && !isGroupOk)
                     result = false;
             }
-
             return result;
         }
-
-        private bool IsValidRun(TileData[] hand, int start, int end)
+        protected override bool IsValidRun(TileData[] hand, int start, int end)
         {
             bool result = true;
-
             int len = end - start + 1;
-
             int jokerCount = 0;
             int nonJokerCount = 0;
-
             int color = -1;
-            int[] nums = new int[len]; // רק מספרים של לא-ג'וקר
-
-            // 1) איסוף: צבע אחד + מספרים + ג'וקרים
+            int[] nums = new int[len];
             for (int i = start; i <= end; i++)
             {
                 TileData t = hand[i];
-
                 if (!IsRealTile(t))
                     result = false;
-
                 if (result)
                 {
                     if (t.IsJoker)
-                    {
                         jokerCount++;
-                    }
                     else
                     {
                         if (color == -1)
                             color = t.ColorIndex;
                         else if (t.ColorIndex != color)
                             result = false;
-
                         nums[nonJokerCount] = t.Value;
                         nonJokerCount++;
                     }
                 }
             }
-
-            // חייב להיות לפחות אריח אמיתי אחד כדי לדעת צבע/בסיס
             if (result && nonJokerCount == 0)
                 result = false;
-
-            // 2) מיון nums (Selection Sort)
             if (result)
-            {
                 for (int i = 0; i < nonJokerCount - 1; i++)
                 {
                     int minIdx = i;
                     for (int j = i + 1; j < nonJokerCount; j++)
-                    {
                         if (nums[j] < nums[minIdx])
                             minIdx = j;
-                    }
-                    int tmp = nums[i];
-                    nums[i] = nums[minIdx];
-                    nums[minIdx] = tmp;
+                    (nums[minIdx], nums[i]) = (nums[i], nums[minIdx]);
                 }
-            }
-
-            // 3) בדיקת תקינות מספרים + חורים
             int gapsNeeded = 0;
             int minNum = 0;
             int maxNum = 0;
-
             if (result)
             {
                 minNum = nums[0];
                 maxNum = nums[nonJokerCount - 1];
-
-                // מספרים חייבים להיות 1..13
                 if (minNum < 1 || maxNum > 13)
                     result = false;
             }
-
             if (result)
             {
                 for (int i = 1; i < nonJokerCount; i++)
                 {
                     int diff = nums[i] - nums[i - 1];
-                    if (diff <= 0) // כפילות או לא עולה
+                    if (diff <= 0)
                         result = false;
                     else
                         gapsNeeded += (diff - 1);
                 }
             }
-
-            // 4) מספיק ג'וקרים להשלים חורים
             if (result)
             {
                 if (gapsNeeded > jokerCount)
                     result = false;
             }
-
-            // 5) ג'וקרים עודפים יכולים להרחיב לפני/אחרי, אבל לא לצאת מ-1..13
             if (result)
             {
                 int extra = jokerCount - gapsNeeded;
-
                 int roomLeft = minNum - 1;
                 int roomRight = 13 - maxNum;
-
                 if (roomLeft + roomRight < extra)
                     result = false;
-
                 int span = (maxNum - minNum + 1);
                 if (span > len)
                     result = false;
             }
-
             return result;
         }
-
-        private bool IsValidGroup(TileData[] hand, int start, int end)
+        protected override bool IsValidGroup(TileData[] hand, int start, int end)
         {
             bool result = true;
-
             int len = end - start + 1;
             if (len > 4)
                 result = false;
-
             int jokerCount = 0;
             int value = -1;
             int nonJokerCount = 0;
-
-            bool[] usedColors = new bool[4]; // צבעים 0..3
-
+            bool[] usedColors = new bool[4];
             for (int i = start; i <= end; i++)
             {
                 TileData t = hand[i];
-
                 if (!IsRealTile(t))
                     result = false;
-
                 if (result)
                 {
                     if (t.IsJoker)
-                    {
                         jokerCount++;
-                    }
                     else
                     {
                         nonJokerCount++;
-
                         if (value == -1)
                             value = t.Value;
                         else if (t.Value != value)
                             result = false;
-
                         int c = t.ColorIndex;
                         if (c < 0 || c > 3)
                             result = false;
@@ -733,29 +664,22 @@ namespace RummikubApp.ModelLogics
                     }
                 }
             }
-
-            // קבוצה לא יכולה להיות רק ג'וקרים
             if (result && nonJokerCount == 0)
                 result = false;
-
             return result;
         }
-        private void TrySetGameOverByTurn(TileData[] currentPlayerHand, Dictionary<string, object> updates)
+        protected override void TrySetGameOverByTurn(TileData[] currentPlayerHand, Dictionary<string, object> updates)
         {
             bool shouldSet = true;
-
             if (IsGameOver)
                 shouldSet = false;
-
             if (shouldSet)
             {
                 bool win = IsWinningBoard(currentPlayerHand);
-
                 if (win)
                 {
                     IsGameOver = true;
                     WinnerIndex = CurrentTurnIndex;
-
                     updates[nameof(IsGameOver)] = true;
                     updates[nameof(WinnerIndex)] = WinnerIndex;
                     GameOver?.Invoke(this,true);
@@ -764,10 +688,7 @@ namespace RummikubApp.ModelLogics
         }
         public override void RefreshUi()
         {
-            // 1) טוענים יד שלי
             TileData[] hand = GetMyHand();
-
-            // 2) בונים רשימת UI מוכנה למסך
             UiBoard.Clear();
             for (int i = 0; i < hand.Length; i++)
             {
@@ -776,81 +697,49 @@ namespace RummikubApp.ModelLogics
                 t.IsSelected = (i == SelectedIndex);
                 UiBoard.Add(t);
             }
-
-            // 3) בונים DiscardTileSource
             bool hasDiscard = (DiscardTile != null && DiscardTile.IsPresent);
-
             if (!hasDiscard)
-            {
                 DiscardTileSource = null;
-            }
             else
             {
                 if (DiscardTile!.IsJoker)
-                {
                     DiscardTileSource = Strings.Joker;
-                }
                 else
                 {
-                    Tile t = new Tile((TileModel.ColorIndexes)DiscardTile.ColorIndex, DiscardTile.Value);
+                    Tile t = new((TileModel.ColorIndexes)DiscardTile.ColorIndex, DiscardTile.Value);
                     DiscardTileSource = t.Source;
                 }
             }
-
-            // 4) מודיעים ל-VM “תתעדכן”
             UiChanged?.Invoke(this, EventArgs.Empty);
         }
-
         public override void TileTapped(int index)
         {
             if (!IsGameOver)
             {
                 bool doWork = true;
-
-                // גבולות
                 if (index < 0 || index >= UiBoard.Count)
                     doWork = false;
-
-                // אם אין בחירה ולחצו על ריק
                 if (doWork)
-                {
                     if (SelectedIndex == -1 && UiBoard[index].IsEmptyTile)
                         doWork = false;
-                }
-
-                // לחיצה על אותו אינדקס = ביטול בחירה
                 if (doWork)
-                {
                     if (SelectedIndex == index)
                     {
                         SelectedIndex = -1;
                         RefreshUi();
                         doWork = false;
                     }
-                }
-
-                // אם כבר נבחר משהו - זו החלפה
                 if (doWork)
-                {
                     if (SelectedIndex != -1)
                     {
                         int first = SelectedIndex;
                         int second = index;
-
                         SelectedIndex = -1;
-
-                        // הלוגיקה שלך לשמירה ל-Firestore קיימת ב-HandleTileTap
                         HandleTileTap(first, _ => { });
                         HandleTileTap(second, _ => { });
-
-                        // אחרי שינוי יד - נרענן תצוגה
                         RefreshUi();
-
                         doWork = false;
                     }
-                }
-
-                // אחרת זו בחירה ראשונה
                 if (doWork)
                 {
                     SelectedIndex = index;
@@ -858,23 +747,5 @@ namespace RummikubApp.ModelLogics
                 }
             }
         }
-
-        public override void DoDiscardSelected()
-        {
-            int idx = SelectedIndex;
-            SelectedIndex = -1;
-
-            DiscardSelectedTileAndSave(idx, _ => { });
-
-            RefreshUi();
-        }
-
-        public override void DoTakeDiscard()
-        {
-            TakeDiscardAndSave(_ => { });
-
-            RefreshUi();
-        }
-
     }
 }
