@@ -458,6 +458,11 @@ namespace RummikubApp.ModelLogics
         {
             return IsFull && CurrentPlayerName == MyName && this.DiscardTile != null && this.DiscardTile.IsPresent && !HasDrawnThisTurn;
         }
+        public override void DoTakeDiscard()
+        {
+            TakeDiscardAndSave(_ => { });
+            RefreshUi();
+        }
         public override void TakeDiscardAndSave(Action<Task> onComplete)
         {
             if (!IsFull || IsGameOver) { onComplete(Task.CompletedTask); return; }
@@ -488,6 +493,7 @@ namespace RummikubApp.ModelLogics
                 [nameof(HasDrawnThisTurn)] = HasDrawnThisTurn
             };
             fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+            RefreshUi();
         }
         protected override bool IsRealTile(TileData t)
         {

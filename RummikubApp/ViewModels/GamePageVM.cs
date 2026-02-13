@@ -36,7 +36,7 @@ namespace RummikubApp.ViewModels
             game.InitGrid(deckGrid);
             tileTappedCommand = new Command<int>(i => this.game.TileTapped(i));
             TakeDiscardCommand = new Command(
-                () => this.game.TakeDiscardAndSave(_ => this.game.RefreshUi()),
+                () => this.game.DoTakeDiscard(),
                 () => game.CanTakeDiscard());
             DiscardSelectedCommand = new Command(
                 () => this.game.DoDiscardSelected(),

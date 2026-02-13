@@ -96,6 +96,7 @@ namespace RummikubApp.Models
         public abstract TileData[] GetMyHand();
         public abstract void DiscardSelectedTileAndSave(int selectedIndex, Action<Task> onComplete);
         public abstract bool CanTakeDiscard();
+        public abstract void DoTakeDiscard();
         public abstract void TakeDiscardAndSave(Action<Task> onComplete);
         protected abstract bool IsRealTile(TileData t);
         protected abstract bool IsWinningBoard(TileData[] hand);
