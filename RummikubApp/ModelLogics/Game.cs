@@ -56,10 +56,8 @@ namespace RummikubApp.ModelLogics
         }
         public override string GetOtherPlayerName(int index)
         {
-            string[] others =
-            [
-                HostName, PlayerName2, PlayerName3, PlayerName4
-            ];
+            string result = string.Empty;
+            string[] others =[HostName, PlayerName2, PlayerName3, PlayerName4];
             string[] valid = new string[3];
             int count = 0;
             for (int i = 0; i < others.Length; i++)
@@ -73,8 +71,8 @@ namespace RummikubApp.ModelLogics
                     }
             }
             if (index >= 0 && index < count)
-                return valid[index];
-            return string.Empty;
+                result = valid[index];
+            return result;
         }
         public override void SetDocument(Action<Task> onComplete)
         {
@@ -109,57 +107,77 @@ namespace RummikubApp.ModelLogics
         }
         public override void UpdateGuestUser(Action<Task> onComplete)
         {
-            if (IsFull)
+            bool canContinue = true;
+            if (!IsFull)
             {
-                Task failed = Task.FromException(new InvalidOperationException(Strings.GameFull));
-                onComplete(failed);
-                return;
-            }
-            if (Deck == null)
-                RebuildDeckFromData();
-            Dictionary<string, object> updates = [];
-            bool handDealt = false;
-            if (string.IsNullOrEmpty(PlayerName2))
-            {
-                PlayerName2 = MyName;
-                updates[nameof(PlayerName2)] = PlayerName2;
-                if (Player2Hand == null || Player2Hand.Length == 0)
+                if (Deck == null)
+                    RebuildDeckFromData();
+                Dictionary<string, object> updates = [];
+                bool handDealt = false;
+                if (string.IsNullOrEmpty(PlayerName2))
                 {
-                    TileData[] first14 = Deck!.DealTiles(14);
-                    Board b = new(first14);
-                    b.EnsureCapacity();
-                    Player2Hand = b.ExportToArray();
-                    updates[nameof(Player2Hand)] = Player2Hand;
-                    handDealt = true;
+                    PlayerName2 = MyName;
+                    updates[nameof(PlayerName2)] = PlayerName2;
+                    if (Player2Hand == null || Player2Hand.Length == 0)
+                    {
+                        TileData[] first14 = Deck!.DealTiles(14);
+                        Board b = new(first14);
+                        b.EnsureCapacity();
+                        Player2Hand = b.ExportToArray();
+                        updates[nameof(Player2Hand)] = Player2Hand;
+                        handDealt = true;
+                    }
                 }
-            }
-            else if (Players >= 3 && string.IsNullOrEmpty(PlayerName3))
-            {
-                PlayerName3 = MyName;
-                updates[nameof(PlayerName3)] = PlayerName3;
-                if (Player3Hand == null || Player3Hand.Length == 0)
+                else if (Players >= 3 && string.IsNullOrEmpty(PlayerName3))
                 {
-                    TileData[] first14 = Deck!.DealTiles(14);
-                    Board b = new(first14);
-                    b.EnsureCapacity();
-                    Player3Hand = b.ExportToArray();
-                    updates[nameof(Player3Hand)] = Player3Hand;
-                    handDealt = true;
+                    PlayerName3 = MyName;
+                    updates[nameof(PlayerName3)] = PlayerName3;
+                    if (Player3Hand == null || Player3Hand.Length == 0)
+                    {
+                        TileData[] first14 = Deck!.DealTiles(14);
+                        Board b = new(first14);
+                        b.EnsureCapacity();
+                        Player3Hand = b.ExportToArray();
+                        updates[nameof(Player3Hand)] = Player3Hand;
+                        handDealt = true;
+                    }
                 }
-            }
-            else if (Players == 4 && string.IsNullOrEmpty(PlayerName4))
-            {
-                PlayerName4 = MyName;
-                updates[nameof(PlayerName4)] = PlayerName4;
-                if (Player4Hand == null || Player4Hand.Length == 0)
+                else if (Players == 4 && string.IsNullOrEmpty(PlayerName4))
                 {
-                    TileData[] first14 = Deck!.DealTiles(14);
-                    Board b = new(first14);
-                    b.EnsureCapacity();
-                    Player4Hand = b.ExportToArray();
+                    PlayerName4 = MyName;
+                    updates[nameof(PlayerName4)] = PlayerName4;
+                    if (Player4Hand == null || Player4Hand.Length == 0)
+                    {
+                        TileData[] first14 = Deck!.DealTiles(14);
+                        Board b = new(first14);
+                        b.EnsureCapacity();
+                        Player4Hand = b.ExportToArray();
 
-                    updates[nameof(Player4Hand)] = Player4Hand;
-                    handDealt = true;
+                        updates[nameof(Player4Hand)] = Player4Hand;
+                        handDealt = true;
+                    }
+                }
+                else
+                {
+                    Task failed = Task.FromException(new InvalidOperationException(Strings.GameFull));
+                    onComplete(failed);
+                    canContinue = false;
+                }
+                if(canContinue)
+                {
+                    CurrentNumOfPlayers++;
+                    updates[nameof(CurrentNumOfPlayers)] = CurrentNumOfPlayers;
+                    if (CurrentNumOfPlayers >= Players)
+                    {
+                        IsFull = true;
+                        updates[nameof(IsFull)] = true;
+                    }
+                    if (handDealt)
+                    {
+                        DeckData = Deck!.ExportToArray();
+                        updates[nameof(DeckData)] = DeckData;
+                    }
+                    fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
                 }
             }
             else
@@ -168,65 +186,44 @@ namespace RummikubApp.ModelLogics
                 onComplete(failed);
                 return;
             }
-            CurrentNumOfPlayers++;
-            updates[nameof(CurrentNumOfPlayers)] = CurrentNumOfPlayers;
-            if (CurrentNumOfPlayers >= Players)
-            {
-                IsFull = true;
-                updates[nameof(IsFull)] = true;
-            }
-            if (handDealt)
-            {
-                DeckData = Deck!.ExportToArray();
-                updates[nameof(DeckData)] = DeckData;
-            }
-            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+            
         }
         protected override TileData[] GetHandForPlayer(string playerName)
         {
-            if (playerName == HostName) 
-                return HostHand;
-            if (playerName == PlayerName2) 
-                return Player2Hand;
-            if (playerName == PlayerName3) 
-                return Player3Hand;
+            TileData[] result = [];
+            if (playerName == HostName)
+                result = HostHand;
+            if (playerName == PlayerName2)
+                result = Player2Hand;
+            if (playerName == PlayerName3)
+                result = Player3Hand;
             if (playerName == PlayerName4) 
-                return Player4Hand;
-            return [];
+                result = Player4Hand;
+            return result;
         }
         protected override void SetHandForPlayer(string playerName, TileData[] hand)
         {
-            if (playerName == HostName) 
-            { 
-                HostHand = hand; 
-                return; 
-            }
-            if (playerName == PlayerName2) 
-            { 
-                Player2Hand = hand; 
-                return; 
-            }
-            if (playerName == PlayerName3) 
-            { 
-                Player3Hand = hand; 
-                return; 
-            }
-            if (playerName == PlayerName4) 
-            { Player4Hand = hand; 
-                return; 
-            }
+            if (playerName == HostName)
+                HostHand = hand;
+            else if (playerName == PlayerName2)
+                Player2Hand = hand;
+            else if (playerName == PlayerName3)
+                Player3Hand = hand;
+            if (playerName == PlayerName4)
+                Player4Hand = hand;
         }
         protected override string GetHandFieldNameForPlayer(string playerName)
         {
-            if (playerName == HostName) 
-                return nameof(HostHand);
-            if (playerName == PlayerName2) 
-                return nameof(Player2Hand);
-            if (playerName == PlayerName3) 
-                return nameof(Player3Hand);
-            if (playerName == PlayerName4) 
-                return nameof(Player4Hand);
-            return string.Empty;
+            string result = string.Empty;
+            if (playerName == HostName)
+                result = nameof(HostHand);
+            if (playerName == PlayerName2)
+                result = nameof(Player2Hand);
+            if (playerName == PlayerName3)
+                result = nameof(Player3Hand);
+            if (playerName == PlayerName4)
+                result = nameof(Player4Hand);
+            return result;
         }
         public override void HandleTileTap(int tappedIndex, Action<Task> onComplete)
         {
@@ -237,62 +234,60 @@ namespace RummikubApp.ModelLogics
                 bool changed = board.HandleTap(tappedIndex);
                 int after = board.SelectedIndex;
                 if (!changed)
-                {
                     onComplete(Task.CompletedTask);
-                    return;
-                }
-                bool swapped = (before != -1 && after == -1 && before != tappedIndex);
-                if (swapped)
+                else
                 {
-                    TileData[] newHand = board.ExportToArray();
-                    SetHandForPlayer(MyName, newHand);
-                    Dictionary<string, object> updates = [];
-                    string field = GetHandFieldNameForPlayer(MyName);
-                    updates[field] = newHand;
-                    fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
-                    return;
+                    bool swapped = (before != -1 && after == -1 && before != tappedIndex);
+                    if (swapped)
+                    {
+                        TileData[] newHand = board.ExportToArray();
+                        SetHandForPlayer(MyName, newHand);
+                        Dictionary<string, object> updates = [];
+                        string field = GetHandFieldNameForPlayer(MyName);
+                        updates[field] = newHand;
+                        fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+                    }
+                    else
+                        onComplete(Task.CompletedTask);
                 }
-                onComplete(Task.CompletedTask);
             }
         }
         public override void TakeTileFromDeckAndSave(Action<Task> onComplete)
         {
-            if (HasDrawnThisTurn || IsGameOver) 
-            { 
-                onComplete(Task.CompletedTask); 
-                return; 
-            }
-            if (Deck == null)
-                RebuildDeckFromData();
-            TileData? drawn = Deck?.DrawTileData();
-            if (drawn == null)
-            {
+            if (HasDrawnThisTurn || IsGameOver)
                 onComplete(Task.CompletedTask);
-                return;
-            }
-            TileData[] hand = GetHandForPlayer(MyName);
-            Board board = new(hand);
-            bool placed = board.PlaceTileInFirstEmpty(drawn);
-            if (!placed)
+            else
             {
-                onComplete(Task.CompletedTask);
-                return;
+                if (Deck == null)
+                    RebuildDeckFromData();
+                TileData? drawn = Deck?.DrawTileData();
+                if (drawn == null)
+                    onComplete(Task.CompletedTask);
+                else
+                {
+                    TileData[] hand = GetHandForPlayer(MyName);
+                    Board board = new(hand);
+                    bool placed = board.PlaceTileInFirstEmpty(drawn);
+                    if (!placed)
+                        onComplete(Task.CompletedTask);
+                    else
+                    {
+                        TileData[] newHand = board.ExportToArray();
+                        SetHandForPlayer(MyName, newHand);
+                        DeckData = Deck!.ExportToArray();
+                        HasDrawnThisTurn = true;
+                        Dictionary<string, object> updates = new()
+                        {
+                            [nameof(DeckData)] = DeckData,
+                            [nameof(HasDrawnThisTurn)] = HasDrawnThisTurn
+                        };
+                        string handField = GetHandFieldNameForPlayer(MyName);
+                        updates[handField] = newHand;
+
+                        fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+                    }
+                }
             }
-            TileData[] newHand = board.ExportToArray();
-            SetHandForPlayer(MyName, newHand);
-            DeckData = Deck!.ExportToArray();
-            HasDrawnThisTurn = true;
-
-            Dictionary<string, object> updates = new()
-            {
-                [nameof(DeckData)] = DeckData,
-                [nameof(HasDrawnThisTurn)] = HasDrawnThisTurn
-            };
-
-            string handField = GetHandFieldNameForPlayer(MyName);
-            updates[handField] = newHand;
-
-            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
         public override void InitGrid(Grid deck)
         {
@@ -303,7 +298,6 @@ namespace RummikubApp.ModelLogics
                 deck.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             }
             for (int i = 0; i < 3; i++)
-            {
                 for (int j = 0; j < 4; j++)
                 {
                     btn = new IndexedButton(i, j)
@@ -313,17 +307,11 @@ namespace RummikubApp.ModelLogics
                     btn.Clicked += OnButtonClicked;
                     deck.Add(btn, j, i);
                 }
-            }
         }
         protected override void OnButtonClicked(object? sender, EventArgs e)
         {
-            if (!IsFull) 
-                return;
-            if (CurrentPlayerName != MyName)
-                return;
-            if (sender is not IndexedButton btn)
-                return;
-            TakeTileFromDeckAndSave(OnTakeTileComplete);
+            if (IsFull && CurrentPlayerName == MyName && sender is IndexedButton btn)
+                TakeTileFromDeckAndSave(OnTakeTileComplete);
         }
         protected override void OnTakeTileComplete(Task task)
         {
@@ -406,53 +394,53 @@ namespace RummikubApp.ModelLogics
             Board board = new(hand);
             board.EnsureCapacity();
             if (selectedIndex < 0 || selectedIndex >= board.Tiles.Length)
-            {
                 onComplete(Task.CompletedTask);
-                return;
+            else
+            {
+                TileData chosen = board.Tiles[selectedIndex];
+                if (chosen == null || chosen.IsEmptyTile)
+                    onComplete(Task.CompletedTask);
+                else
+                {
+                    DiscardTile = new TileData
+                    {
+                        ColorIndex = chosen.ColorIndex,
+                        Value = chosen.Value,
+                        IsJoker = chosen.IsJoker,
+                        IsEmptyTile = false,
+                        IsPresent = true
+                    };
+                    board.Tiles[selectedIndex] = new TileData
+                    {
+                        ColorIndex = 0,
+                        Value = 0,
+                        IsJoker = false,
+                        IsEmptyTile = true,
+                        IsPresent = false
+                    };
+                    TileData[] newHand = board.ExportToArray();
+                    SetHandForPlayer(MyName, newHand);
+                    Dictionary<string, object> updates = new()
+                    {
+                        [GetHandFieldNameForPlayer(MyName)] = newHand,
+                        [nameof(DiscardTile)] = DiscardTile
+                    };
+                    TrySetGameOverByTurn(newHand, updates);
+                    bool advanceTurn = true;
+                    if (IsGameOver)
+                        advanceTurn = false;
+                    if (advanceTurn)
+                    {
+                        int next = CurrentTurnIndex + 1;
+                        if (next > Players) next = 1;
+                        CurrentTurnIndex = next;
+                        HasDrawnThisTurn = false;
+                        updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
+                        updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
+                    }
+                    fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+                }  
             }
-            TileData chosen = board.Tiles[selectedIndex];
-            if (chosen == null || chosen.IsEmptyTile)
-            {
-                onComplete(Task.CompletedTask);
-                return;
-            }
-            DiscardTile = new TileData
-            {
-                ColorIndex = chosen.ColorIndex,
-                Value = chosen.Value,
-                IsJoker = chosen.IsJoker,
-                IsEmptyTile = false,
-                IsPresent = true
-            };
-            board.Tiles[selectedIndex] = new TileData
-            {
-                ColorIndex = 0,
-                Value = 0,
-                IsJoker = false,
-                IsEmptyTile = true,
-                IsPresent = false
-            };
-            TileData[] newHand = board.ExportToArray();
-            SetHandForPlayer(MyName, newHand);
-            Dictionary<string, object> updates = new()
-            {
-                [GetHandFieldNameForPlayer(MyName)] = newHand,
-                [nameof(DiscardTile)] = DiscardTile
-            };
-            TrySetGameOverByTurn(newHand, updates);
-            bool advanceTurn = true;
-            if (IsGameOver)
-                advanceTurn = false;
-            if (advanceTurn)
-            {
-                int next = CurrentTurnIndex + 1;
-                if (next > Players) next = 1;
-                CurrentTurnIndex = next;
-                HasDrawnThisTurn = false;
-                updates[nameof(HasDrawnThisTurn)] = HasDrawnThisTurn;
-                updates[nameof(CurrentTurnIndex)] = CurrentTurnIndex;
-            }
-            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
         }
         public override bool CanTakeDiscard()
         {
@@ -465,36 +453,37 @@ namespace RummikubApp.ModelLogics
         }
         public override void TakeDiscardAndSave(Action<Task> onComplete)
         {
-            if (!IsFull || IsGameOver) { onComplete(Task.CompletedTask); return; }
-            if (CurrentPlayerName != MyName) { onComplete(Task.CompletedTask); return; }
-            if (HasDrawnThisTurn) { onComplete(Task.CompletedTask); return; }
-            if (DiscardTile == null || !DiscardTile.IsPresent) { onComplete(Task.CompletedTask); return; }
-            TileData[] hand = GetMyHand();
-            Board board = new(hand);
-            board.EnsureCapacity();
-            TileData tileToAdd = new()
+            if (!IsFull || IsGameOver || CurrentPlayerName != MyName || HasDrawnThisTurn || DiscardTile == null || !DiscardTile.IsPresent)
+                onComplete(Task.CompletedTask);
+            else
             {
-                ColorIndex = DiscardTile.ColorIndex,
-                Value = DiscardTile.Value,
-                IsJoker = DiscardTile.IsJoker,
-                IsEmptyTile = false,
-                IsPresent = false
-            };
-            bool placed = board.PlaceTileInFirstEmpty(tileToAdd);
-            if (!placed) { onComplete(Task.CompletedTask); return; }
-            TileData[] newHand = board.ExportToArray();
-            SetHandForPlayer(MyName, newHand);
-            DiscardTile = new TileData { IsPresent = false };
-            HasDrawnThisTurn = true;
-            Dictionary<string, object> updates = new()
-            {
-                [GetHandFieldNameForPlayer(MyName)] = newHand,
-                [nameof(DiscardTile)] = DiscardTile,
-                [nameof(HasDrawnThisTurn)] = HasDrawnThisTurn
-            };
-            fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
-            RefreshUi();
-        }
+                TileData[] hand = GetMyHand();
+                Board board = new(hand);
+                board.EnsureCapacity();
+                TileData tileToAdd = new()
+                {
+                    ColorIndex = DiscardTile.ColorIndex,
+                    Value = DiscardTile.Value,
+                    IsJoker = DiscardTile.IsJoker,
+                    IsEmptyTile = false,
+                    IsPresent = false
+                };
+                bool placed = board.PlaceTileInFirstEmpty(tileToAdd);
+                if (!placed) { onComplete(Task.CompletedTask); return; }
+                TileData[] newHand = board.ExportToArray();
+                SetHandForPlayer(MyName, newHand);
+                DiscardTile = new TileData { IsPresent = false };
+                HasDrawnThisTurn = true;
+                Dictionary<string, object> updates = new()
+                {
+                    [GetHandFieldNameForPlayer(MyName)] = newHand,
+                    [nameof(DiscardTile)] = DiscardTile,
+                    [nameof(HasDrawnThisTurn)] = HasDrawnThisTurn
+                };
+                fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
+                RefreshUi();
+            }
+        } 
         protected override bool IsRealTile(TileData t)
         {
             bool result = true;
@@ -540,11 +529,9 @@ namespace RummikubApp.ModelLogics
             if (len < 3)
                 result = false;
             if (result)
-            {
                 for (int i = start; i <= end; i++)
                     if (!IsRealTile(hand[i]))
                         result = false;
-            }
             if (result)
             {
                 bool isRunOk = IsValidRun(hand, start, end);

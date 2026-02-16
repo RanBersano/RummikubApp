@@ -15,7 +15,12 @@ namespace RummikubApp.Models
         public GameSize SelectedGameSize { get; set; } = new GameSize();
         public EventHandler<Game>? OnGameAdded;
         public EventHandler? OnGamesChanged;
+        public abstract void AddGame();
+        protected abstract void OnGameDeleted(object? sender, EventArgs e);
+        protected abstract void OnComplete(Task task);
         public abstract void AddSnapshotListener();
         public abstract void RemoveSnapshotListener();
+        protected abstract void OnChange(IQuerySnapshot snapshot, Exception error);
+        protected abstract void OnComplete(IQuerySnapshot qs);
     }
 }

@@ -34,13 +34,13 @@ namespace RummikubApp.ModelLogics
             Tile empty = new(true);
             return empty;
         }
-        public override ImageSource? GetSourceFor(ColorIndexes color, int value) 
+        public override ImageSource? GetSourceFor(ColorIndexes color, int value)
         {
             if (value <= 0) return null;
             string file = GetFileName(color, value);
             return ImageSource.FromFile(file);
         }
-        protected override string GetFileName(ColorIndexes color, int value) 
+        protected override string GetFileName(ColorIndexes color, int value)
         {
             Tile t = new(color, value);
             if (t.Source == null) return string.Empty;
