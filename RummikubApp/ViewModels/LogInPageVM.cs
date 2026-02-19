@@ -1,15 +1,16 @@
-﻿using RummikubApp.ModelLogics;
-using System.Windows.Input;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using RummikubApp.ModelLogics;
 using RummikubApp.Models;
 using RummikubApp.Views;
+using System.Windows.Input;
 
 namespace RummikubApp.ViewModels
 {
-    public class LogInPageVM : ObservableObject
+    public partial class LogInPageVM : ObservableObject
     {
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();
-        public bool IsBusy { get; set; } = false;
         public ICommand ResetEmail => new Command(ResetPass);
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand LogInCommand {  get; }
@@ -19,6 +20,7 @@ namespace RummikubApp.ViewModels
             LogInCommand = new Command(LogIn, CanLogIn);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
             user.OnAuthComplete += OnAuthComplete;
+            user.ShowToastAlert += ShowToastAlert;
         }
         public bool IsChecked
         {
@@ -40,11 +42,31 @@ namespace RummikubApp.ViewModels
         }
         public bool CanLogIn()
         {
-            return user.CanLogIn();
+            return !IsBusy && user.CanLogIn();
+        }
+        private void ShowToastAlert(object? sender, string msg)
+        {
+            isBusy = false;
+            OnPropertyChanged(nameof(isBusy));
+            OnPropertyChanged(nameof(isBusy));
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Toast.Make(msg, ToastDuration.Long).Show();
+            });
+        }
+        private bool isBusy;
+        public bool IsBusy
+        {
+            get => isBusy;
+            set
+            {
+                isBusy = value;
+                OnPropertyChanged();
+                (LogInCommand as Command)?.ChangeCanExecute();
+            }
         }
         private void OnAuthComplete(object? sender, EventArgs e)
         {
-            OnPropertyChanged(nameof(IsBusy));
             if (Application.Current != null)
             {
                 MainThread.InvokeOnMainThreadAsync(() =>
@@ -55,7 +77,11 @@ namespace RummikubApp.ViewModels
         }
         private void LogIn()
         {
-            user.Login(IsCheckedValue);
+            if (!IsBusy)
+            {
+                IsBusy = true;
+                user.Login(IsCheckedValue);
+            }
         }
         private void ToggleIsPassword()
         {

@@ -5,6 +5,7 @@ namespace RummikubApp.Models
     {
         protected FbData fbd = new();
         public EventHandler? OnAuthComplete;
+        public EventHandler<string>? ShowToastAlert;
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;

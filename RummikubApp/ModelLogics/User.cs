@@ -57,10 +57,7 @@ namespace RummikubApp.ModelLogics
         }
         protected override void ShowAlert(string msg)
         {
-            MainThread.InvokeOnMainThreadAsync(() =>
-            {
-               Toast.Make(msg, ToastDuration.Long).Show();
-            });
+            ShowToastAlert?.Invoke(this, msg);
         }
         protected override void SaveToPreferences()
         {

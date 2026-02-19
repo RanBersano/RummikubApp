@@ -1,4 +1,6 @@
-﻿using RummikubApp.ModelLogics;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using RummikubApp.ModelLogics;
 using RummikubApp.Models;
 using RummikubApp.Views;
 using System.Windows.Input;
@@ -8,7 +10,6 @@ namespace RummikubApp.ViewModels
     {
         public bool IsPassword { get; set; } = true;
         private readonly User user = new();
-        public bool IsBusy => user.IsBusy;
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand RegisterCommand { get; }
         public RegisterPageVM()
@@ -16,6 +17,7 @@ namespace RummikubApp.ViewModels
             RegisterCommand = new Command(Register, CanRegister);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
             user.OnAuthComplete += OnAuthComplete;
+            user.ShowToastAlert += ShowToastAlert;
         }
         private void OnAuthComplete(object? sender, EventArgs e)
         {
@@ -35,11 +37,36 @@ namespace RummikubApp.ViewModels
         }
         public bool CanRegister()
         {
-            return user.CanRegister();
+            return !IsBusy && user.CanRegister();
+        }
+        private void ShowToastAlert(object? sender, string msg)
+        {
+            isBusy = false;
+            OnPropertyChanged(nameof(isBusy));
+            OnPropertyChanged(nameof(isBusy));
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Toast.Make(msg, ToastDuration.Long).Show();
+            });
+        }
+        private bool isBusy;
+        public bool IsBusy
+        {
+            get => isBusy;
+            set
+            {
+                isBusy = value;
+                OnPropertyChanged();
+                (RegisterCommand as Command)?.ChangeCanExecute();
+            }
         }
         private void Register()
         {
-            user.Register();
+            if (!IsBusy)
+            {
+                IsBusy = true;
+                user.Register();
+            }
         }
         public string UserName
         {
