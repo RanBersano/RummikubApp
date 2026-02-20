@@ -4,6 +4,7 @@ namespace RummikubApp.Models
 {
     public abstract class TileModel : ImageButton
     {
+        #region Fields
         private static readonly string[,] tilesImage ={
             {Strings.OneOrange, Strings.TwoOrange, Strings.ThreeOrange, Strings.FourOrange, Strings.FiveOrange, Strings.SixOrange, Strings.SevenOrange, Strings.EightOrange, Strings.NineOrange, Strings.TenOrange, Strings.ElevenOrange, Strings.TwelveOrange, Strings.ThirteenOrange},
             {Strings.OneRed, Strings.TwoRed, Strings.ThreeRed, Strings.FourRed, Strings.FiveRed, Strings.SixRed, Strings.SevenRed, Strings.EightRed, Strings.NineRed, Strings.TenRed, Strings.ElevenRed, Strings.TwelveRed, Strings.ThirteenRed},
@@ -18,21 +19,18 @@ namespace RummikubApp.Models
         }
         public static int TilesInColor
         {
-            get
-            {
-                return tilesImage.GetLength(1);
-            }
+            get => tilesImage.GetLength(1);
         }
+        #endregion
+        #region Properties
         public ColorIndexes ColorIndex { get; set; }
         public int Value { get; set; }
+        public int Index { get; set; }
         public bool IsJoker { get; set; }
         public bool IsSelected { get; set; }
-        public int Index { get; set; }
         public bool IsEmptyTile { get; set; }
-        public abstract Tile CreateEmptyTile();
-        public abstract ImageSource? GetSourceFor(ColorIndexes color, int value);
-        protected abstract string GetFileName(ColorIndexes color, int value);
-        public abstract Tile FromTileData(TileData data);
+        #endregion
+        #region Constructors
         public TileModel(ColorIndexes colorIndex, int value)
         {
             ColorIndex = colorIndex;
@@ -46,6 +44,15 @@ namespace RummikubApp.Models
         public TileModel()
         {
         }
+        #endregion
+        #region Public Methods
+        public abstract Tile CreateEmptyTile();
+        public abstract ImageSource? GetSourceFor(ColorIndexes color, int value);
+        public abstract Tile FromTileData(TileData data);
+        #endregion
+        #region Private Methods
+        protected abstract string GetFileName(ColorIndexes color, int value);
+        #endregion
     }
 }
  

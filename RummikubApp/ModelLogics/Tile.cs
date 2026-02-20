@@ -36,29 +36,40 @@ namespace RummikubApp.ModelLogics
         }
         public override ImageSource? GetSourceFor(ColorIndexes color, int value)
         {
-            if (value <= 0) return null;
-            string file = GetFileName(color, value);
-            return ImageSource.FromFile(file);
+            ImageSource? result = null;
+            if (value > 0)
+            {
+                string file = GetFileName(color, value);
+                result = ImageSource.FromFile(file);
+            }
+            return result;
         }
         protected override string GetFileName(ColorIndexes color, int value)
         {
+            string result = string.Empty;
             Tile t = new(color, value);
-            if (t.Source == null) return string.Empty;
-            return t.Source.ToString()!;
+            if (t.Source != null)
+                result = t.Source.ToString()!;
+            return result;
         }
         public override Tile FromTileData(TileData data)
         {
+            _ = CreateEmptyTile();
+            Tile result;
             if (data == null)
-                return CreateEmptyTile();
-            if (data.IsEmptyTile)
-                return CreateEmptyTile();
-            if (data.IsJoker)
-                return new Tile();
-            Tile t2 = new((ColorIndexes)data.ColorIndex, data.Value)
+                result = CreateEmptyTile();
+            else if (data.IsEmptyTile)
+                result = CreateEmptyTile();
+            else if (data.IsJoker)
+                result = new Tile();
+            else
             {
-                IsEmptyTile = false
-            };
-            return t2;
+                result = new((ColorIndexes)data.ColorIndex, data.Value)
+                {
+                    IsEmptyTile = false
+                };
+            }
+            return result;
         }
     }
 }

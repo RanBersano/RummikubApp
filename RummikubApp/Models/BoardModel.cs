@@ -4,16 +4,20 @@ namespace RummikubApp.Models
 {
     public abstract class BoardModel
     {
-        public int Capacity { get; protected set; } = 18;
-        public TileData[] Tiles { get; protected set; } = new TileData[0];
-        [Ignored]
+        #region Properties
+        public TileData[] Tiles { get; protected set; } = [];
         public int SelectedIndex { get; protected set; } = -1;
-        public abstract void LoadFromArray(TileData[] tiles);
+        [Ignored]
+        public int Capacity { get; protected set; } = 18;
+        #endregion
+        #region Public Methods
         public abstract TileData[] ExportToArray();
+        public abstract void LoadFromArray(TileData[] tiles);
         public abstract void EnsureCapacity();
-        public abstract bool HandleTap(int index);
         public abstract void ClearSelection();
-        public abstract int FindFirstEmptyTileIndex();
+        public abstract bool HandleTap(int index);
         public abstract bool PlaceTileInFirstEmpty(TileData tile);
+        public abstract int FindFirstEmptyTileIndex();
+        #endregion
     }
 }

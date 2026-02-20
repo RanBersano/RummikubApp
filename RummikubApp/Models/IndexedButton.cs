@@ -1,9 +1,12 @@
 ﻿namespace RummikubApp.Models
 {
-    public class IndexedButton : Button
+    public partial class IndexedButton : Button
     {
+        #region Properties
         public int RowIndex { get; set; }
         public int ColumnIndex { get; set; }
+        #endregion
+        #region Constructor
         public IndexedButton(int rowIndex, int columnIndex)
         {
             RowIndex = rowIndex;
@@ -11,5 +14,6 @@
             HeightRequest = 50;
             WidthRequest = 40;
         }
+        #endregion
     }
 }

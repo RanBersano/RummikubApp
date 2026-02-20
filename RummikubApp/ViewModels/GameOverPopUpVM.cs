@@ -4,10 +4,17 @@ namespace RummikubApp.ViewModels
 {
     public class GameOverPopUpVM
     {
+        #region Fields
         private readonly GameOverPopUp _gameOverPopUp;
+        #endregion
+        #region Commands
         public ICommand HomeCommand { get; private set; }
+        #endregion
+        #region Properties
         public string ResultText { get; }
         public string ResultMessage { get; }
+        #endregion
+        #region Constructor
         public GameOverPopUpVM(GameOverPopUp gameOverPopUp, string title, string message)
         {
             _gameOverPopUp = gameOverPopUp;
@@ -15,6 +22,8 @@ namespace RummikubApp.ViewModels
             ResultMessage = message;
             HomeCommand = new Command(TransferHome);
         }
+        #endregion
+        #region Private Methods
         private void TransferHome(object obj)
         {
             MainThread.InvokeOnMainThreadAsync(() =>
@@ -24,5 +33,6 @@ namespace RummikubApp.ViewModels
             });
             _gameOverPopUp.Close();
         }
+        #endregion
     }
 }

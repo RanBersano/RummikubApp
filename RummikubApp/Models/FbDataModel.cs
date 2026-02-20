@@ -5,18 +5,15 @@ namespace RummikubApp.Models
 {
     public abstract class FbDataModel
     {
+        #region Fields
         protected FirebaseAuthClient facl;
         protected IFirestore fs;
+        #endregion
+        #region Properties
         public abstract string DisplayName { get; }
         public abstract string UserId { get; }
-        public abstract void CreateUserWithEmailAndPasswordAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete);
-        public abstract void SignInWithEmailAndPasswordAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete);
-        public abstract void ResetEmailPasswordAsync(string email, Action<Task> OnComplete);
-        public abstract string SetDocument(object obj, string collectonName, string id, Action<System.Threading.Tasks.Task> OnComplete);
-        public abstract void UpdateFields(string collectonName, string id, Dictionary<string, object> dict, Action<Task> OnComplete);
-        public abstract void DeleteDocument(string collectonName, string id, Action<Task> OnComplete);
-        public abstract void GetDocumentsWhereLessThan(string collectonName, string fName, object fValue, Action<IQuerySnapshot> OnComplete); public abstract IListenerRegistration AddSnapshotListener(string collectonName, Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
-        public abstract IListenerRegistration AddSnapshotListener(string collectonName, string id, Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
+        #endregion
+        #region Constructor
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()
@@ -28,5 +25,16 @@ namespace RummikubApp.Models
             facl = new FirebaseAuthClient(fac);
             fs = CrossCloudFirestore.Current.Instance;
         }
+        #endregion
+        #region Public Methods
+        public abstract void CreateUserWithEmailAndPasswordAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete);
+        public abstract void SignInWithEmailAndPasswordAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete);
+        public abstract void ResetEmailPasswordAsync(string email, Action<Task> OnComplete);
+        public abstract string SetDocument(object obj, string collectonName, string id, Action<System.Threading.Tasks.Task> OnComplete);
+        public abstract void UpdateFields(string collectonName, string id, Dictionary<string, object> dict, Action<Task> OnComplete);
+        public abstract void DeleteDocument(string collectonName, string id, Action<Task> OnComplete);
+        public abstract void GetDocumentsWhereLessThan(string collectonName, string fName, object fValue, Action<IQuerySnapshot> OnComplete); public abstract IListenerRegistration AddSnapshotListener(string collectonName, Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
+        public abstract IListenerRegistration AddSnapshotListener(string collectonName, string id, Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
+        #endregion
     }
 }

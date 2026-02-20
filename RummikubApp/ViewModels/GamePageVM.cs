@@ -10,7 +10,16 @@ namespace RummikubApp.ViewModels
 {
     public partial class GamePageVM : ObservableObject
     {
+        #region Fields
         private readonly Game game;
+        #endregion
+        #region Commands
+        private readonly Command<int> tileTappedCommand;
+        public ICommand TileTappedCommand => tileTappedCommand;
+        public ICommand TakeDiscardCommand { get; }
+        public ICommand DiscardSelectedCommand { get; }
+        #endregion
+        #region Properties
         public ObservableCollection<Tile> Board => game.UiBoard;
         public ImageSource? DiscardTileSource => game.DiscardTileSource;
         public string TimeLeft => game.TimeLeft;
@@ -22,10 +31,8 @@ namespace RummikubApp.ViewModels
         public bool IsPlayer1Turn => game.CurrentPlayerName == game.GetOtherPlayerName(0);
         public bool IsPlayer2Turn => game.CurrentPlayerName == game.GetOtherPlayerName(1);
         public bool IsPlayer3Turn => game.CurrentPlayerName == game.GetOtherPlayerName(2);
-        private readonly Command<int> tileTappedCommand;
-        public ICommand TileTappedCommand => tileTappedCommand;
-        public ICommand TakeDiscardCommand { get; }
-        public ICommand DiscardSelectedCommand { get; }
+        #endregion
+        #region Constructor
         public GamePageVM(Game game, Grid deckGrid)
         {
             this.game = game;
@@ -45,6 +52,12 @@ namespace RummikubApp.ViewModels
                 this.game.UpdateGuestUser(OnJoinComplete);
             this.game.RefreshUi();
         }
+        #endregion
+        #region Public Methods
+        public void AddSnapshotListener() => game.AddSnapshotListener();
+        public void RemoveSnapshotListener() => game.RemoveSnapshotListener();
+        #endregion
+        #region Private Methods
         private void GameIsOver(object? sender, bool win)
         {
             string title = win? Strings.YouWonTitle : Strings.YouLostTitle;
@@ -77,7 +90,6 @@ namespace RummikubApp.ViewModels
             if (!task.IsCompletedSuccessfully)
                 Toast.Make(Strings.JoinGameErr, ToastDuration.Long).Show();
         }
-        public void AddSnapshotListener() => game.AddSnapshotListener();
-        public void RemoveSnapshotListener() => game.RemoveSnapshotListener();
+        #endregion
     }
 }

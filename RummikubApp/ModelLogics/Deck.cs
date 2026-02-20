@@ -3,7 +3,7 @@ namespace RummikubApp.ModelLogics
 {
     public class Deck : DeckModel
     {
-        private readonly Random rnd = new Random();
+        private readonly Random rnd = new();
         public Deck()
         {
             BuildFullDeck();
@@ -20,14 +20,14 @@ namespace RummikubApp.ModelLogics
         public override void LoadFromArray(TileData[] tiles)
         {
             if (tiles == null)
+                Tiles = [];
+            else
             {
-                Tiles = new TileData[0];
-                return;
+                TileData[] copy = new TileData[tiles.Length];
+                for (int i = 0; i < tiles.Length; i++)
+                    copy[i] = tiles[i];
+                Tiles = copy;
             }
-            TileData[] copy = new TileData[tiles.Length];
-            for (int i = 0; i < tiles.Length; i++)
-                copy[i] = tiles[i];
-            Tiles = copy;
         }
         public override TileData[] ExportToArray()
         {
@@ -74,39 +74,43 @@ namespace RummikubApp.ModelLogics
             for (int i = Tiles.Length - 1; i > 0; i--)
             {
                 int j = rnd.Next(i + 1);
-                TileData temp = Tiles[i];
-                Tiles[i] = Tiles[j];
-                Tiles[j] = temp;
+                (Tiles[j], Tiles[i]) = (Tiles[i], Tiles[j]);
             }
         }
         public override TileData[] DealTiles(int count)
         {
+            TileData[] hand;
             if (count <= 0 || Tiles.Length == 0)
-                return new TileData[0];
-            int take = count;
-            if (take > Tiles.Length)
-                take = Tiles.Length;
-            TileData[] hand = new TileData[take];
-            for (int i = 0; i < take; i++)
-                hand[i] = Tiles[i];
-            int remaining = Tiles.Length - take;
-            TileData[] newDeck = new TileData[remaining];
-            for (int i = 0; i < remaining; i++)
-                newDeck[i] = Tiles[take + i];
-            Tiles = newDeck;
+                hand = [];
+            else
+            {
+                int take = count;
+                if (take > Tiles.Length)
+                    take = Tiles.Length;
+                hand = new TileData[take];
+                for (int i = 0; i < take; i++)
+                    hand[i] = Tiles[i];
+                int remaining = Tiles.Length - take;
+                TileData[] newDeck = new TileData[remaining];
+                for (int i = 0; i < remaining; i++)
+                    newDeck[i] = Tiles[take + i];
+                Tiles = newDeck;
+            }
             return hand;
         }
         public override TileData? DrawTileData()
         {
-            if (Tiles.Length == 0)
-                return null;
-            TileData top = Tiles[0];
-            int remaining = Tiles.Length - 1;
-            TileData[] newDeck = new TileData[remaining];
-            for (int i = 0; i < remaining; i++)
-                newDeck[i] = Tiles[i + 1];
-            Tiles = newDeck;
-            return top;
+            TileData? result = null;
+            if (Tiles.Length != 0)
+            {
+                result = Tiles[0];
+                int remaining = Tiles.Length - 1;
+                TileData[] newDeck = new TileData[remaining];
+                for (int i = 0; i < remaining; i++)
+                    newDeck[i] = Tiles[i + 1];
+                Tiles = newDeck;
+            }
+            return result;
         }
     }
 }

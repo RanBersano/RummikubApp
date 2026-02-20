@@ -8,47 +8,15 @@ namespace RummikubApp.ViewModels
 {
     public partial class RegisterPageVM : ObservableObject
     {
-        public bool IsPassword { get; set; } = true;
+        #region Fields
         private readonly User user = new();
+        #endregion
+        #region Commands
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand RegisterCommand { get; }
-        public RegisterPageVM()
-        {
-            RegisterCommand = new Command(Register, CanRegister);
-            ToggleIsPasswordCommand = new Command(ToggleIsPassword);
-            user.OnAuthComplete += OnAuthComplete;
-            user.ShowToastAlert += ShowToastAlert;
-        }
-        private void OnAuthComplete(object? sender, EventArgs e)
-        {
-            if(Application.Current != null)
-            {
-                OnPropertyChanged(nameof(IsBusy));
-                MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    Application.Current.MainPage = new HomePage();
-                });
-            }
-        }
-        private void ToggleIsPassword()
-        {
-            IsPassword = !IsPassword;
-            OnPropertyChanged(nameof(IsPassword));
-        }
-        public bool CanRegister()
-        {
-            return !IsBusy && user.CanRegister();
-        }
-        private void ShowToastAlert(object? sender, string msg)
-        {
-            isBusy = false;
-            OnPropertyChanged(nameof(isBusy));
-            OnPropertyChanged(nameof(isBusy));
-            MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                Toast.Make(msg, ToastDuration.Long).Show();
-            });
-        }
+        #endregion
+        #region Properties
+        public bool IsPassword { get; set; } = true;
         private bool isBusy;
         public bool IsBusy
         {
@@ -58,14 +26,6 @@ namespace RummikubApp.ViewModels
                 isBusy = value;
                 OnPropertyChanged();
                 (RegisterCommand as Command)?.ChangeCanExecute();
-            }
-        }
-        private void Register()
-        {
-            if (!IsBusy)
-            {
-                IsBusy = true;
-                user.Register();
             }
         }
         public string UserName
@@ -95,5 +55,57 @@ namespace RummikubApp.ViewModels
                 (RegisterCommand as Command)?.ChangeCanExecute();
             }
         }
+        #endregion
+        #region Constructor
+        public RegisterPageVM()
+        {
+            RegisterCommand = new Command(Register, CanRegister);
+            ToggleIsPasswordCommand = new Command(ToggleIsPassword);
+            user.OnAuthComplete += OnAuthComplete;
+            user.ShowToastAlert += ShowToastAlert;
+        }
+        #endregion
+        #region Public Methods
+        public bool CanRegister()
+        {
+            return !IsBusy && user.CanRegister();
+        }
+        #endregion
+        #region Private Methods
+        private void OnAuthComplete(object? sender, EventArgs e)
+        {
+            if(Application.Current != null)
+            {
+                OnPropertyChanged(nameof(IsBusy));
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    Application.Current.MainPage = new HomePage();
+                });
+            }
+        }
+        private void ToggleIsPassword()
+        {
+            IsPassword = !IsPassword;
+            OnPropertyChanged(nameof(IsPassword));
+        }
+        private void ShowToastAlert(object? sender, string msg)
+        {
+            isBusy = false;
+            OnPropertyChanged(nameof(isBusy));
+            OnPropertyChanged(nameof(isBusy));
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Toast.Make(msg, ToastDuration.Long).Show();
+            });
+        }
+        private void Register()
+        {
+            if (!IsBusy)
+            {
+                IsBusy = true;
+                user.Register();
+            }
+        }
+        #endregion
     }
 }

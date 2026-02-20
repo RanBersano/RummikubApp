@@ -9,19 +9,17 @@ namespace RummikubApp.ViewModels
 {
     public partial class LogInPageVM : ObservableObject
     {
-        public bool IsPassword { get; set; } = true;
+        #region Fields
         private readonly User user = new();
+        #endregion
+        #region Commands
         public ICommand ResetEmail => new Command(ResetPass);
         public ICommand ToggleIsPasswordCommand { get; }
         public ICommand LogInCommand {  get; }
-        private bool IsCheckedValue;
-        public LogInPageVM()
-        {
-            LogInCommand = new Command(LogIn, CanLogIn);
-            ToggleIsPasswordCommand = new Command(ToggleIsPassword);
-            user.OnAuthComplete += OnAuthComplete;
-            user.ShowToastAlert += ShowToastAlert;
-        }
+        #endregion
+        #region Properties
+        private bool IsCheckedValue { get; set; }
+        public bool IsPassword { get; set; } = true;
         public bool IsChecked
         {
             get => IsCheckedValue;
@@ -30,29 +28,7 @@ namespace RummikubApp.ViewModels
         public string EmailForReset
         {
             get => user.EmailForReset;
-            set
-            {
-                user.EmailForReset = value;
-            }
-        }
-        private void ResetPass()
-        {
-            user.EmailForReset = EmailForReset;
-            user.ResetEmailPassword();
-        }
-        public bool CanLogIn()
-        {
-            return !IsBusy && user.CanLogIn();
-        }
-        private void ShowToastAlert(object? sender, string msg)
-        {
-            isBusy = false;
-            OnPropertyChanged(nameof(isBusy));
-            OnPropertyChanged(nameof(isBusy));
-            MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                Toast.Make(msg, ToastDuration.Long).Show();
-            });
+            set => user.EmailForReset = value;
         }
         private bool isBusy;
         public bool IsBusy
@@ -64,29 +40,6 @@ namespace RummikubApp.ViewModels
                 OnPropertyChanged();
                 (LogInCommand as Command)?.ChangeCanExecute();
             }
-        }
-        private void OnAuthComplete(object? sender, EventArgs e)
-        {
-            if (Application.Current != null)
-            {
-                MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    Application.Current.MainPage = new HomePage();
-                });
-            }
-        }
-        private void LogIn()
-        {
-            if (!IsBusy)
-            {
-                IsBusy = true;
-                user.Login(IsCheckedValue);
-            }
-        }
-        private void ToggleIsPassword()
-        {
-            IsPassword = !IsPassword;
-            OnPropertyChanged(nameof(IsPassword));
         }
         public string UserName 
         { 
@@ -115,5 +68,57 @@ namespace RummikubApp.ViewModels
                 (LogInCommand as Command)?.ChangeCanExecute();
             }
         }
+        #endregion
+        #region Constructor
+        public LogInPageVM()
+        {
+            LogInCommand = new Command(LogIn, CanLogIn);
+            ToggleIsPasswordCommand = new Command(ToggleIsPassword);
+            user.OnAuthComplete += OnAuthComplete;
+            user.ShowToastAlert += ShowToastAlert;
+        }
+        #endregion
+        #region Private Methods
+        public bool CanLogIn()
+        {
+            return !IsBusy && user.CanLogIn();
+        }
+        private void ResetPass()
+        {
+            user.EmailForReset = EmailForReset;
+            user.ResetEmailPassword();
+        }
+        private void ShowToastAlert(object? sender, string msg)
+        {
+            isBusy = false;
+            OnPropertyChanged(nameof(isBusy));
+            OnPropertyChanged(nameof(isBusy));
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Toast.Make(msg, ToastDuration.Long).Show();
+            });
+        }
+        private void OnAuthComplete(object? sender, EventArgs e)
+        {
+            if (Application.Current != null)
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    Application.Current.MainPage = new HomePage();
+                });
+        }
+        private void LogIn()
+        {
+            if (!IsBusy)
+            {
+                IsBusy = true;
+                user.Login(IsCheckedValue);
+            }
+        }
+        private void ToggleIsPassword()
+        {
+            IsPassword = !IsPassword;
+            OnPropertyChanged(nameof(IsPassword));
+        }
+        #endregion
     }
 }
