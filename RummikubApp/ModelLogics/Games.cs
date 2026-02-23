@@ -6,6 +6,12 @@ namespace RummikubApp.ModelLogics
 {
     public class Games: GamesModel
     {
+        #region Constructor
+        public Games()
+        {
+        }
+        #endregion
+        #region Public Methods
         public override void AddGame()
         {
             IsBusy = true;
@@ -16,6 +22,16 @@ namespace RummikubApp.ModelLogics
             currentGame.OnGameDeleted += OnGameDeleted;
             currentGame.SetDocument(OnComplete);
         }
+        public override void AddSnapshotListener()
+        {
+            ilr = fbd.AddSnapshotListener(Keys.GamesCollection, OnChange!);
+        }
+        public override void RemoveSnapshotListener()
+        {
+            ilr?.Remove();
+        }
+        #endregion
+        #region Private Methods
         protected override void OnGameDeleted(object? sender, EventArgs e)
         {
             MainThread.InvokeOnMainThreadAsync(() =>
@@ -27,17 +43,6 @@ namespace RummikubApp.ModelLogics
         {
             IsBusy = false;
             OnGameAdded?.Invoke(this, currentGame!);
-        }
-        public Games()
-        {
-        }
-        public override void AddSnapshotListener()
-        {
-            ilr = fbd.AddSnapshotListener(Keys.GamesCollection, OnChange!);
-        }
-        public override void RemoveSnapshotListener()
-        {
-            ilr?.Remove();
         }
         protected override void OnChange(IQuerySnapshot snapshot, Exception error)
         {
@@ -57,5 +62,6 @@ namespace RummikubApp.ModelLogics
             }
             OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }
+        #endregion
     }
 }

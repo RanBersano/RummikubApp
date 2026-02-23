@@ -7,8 +7,10 @@ namespace RummikubApp.ModelLogics
 {
     public class Game : GameModel
     {
+        #region Fields
         private readonly Tile tileFactory = new();
-
+        #endregion
+        #region Constructors
         public Game(GameSize selectedGameSize)
         {
             RegisterTimer();
@@ -28,32 +30,8 @@ namespace RummikubApp.ModelLogics
         {
             RegisterTimer();
         }
-        protected override void RegisterTimer()
-        {
-            WeakReferenceMessenger.Default.Register<AppMessage<long>>(this, (r, m) =>
-            {
-                OnMessageReceived(m.Value);
-            });
-        }
-        protected override void OnMessageReceived(long timeLeft)
-        {
-            TimeLeft = timeLeft == Keys.FinishedSignal ? Strings.TimeUp : double.Round(timeLeft / 1000, 1).ToString();
-            TimeLeftChanged?.Invoke(this, EventArgs.Empty);
-        }
-        protected override Board GetMyBoard()
-        {
-            if (MyBoardCache == null)
-            {
-                TileData[] hand = GetMyHand();
-                MyBoardCache = new Board(hand);
-                MyBoardCache.EnsureCapacity();
-            }
-            return MyBoardCache;
-        }
-        protected override void RebuildDeckFromData()
-        {
-            Deck = new Deck(DeckData);
-        }
+        #endregion
+        #region Public Methods
         public override string GetOtherPlayerName(int index)
         {
             string result = string.Empty;
@@ -188,43 +166,6 @@ namespace RummikubApp.ModelLogics
             }
             
         }
-        protected override TileData[] GetHandForPlayer(string playerName)
-        {
-            TileData[] result = [];
-            if (playerName == HostName)
-                result = HostHand;
-            if (playerName == PlayerName2)
-                result = Player2Hand;
-            if (playerName == PlayerName3)
-                result = Player3Hand;
-            if (playerName == PlayerName4) 
-                result = Player4Hand;
-            return result;
-        }
-        protected override void SetHandForPlayer(string playerName, TileData[] hand)
-        {
-            if (playerName == HostName)
-                HostHand = hand;
-            else if (playerName == PlayerName2)
-                Player2Hand = hand;
-            else if (playerName == PlayerName3)
-                Player3Hand = hand;
-            if (playerName == PlayerName4)
-                Player4Hand = hand;
-        }
-        protected override string GetHandFieldNameForPlayer(string playerName)
-        {
-            string result = string.Empty;
-            if (playerName == HostName)
-                result = nameof(HostHand);
-            if (playerName == PlayerName2)
-                result = nameof(Player2Hand);
-            if (playerName == PlayerName3)
-                result = nameof(Player3Hand);
-            if (playerName == PlayerName4)
-                result = nameof(Player4Hand);
-            return result;
-        }
         public override void HandleTileTap(int tappedIndex, Action<Task> onComplete)
         {
             if (!IsGameOver)
@@ -307,70 +248,6 @@ namespace RummikubApp.ModelLogics
                     btn.Clicked += OnButtonClicked;
                     deck.Add(btn, j, i);
                 }
-        }
-        protected override void OnButtonClicked(object? sender, EventArgs e)
-        {
-            if (IsFull && CurrentPlayerName == MyName && sender is IndexedButton btn)
-                TakeTileFromDeckAndSave(OnTakeTileComplete);
-        }
-        protected override void OnTakeTileComplete(Task task)
-        {
-            if (!task.IsCompletedSuccessfully)
-                return;
-        }
-        protected override void OnComplete(Task task)
-        {
-            if (task.IsCompletedSuccessfully)
-                OnGameDeleted?.Invoke(this, EventArgs.Empty);
-        }  
-        protected override void OnChange(IDocumentSnapshot? snapshot, Exception? error)
-        {
-            Game? updated = snapshot?.ToObject<Game>();
-            if (updated != null)
-            {
-                if(updated.IsGameOver && !IsGameOver)
-                    GameOver?.Invoke(this, false);
-                HasDrawnThisTurn = updated.HasDrawnThisTurn;
-                IsGameOver = updated.IsGameOver;
-                WinnerIndex = updated.WinnerIndex;
-                Players = updated.Players;
-                IsFull = updated.IsFull;
-                CurrentNumOfPlayers = updated.CurrentNumOfPlayers;
-                HostName = updated.HostName;
-                PlayerName2 = updated.PlayerName2;
-                PlayerName3 = updated.PlayerName3;
-                PlayerName4 = updated.PlayerName4;
-                CurrentTurnIndex = updated.CurrentTurnIndex;
-                DeckData = updated.DeckData ?? [];
-                HostHand = updated.HostHand ?? [];
-                Player2Hand = updated.Player2Hand ?? [];
-                Player3Hand = updated.Player3Hand ?? [];
-                Player4Hand = updated.Player4Hand ?? [];
-                DiscardTile = updated.DiscardTile ?? new TileData { IsPresent = false };
-                MyBoardCache = null;
-                RebuildDeckFromData();
-                RefreshUi();
-                OnGameChanged?.Invoke(this, EventArgs.Empty);
-            }
-            else
-            {
-                MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    Shell.Current.Navigation.PopAsync();
-                    Toast.Make(Strings.GameDeleted, ToastDuration.Long).Show();
-                });
-            }
-            if (IsFull && !StartTimerWasTriggered)
-            {
-                StartTimerWasTriggered = true;
-                WeakReferenceMessenger.Default.Send(new AppMessage<TimerSettings>(timerSettings));
-            }
-            else
-            {
-                WeakReferenceMessenger.Default.Send(new AppMessage<bool>(true));
-                TimeLeft = string.Empty;
-                TimeLeftChanged?.Invoke(this, EventArgs.Empty);
-            }
         }
         public override TileData[] GetMyHand()
         {
@@ -483,7 +360,171 @@ namespace RummikubApp.ModelLogics
                 fbd.UpdateFields(Keys.GamesCollection, Id, updates, onComplete);
                 RefreshUi();
             }
-        } 
+        }
+        public override void RefreshUi()
+        {
+            TileData[] hand = GetMyHand();
+            UiBoard.Clear();
+            for (int i = 0; i < hand.Length; i++)
+            {
+                Tile t = tileFactory.FromTileData(hand[i]);
+                t.Index = i;
+                t.IsSelected = (i == SelectedIndex);
+                UiBoard.Add(t);
+            }
+            bool hasDiscard = (DiscardTile != null && DiscardTile.IsPresent);
+            if (!hasDiscard)
+                DiscardTileSource = null;
+            else
+            {
+                if (DiscardTile!.IsJoker)
+                    DiscardTileSource = Strings.Joker;
+                else
+                {
+                    Tile t = new((TileModel.ColorIndexes)DiscardTile.ColorIndex, DiscardTile.Value);
+                    DiscardTileSource = t.Source;
+                }
+            }
+            UiChanged?.Invoke(this, EventArgs.Empty);
+        }
+        public override void TileTapped(int index)
+        {
+            if (!IsGameOver)
+            {
+                bool doWork = true;
+                if (index < 0 || index >= UiBoard.Count)
+                    doWork = false;
+                if (doWork)
+                    if (SelectedIndex == -1 && UiBoard[index].IsEmptyTile)
+                        doWork = false;
+                if (doWork)
+                    if (SelectedIndex == index)
+                    {
+                        SelectedIndex = -1;
+                        RefreshUi();
+                        doWork = false;
+                    }
+                if (doWork)
+                    if (SelectedIndex != -1)
+                    {
+                        int first = SelectedIndex;
+                        int second = index;
+                        SelectedIndex = -1;
+                        HandleTileTap(first, _ => { });
+                        HandleTileTap(second, _ => { });
+                        RefreshUi();
+                        doWork = false;
+                    }
+                if (doWork)
+                {
+                    SelectedIndex = index;
+                    RefreshUi();
+                }
+            }
+        }
+        #endregion
+        #region Private Methods
+        protected override TileData[] GetHandForPlayer(string playerName)
+        {
+            TileData[] result = [];
+            if (playerName == HostName)
+                result = HostHand;
+            if (playerName == PlayerName2)
+                result = Player2Hand;
+            if (playerName == PlayerName3)
+                result = Player3Hand;
+            if (playerName == PlayerName4)
+                result = Player4Hand;
+            return result;
+        }
+        protected override void SetHandForPlayer(string playerName, TileData[] hand)
+        {
+            if (playerName == HostName)
+                HostHand = hand;
+            else if (playerName == PlayerName2)
+                Player2Hand = hand;
+            else if (playerName == PlayerName3)
+                Player3Hand = hand;
+            if (playerName == PlayerName4)
+                Player4Hand = hand;
+        }
+        protected override string GetHandFieldNameForPlayer(string playerName)
+        {
+            string result = string.Empty;
+            if (playerName == HostName)
+                result = nameof(HostHand);
+            if (playerName == PlayerName2)
+                result = nameof(Player2Hand);
+            if (playerName == PlayerName3)
+                result = nameof(Player3Hand);
+            if (playerName == PlayerName4)
+                result = nameof(Player4Hand);
+            return result;
+        }
+        protected override void OnButtonClicked(object? sender, EventArgs e)
+        {
+            if (IsFull && CurrentPlayerName == MyName && sender is IndexedButton btn)
+                TakeTileFromDeckAndSave(OnTakeTileComplete);
+        }
+        protected override void OnTakeTileComplete(Task task)
+        {
+            if (!task.IsCompletedSuccessfully)
+                return;
+        }
+        protected override void OnComplete(Task task)
+        {
+            if (task.IsCompletedSuccessfully)
+                OnGameDeleted?.Invoke(this, EventArgs.Empty);
+        }
+        protected override void OnChange(IDocumentSnapshot? snapshot, Exception? error)
+        {
+            Game? updated = snapshot?.ToObject<Game>();
+            if (updated != null)
+            {
+                if (updated.IsGameOver && !IsGameOver)
+                    GameOver?.Invoke(this, false);
+                HasDrawnThisTurn = updated.HasDrawnThisTurn;
+                IsGameOver = updated.IsGameOver;
+                WinnerIndex = updated.WinnerIndex;
+                Players = updated.Players;
+                IsFull = updated.IsFull;
+                CurrentNumOfPlayers = updated.CurrentNumOfPlayers;
+                HostName = updated.HostName;
+                PlayerName2 = updated.PlayerName2;
+                PlayerName3 = updated.PlayerName3;
+                PlayerName4 = updated.PlayerName4;
+                CurrentTurnIndex = updated.CurrentTurnIndex;
+                DeckData = updated.DeckData ?? [];
+                HostHand = updated.HostHand ?? [];
+                Player2Hand = updated.Player2Hand ?? [];
+                Player3Hand = updated.Player3Hand ?? [];
+                Player4Hand = updated.Player4Hand ?? [];
+                DiscardTile = updated.DiscardTile ?? new TileData { IsPresent = false };
+                MyBoardCache = null;
+                RebuildDeckFromData();
+                RefreshUi();
+                OnGameChanged?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    Shell.Current.Navigation.PopAsync();
+                    Toast.Make(Strings.GameDeleted, ToastDuration.Long).Show();
+                });
+            }
+            if (IsFull && !StartTimerWasTriggered)
+            {
+                StartTimerWasTriggered = true;
+                WeakReferenceMessenger.Default.Send(new AppMessage<TimerSettings>(timerSettings));
+            }
+            else
+            {
+                WeakReferenceMessenger.Default.Send(new AppMessage<bool>(true));
+                TimeLeft = string.Empty;
+                TimeLeftChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
         protected override bool IsRealTile(TileData t)
         {
             bool result = true;
@@ -679,66 +720,32 @@ namespace RummikubApp.ModelLogics
                 }
             }
         }
-        public override void RefreshUi()
+        protected override void RegisterTimer()
         {
-            TileData[] hand = GetMyHand();
-            UiBoard.Clear();
-            for (int i = 0; i < hand.Length; i++)
+            WeakReferenceMessenger.Default.Register<AppMessage<long>>(this, (r, m) =>
             {
-                Tile t = tileFactory.FromTileData(hand[i]);
-                t.Index = i;
-                t.IsSelected = (i == SelectedIndex);
-                UiBoard.Add(t);
-            }
-            bool hasDiscard = (DiscardTile != null && DiscardTile.IsPresent);
-            if (!hasDiscard)
-                DiscardTileSource = null;
-            else
-            {
-                if (DiscardTile!.IsJoker)
-                    DiscardTileSource = Strings.Joker;
-                else
-                {
-                    Tile t = new((TileModel.ColorIndexes)DiscardTile.ColorIndex, DiscardTile.Value);
-                    DiscardTileSource = t.Source;
-                }
-            }
-            UiChanged?.Invoke(this, EventArgs.Empty);
+                OnMessageReceived(m.Value);
+            });
         }
-        public override void TileTapped(int index)
+        protected override void OnMessageReceived(long timeLeft)
         {
-            if (!IsGameOver)
-            {
-                bool doWork = true;
-                if (index < 0 || index >= UiBoard.Count)
-                    doWork = false;
-                if (doWork)
-                    if (SelectedIndex == -1 && UiBoard[index].IsEmptyTile)
-                        doWork = false;
-                if (doWork)
-                    if (SelectedIndex == index)
-                    {
-                        SelectedIndex = -1;
-                        RefreshUi();
-                        doWork = false;
-                    }
-                if (doWork)
-                    if (SelectedIndex != -1)
-                    {
-                        int first = SelectedIndex;
-                        int second = index;
-                        SelectedIndex = -1;
-                        HandleTileTap(first, _ => { });
-                        HandleTileTap(second, _ => { });
-                        RefreshUi();
-                        doWork = false;
-                    }
-                if (doWork)
-                {
-                    SelectedIndex = index;
-                    RefreshUi();
-                }
-            }
+            TimeLeft = timeLeft == Keys.FinishedSignal ? Strings.TimeUp : double.Round(timeLeft / 1000, 1).ToString();
+            TimeLeftChanged?.Invoke(this, EventArgs.Empty);
         }
+        protected override Board GetMyBoard()
+        {
+            if (MyBoardCache == null)
+            {
+                TileData[] hand = GetMyHand();
+                MyBoardCache = new Board(hand);
+                MyBoardCache.EnsureCapacity();
+            }
+            return MyBoardCache;
+        }
+        protected override void RebuildDeckFromData()
+        {
+            Deck = new Deck(DeckData);
+        }
+        #endregion
     }
 }

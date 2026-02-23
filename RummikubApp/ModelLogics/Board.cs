@@ -3,6 +3,7 @@ namespace RummikubApp.ModelLogics
 {
     public class Board : BoardModel
     {
+        #region Constructors
         public Board()
         {
             Capacity = 18;
@@ -17,6 +18,8 @@ namespace RummikubApp.ModelLogics
             SelectedIndex = -1;
             EnsureCapacity();
         }
+        #endregion
+        #region Public Methods
         public override void LoadFromArray(TileData[] tiles)
         {
             if (tiles == null)
@@ -111,5 +114,6 @@ namespace RummikubApp.ModelLogics
             }
             return result;
         }
+        #endregion
     }
 }

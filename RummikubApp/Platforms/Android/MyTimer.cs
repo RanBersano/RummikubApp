@@ -10,7 +10,6 @@ namespace RummikubApp.Platforms.Android
         {
             WeakReferenceMessenger.Default.Send(new AppMessage<long>(Keys.FinishedSignal));
         }
-
         public override void OnTick(long millisUntilFinished)
         {
             WeakReferenceMessenger.Default.Send(new AppMessage<long>(millisUntilFinished));

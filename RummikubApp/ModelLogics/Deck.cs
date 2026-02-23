@@ -3,7 +3,10 @@ namespace RummikubApp.ModelLogics
 {
     public class Deck : DeckModel
     {
+        #region Fields
         private readonly Random rnd = new();
+        #endregion
+        #region Constructors
         public Deck()
         {
             BuildFullDeck();
@@ -13,6 +16,8 @@ namespace RummikubApp.ModelLogics
         {
             LoadFromArray(existingTiles);
         }
+        #endregion
+        #region Public Methods
         public override int Count
         {
             get { return Tiles.Length; }
@@ -112,5 +117,6 @@ namespace RummikubApp.ModelLogics
             }
             return result;
         }
+        #endregion
     }
 }

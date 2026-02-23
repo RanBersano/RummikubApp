@@ -9,7 +9,10 @@ namespace RummikubApp.Platforms.Android
     [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
     public class MainActivity : MauiAppCompatActivity
     {
+        #region Fields
         MyTimer? mTimer;
+        #endregion
+        #region Private Methods
         override protected void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -32,7 +35,6 @@ namespace RummikubApp.Platforms.Android
                 OnMessageReceived(m.Value);
             });
         }
-
         private void OnMessageReceived(bool value)
         {
             if (value)
@@ -41,11 +43,11 @@ namespace RummikubApp.Platforms.Android
                 mTimer = null;
             }
         }
-
         private void OnMessageReceived(TimerSettings value)
         {
             mTimer = new MyTimer(value.TotalTimeInMilliseconds, value.IntervalInMilliseconds);
             mTimer.Start();
         }
+        #endregion
     }
 }

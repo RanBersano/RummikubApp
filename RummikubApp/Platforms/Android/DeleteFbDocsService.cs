@@ -11,9 +11,14 @@ namespace RummikubApp.Platforms.Android
     [Service]
     public class DeleteFbDocsService : Service
     {
-        private bool isRunning = true;
+        #region Fields
         private readonly FbData fbd = new();
+        #endregion
+        #region Properties
+        private bool isRunning = true;
         [return: GeneratedEnum]
+        #endregion
+        #region Public Methods
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
             ThreadStart threadStart = new(DeleteFbDocs);
@@ -21,22 +26,6 @@ namespace RummikubApp.Platforms.Android
             thread.Start();
             return base.OnStartCommand(intent, flags, startId);
         }
-        private void DeleteFbDocs()
-        {
-            while (isRunning)
-            {
-                fbd.GetDocumentsWhereLessThan(Keys.GamesCollection, nameof(GameModel.Created), DateTime.Now.AddDays(-1), OnComplete);
-                Thread.Sleep(Keys.OneHourInMilliseconds);
-            }
-            StopSelf();
-        }
-
-        private void OnComplete(IQuerySnapshot qs)
-        {
-            foreach (IDocumentSnapshot doc in qs.Documents)
-                fbd.DeleteDocument(Keys.GamesCollection, doc.Id, (task) => { });
-        }
-
         public override IBinder? OnBind(Intent? intent)
         {
             // Not used
@@ -47,5 +36,22 @@ namespace RummikubApp.Platforms.Android
             isRunning = false;
             base.OnDestroy();
         }
+        #endregion
+        #region Private Methods
+        private void DeleteFbDocs()
+        {
+            while (isRunning)
+            {
+                fbd.GetDocumentsWhereLessThan(Keys.GamesCollection, nameof(GameModel.Created), DateTime.Now.AddDays(-1), OnComplete);
+                Thread.Sleep(Keys.OneHourInMilliseconds);
+            }
+            StopSelf();
+        }
+        private void OnComplete(IQuerySnapshot qs)
+        {
+            foreach (IDocumentSnapshot doc in qs.Documents)
+                fbd.DeleteDocument(Keys.GamesCollection, doc.Id, (task) => { });
+        }
+        #endregion
     }
 }

@@ -5,6 +5,15 @@ namespace RummikubApp.ModelLogics
 {
     public class User : UserModel
     {
+        #region Constructor
+        public User()
+        {
+            UserName = Preferences.Get(Keys.UserNameKey, string.Empty);
+            Password = Preferences.Get(Keys.PasswordKey, string.Empty);
+            Email = Preferences.Get(Keys.EmailKey, string.Empty);
+        }
+        #endregion
+        #region Public Methods
         public override void Login(bool IsChecked)
         {
             IsBusy = true;
@@ -27,6 +36,25 @@ namespace RummikubApp.ModelLogics
         {
              fbd.ResetEmailPasswordAsync(EmailForReset, OnResetComplete);
         }
+        public override string GetFirebaseErrorMessage(string msg)
+        {
+            return msg.Contains(Strings.Reason) ?
+                msg.Contains(Strings.EmailExists) ? Strings.EmailExistsmsg :
+                msg.Contains(Strings.InvalidEmailAddress) ? Strings.InvalidEmailAddressmsg :
+                msg.Contains(Strings.WeakPassword) ? Strings.WeakPasswordmsg :
+                msg.Contains(Strings.UserNotFound) ? Strings.UserNotFoundmsg : 
+                Strings.UnknownError : Strings.UnknownError;
+        }
+        public override bool CanLogIn()
+        {
+            return !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email);
+        }
+        public override bool CanRegister()
+        {
+            return !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email);
+        }
+        #endregion
+        #region Private Methods
         protected override void OnResetComplete(Task task)
         {
         }
@@ -46,15 +74,6 @@ namespace RummikubApp.ModelLogics
             else
                 ShowAlert(Strings.CreateUserError);
         }
-        public override string GetFirebaseErrorMessage(string msg)
-        {
-            return msg.Contains(Strings.Reason) ?
-                msg.Contains(Strings.EmailExists) ? Strings.EmailExistsmsg :
-                msg.Contains(Strings.InvalidEmailAddress) ? Strings.InvalidEmailAddressmsg :
-                msg.Contains(Strings.WeakPassword) ? Strings.WeakPasswordmsg :
-                msg.Contains(Strings.UserNotFound) ? Strings.UserNotFoundmsg : 
-                Strings.UnknownError : Strings.UnknownError;
-        }
         protected override void ShowAlert(string msg)
         {
             ShowToastAlert?.Invoke(this, msg);
@@ -65,19 +84,6 @@ namespace RummikubApp.ModelLogics
             Preferences.Set(Keys.PasswordKey, Password);
             Preferences.Set(Keys.EmailKey, Email);
         }
-        public override bool CanLogIn()
-        {
-            return !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email);
-        }
-        public override bool CanRegister()
-        {
-            return !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(Email);
-        }
-        public User()
-        {
-            UserName = Preferences.Get(Keys.UserNameKey, string.Empty);
-            Password = Preferences.Get(Keys.PasswordKey, string.Empty);
-            Email = Preferences.Get(Keys.EmailKey, string.Empty);
-        }
+        #endregion
     }
 }

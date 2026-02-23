@@ -4,6 +4,7 @@ namespace RummikubApp.ModelLogics
 {
     public partial class Tile : TileModel
     {
+        #region Constructors
         public Tile(ColorIndexes colorIndex, int value) : base(colorIndex, value)
         {
             ColorIndex = colorIndex;
@@ -29,6 +30,8 @@ namespace RummikubApp.ModelLogics
             HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, false);
             WidthRequest = 40;
         }
+        #endregion
+        #region Public Methods
         public override Tile CreateEmptyTile()
         {
             Tile empty = new(true);
@@ -42,14 +45,6 @@ namespace RummikubApp.ModelLogics
                 string file = GetFileName(color, value);
                 result = ImageSource.FromFile(file);
             }
-            return result;
-        }
-        protected override string GetFileName(ColorIndexes color, int value)
-        {
-            string result = string.Empty;
-            Tile t = new(color, value);
-            if (t.Source != null)
-                result = t.Source.ToString()!;
             return result;
         }
         public override Tile FromTileData(TileData data)
@@ -71,5 +66,16 @@ namespace RummikubApp.ModelLogics
             }
             return result;
         }
+        #endregion
+        #region Private Methods
+        protected override string GetFileName(ColorIndexes color, int value)
+        {
+            string result = string.Empty;
+            Tile t = new(color, value);
+            if (t.Source != null)
+                result = t.Source.ToString()!;
+            return result;
+        }
+        #endregion
     }
 }

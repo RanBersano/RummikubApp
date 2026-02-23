@@ -6,9 +6,12 @@ namespace RummikubApp.ModelLogics
 {
     public partial class FbData : FbDataModel
     {
+        #region Constructor
         public FbData()
         {
         }
+        #endregion
+        #region Public Methods
         public async override void CreateUserWithEmailAndPasswordAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete)
         {
             await facl.CreateUserWithEmailAndPasswordAsync(email, password, name).ContinueWith(OnComplete);
@@ -76,5 +79,6 @@ namespace RummikubApp.ModelLogics
                 return facl.User.Uid;
             }
         }
+        #endregion
     }
 }
